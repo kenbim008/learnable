@@ -1,0 +1,2868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEARNible - Transform Your Knowledge Into Income</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            color: #2D3748;
+            line-height: 1.6;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Header Styles */
+        header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .logo-icon {
+            font-size: 1.5rem;
+        }
+
+        .logo-learn {
+            color: #5B7FFF;
+        }
+
+        .logo-ible {
+            color: #10B981;
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        nav a {
+            color: #2D3748;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+
+        nav a:hover {
+            color: #4F7CFF;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .currency-selector {
+            padding: 0.5rem;
+            border: 1px solid #E2E8F0;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .cart-icon {
+            font-size: 1.5rem;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #FF4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-outline {
+            border: 2px solid #4F7CFF;
+            color: #4F7CFF;
+            background: white;
+        }
+
+        .btn-outline:hover {
+            background: #4F7CFF;
+            color: white;
+        }
+
+        .btn-primary {
+            background: #4F7CFF;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3D63D9;
+        }
+
+        .btn-success {
+            background: #10B981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #4F7CFF 0%, #00D4A1 100%);
+            color: white;
+            text-align: center;
+            padding: 5rem 2rem;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+
+        .hero .brand-name {
+            color: white;
+            font-weight: 700;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        /* How It Works Section */
+        .how-it-works {
+            padding: 5rem 2rem;
+            background: white;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #2D3748;
+        }
+
+        .steps {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .step {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .step:nth-child(1) .step-number {
+            background: #E6F2FF;
+            color: #4F7CFF;
+        }
+
+        .step:nth-child(2) .step-number {
+            background: #E6FFF5;
+            color: #00D4A1;
+        }
+
+        .step:nth-child(3) .step-number {
+            background: #F3E6FF;
+            color: #8B7CFF;
+        }
+
+        .step:nth-child(4) .step-number {
+            background: #FFF5E6;
+            color: #FFB800;
+        }
+
+        .step h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1.25rem;
+        }
+
+        .step p {
+            color: #718096;
+            font-size: 0.95rem;
+        }
+
+        /* Featured Courses Section */
+        .featured-courses {
+            padding: 5rem 2rem;
+            background: #F5F7FA;
+        }
+
+        .filter-bar {
+            max-width: 1200px;
+            margin: 0 auto 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-bar input,
+        .filter-bar select {
+            padding: 0.75rem;
+            border: 1px solid #E2E8F0;
+            border-radius: 6px;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .courses-grid {
+            max-width: 1200px;
+            margin: 2rem auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .course-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        }
+
+        .course-image {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .course-content {
+            padding: 1.5rem;
+        }
+
+        .course-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .course-instructor {
+            color: #718096;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .course-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .course-price {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #2D3748;
+        }
+
+        .course-rating {
+            color: #FFB800;
+        }
+
+        .add-to-cart-btn {
+            width: 100%;
+            margin-top: 1rem;
+            background: #10B981;
+            color: white;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .add-to-cart-btn:hover {
+            background: #059669;
+        }
+
+        .preview-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(79, 124, 255, 0.9);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Community Page */
+        .community-page {
+            padding: 3rem 2rem;
+            background: #F5F7FA;
+            min-height: 100vh;
+        }
+
+        .community-header {
+            max-width: 1200px;
+            margin: 0 auto 3rem;
+            text-align: center;
+        }
+
+        .community-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .community-tabs {
+            max-width: 1200px;
+            margin: 0 auto 2rem;
+            display: flex;
+            gap: 1rem;
+            border-bottom: 2px solid #E2E8F0;
+        }
+
+        .community-tab {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: #718096;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .community-tab.active {
+            color: #4F7CFF;
+            border-bottom-color: #4F7CFF;
+        }
+
+        .community-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        .forum-list {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+        }
+
+        .forum-category {
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        .forum-category h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .forum-topic {
+            padding: 1rem;
+            border: 1px solid #E2E8F0;
+            border-radius: 6px;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .forum-topic:hover {
+            background: #F5F7FA;
+            border-color: #4F7CFF;
+        }
+
+        .topic-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .topic-title {
+            font-weight: 600;
+            color: #2D3748;
+        }
+
+        .topic-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.85rem;
+            color: #718096;
+        }
+
+        .community-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .sidebar-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .sidebar-card h3 {
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .trending-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        .trending-item:last-child {
+            border-bottom: none;
+        }
+
+        .online-user {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 0;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4F7CFF 0%, #00D4A1 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .online-indicator {
+            width: 10px;
+            height: 10px;
+            background: #10B981;
+            border-radius: 50%;
+            margin-left: auto;
+        }
+
+        .community-guidelines {
+            background: #FFF5E6;
+            border-left: 4px solid #FFB800;
+            padding: 1rem;
+        }
+
+        .community-guidelines h4 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+            color: #FFB800;
+        }
+
+        .guidelines-list {
+            list-style: none;
+            font-size: 0.9rem;
+        }
+
+        .guidelines-list li {
+            padding: 0.25rem 0;
+            display: flex;
+            align-items: start;
+            gap: 0.5rem;
+        }
+
+        .guidelines-list li:before {
+            content: "•";
+            color: #FFB800;
+            font-weight: bold;
+        }
+
+        /* Why Choose Section */
+        .why-choose {
+            padding: 5rem 2rem;
+            background: white;
+        }
+
+        .features {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1.25rem;
+        }
+
+        .feature-card.blue h3 {
+            color: #4F7CFF;
+        }
+
+        .feature-card.green h3 {
+            color: #00D4A1;
+        }
+
+        .feature-card p {
+            color: #718096;
+            font-size: 0.95rem;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 5rem 2rem;
+            background: #F5F7FA;
+        }
+
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .pricing-header h2 {
+            font-size: 2.5rem;
+            color: #2D3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .instructor-pricing-card {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border: 3px solid #10B981;
+            border-radius: 12px;
+            padding: 3rem;
+            text-align: center;
+        }
+
+        .plan-badge {
+            display: inline-block;
+            background: #10B981;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        .price-large {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #10B981;
+            margin-bottom: 0.5rem;
+        }
+
+        .price-period {
+            color: #718096;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-features {
+            text-align: left;
+            margin: 2rem 0;
+        }
+
+        .pricing-features ul {
+            list-style: none;
+        }
+
+        .pricing-features li {
+            padding: 0.75rem 0;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1rem;
+            color: #2D3748;
+        }
+
+        .pricing-features li:before {
+            content: "✓";
+            color: #10B981;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .pricing-cta {
+            margin-top: 2rem;
+        }
+
+        .pricing-cta .btn {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .trial-notice {
+            margin-top: 1rem;
+            color: #718096;
+            font-size: 0.95rem;
+        }
+
+        /* Shopping Cart Sidebar */
+        .cart-sidebar {
+            position: fixed;
+            right: -400px;
+            top: 0;
+            width: 400px;
+            height: 100vh;
+            background: white;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+            z-index: 2000;
+            transition: right 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-sidebar.active {
+            right: 0;
+        }
+
+        .cart-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #E2E8F0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-header h3 {
+            font-size: 1.5rem;
+        }
+
+        .close-cart {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #718096;
+        }
+
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .cart-item-image {
+            width: 80px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .cart-item-details {
+            flex: 1;
+        }
+
+        .cart-item-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .cart-item-instructor {
+            font-size: 0.85rem;
+            color: #718096;
+        }
+
+        .cart-item-price {
+            font-weight: bold;
+            color: #10B981;
+        }
+
+        .remove-item {
+            background: none;
+            border: none;
+            color: #FF4444;
+            cursor: pointer;
+            font-size: 1.25rem;
+        }
+
+        .cart-footer {
+            padding: 1.5rem;
+            border-top: 1px solid #E2E8F0;
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #718096;
+        }
+
+        /* Dashboard Styles */
+        .dashboard {
+            min-height: 100vh;
+            background: #F5F7FA;
+        }
+
+        .dashboard-container {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: white;
+            min-height: calc(100vh - 70px);
+            padding: 2rem 1rem;
+            box-shadow: 2px 0 4px rgba(0,0,0,0.05);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: #2D3748;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background: #E6F2FF;
+            color: #4F7CFF;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+        }
+
+        .dashboard-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .dashboard-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: #718096;
+            font-size: 0.9rem;
+        }
+
+        .content-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+
+        .content-card h2 {
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .permissions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .permission-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            border: 1px solid #E2E8F0;
+            border-radius: 6px;
+        }
+
+        .permission-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .permission-item label {
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .stripe-integration {
+            background: linear-gradient(135deg, #635BFF 0%, #4F46E5 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .stripe-integration h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stripe-status {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Footer */
+        footer {
+            background: #1F1F3D;
+            color: #CBD5E0;
+            padding: 3rem 2rem 1rem;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-brand {
+            color: white;
+        }
+
+        .footer-brand h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+        }
+
+        .social-icon.twitter { background: #1DA1F2; }
+        .social-icon.youtube { background: #FF0000; }
+        .social-icon.instagram { background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); }
+        .social-icon.linkedin { background: #0077B5; }
+
+        .footer-column h4 {
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .footer-column a {
+            color: #CBD5E0;
+            text-decoration: none;
+            display: block;
+            padding: 0.25rem 0;
+            cursor: pointer;
+        }
+
+        .footer-column a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #4A5568;
+            padding-top: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 3000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: #718096;
+        }
+
+        .modal h2 {
+            margin-bottom: 0.5rem;
+        }
+
+        .modal p {
+            color: #718096;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #E2E8F0;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .file-upload-area {
+            border: 2px dashed #E2E8F0;
+            border-radius: 6px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-upload-area:hover {
+            border-color: #4F7CFF;
+            background: #F5F7FA;
+        }
+
+        .file-upload-area input[type="file"] {
+            display: none;
+        }
+
+        .role-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .role-btn {
+            flex: 1;
+            padding: 0.75rem;
+            border: 2px solid #E2E8F0;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .role-btn.active {
+            background: #8B7CFF;
+            color: white;
+            border-color: #8B7CFF;
+        }
+
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .forgot-password {
+            color: #4F7CFF;
+            text-decoration: none;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 1.5rem 0;
+            color: #718096;
+            position: relative;
+        }
+
+        .divider:before,
+        .divider:after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background: #E2E8F0;
+        }
+
+        .divider:before { left: 0; }
+        .divider:after { right: 0; }
+
+        .social-login {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .social-btn {
+            padding: 0.75rem;
+            border: 1px solid #E2E8F0;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-weight: 600;
+        }
+
+        .modal-footer {
+            text-align: center;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        .modal-footer a {
+            color: #4F7CFF;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .admin-link {
+            color: #FFB800;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+            margin-top: 1rem;
+        }
+
+        .admin-access-notice {
+            background: #FFF5E6;
+            border-left: 4px solid #FFB800;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        /* Video Player */
+        .video-player-container {
+            position: relative;
+            width: 100%;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .video-player {
+            width: 100%;
+            display: block;
+        }
+
+        .video-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .no-download-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+        }
+
+        .drm-notice {
+            background: #4F7CFF;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Chatbot */
+        .chatbot {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1500;
+        }
+
+        .chatbot-toggle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4F7CFF 0%, #00D4A1 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .chatbot-window {
+            display: none;
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 360px;
+            height: 500px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+            flex-direction: column;
+        }
+
+        .chatbot-window.active {
+            display: flex;
+        }
+
+        .chatbot-header {
+            background: linear-gradient(135deg, #4F7CFF 0%, #00D4A1 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chatbot-minimize {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1.25rem;
+        }
+
+        .chatbot-body {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        .chatbot-message {
+            background: #F5F7FA;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .faq-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .faq-btn {
+            background: white;
+            border: 1px solid #E2E8F0;
+            padding: 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .faq-btn:hover {
+            background: #F5F7FA;
+        }
+
+        .chatbot-input {
+            padding: 1rem;
+            border-top: 1px solid #E2E8F0;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chatbot-input input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid #E2E8F0;
+            border-radius: 6px;
+        }
+
+        .chatbot-input button {
+            background: #4F7CFF;
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            nav {
+                display: none;
+            }
+            
+            .cart-sidebar {
+                width: 100vw;
+                right: -100vw;
+            }
+
+            .dashboard-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+
+            .community-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Landing Page -->
+    <div id="landingPage">
+        <!-- Header -->
+        <header>
+            <div class="header-container">
+                <div class="logo" onclick="showPage('landing')">
+                    <span class="logo-icon">📖</span>
+                    <span><span class="logo-learn">LEARN</span><span class="logo-ible">ible</span></span>
+                </div>
+                <nav>
+                    <a onclick="showPage('landing')">Home</a>
+                    <a onclick="scrollToSection('courses')">Courses</a>
+                    <a onclick="showPage('community')">Community</a>
+                    <a onclick="scrollToSection('pricing')">Pricing</a>
+                    <a onclick="showPage('landing')">About</a>
+                </nav>
+                <div class="header-right">
+                    <select class="currency-selector" id="countrySelector" onchange="changeCountry()">
+                        <option value="US">US - USD</option>
+                        <option value="NG">Nigeria - NGN</option>
+                        <option value="GB">UK - GBP</option>
+                        <option value="EU">Europe - EUR</option>
+                        <option value="CA">Canada - CAD</option>
+                    </select>
+                    <div class="cart-icon" onclick="toggleCart()">
+                        🛒
+                        <span class="cart-badge" id="cartBadge">0</span>
+                    </div>
+                    <button class="btn btn-outline" onclick="openModal('login')">Login</button>
+                    <button class="btn btn-primary" onclick="openModal('signup')">Sign Up</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1>Transform Your Knowledge Into Income</h1>
+            <p>Join thousands of instructors earning from their expertise on <span class="brand-name">LEARNible</span></p>
+            <div class="hero-buttons">
+                <button class="btn btn-success" onclick="openSignupAsInstructor()">Join As Instructor</button>
+                <button class="btn btn-primary" onclick="openSignupAsStudent()">Join As Student</button>
+            </div>
+        </section>
+
+        <!-- How It Works -->
+        <section class="how-it-works">
+            <h2 class="section-title">How It Works</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Sign Up</h3>
+                    <p>Create your instructor account and subscribe for $9.99/month</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Create Courses</h3>
+                    <p>Upload your videos and build engaging course content</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Publish & Earn</h3>
+                    <p>Launch your courses and earn 60% from every sale</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>Track Success</h3>
+                    <p>Monitor your earnings and student progress with detailed analytics</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Courses -->
+        <section class="featured-courses" id="courses">
+            <h2 class="section-title">Featured Courses</h2>
+            <div class="filter-bar">
+                <input type="text" placeholder="Search courses...">
+                <select>
+                    <option>All Categories</option>
+                    <option>Technology & IT</option>
+                    <option>Business</option>
+                    <option>Design</option>
+                </select>
+                <select>
+                    <option>All Levels</option>
+                    <option>Beginner</option>
+                    <option>Intermediate</option>
+                    <option>Advanced</option>
+                </select>
+                <select>
+                    <option>Most Popular</option>
+                    <option>Highest Rated</option>
+                    <option>Newest</option>
+                </select>
+            </div>
+            
+            <div class="courses-grid" id="coursesGrid">
+                <!-- Courses will be dynamically loaded here -->
+            </div>
+        </section>
+
+        <!-- Why Choose LEARNible -->
+        <section class="why-choose">
+            <h2 class="section-title">Why Choose <span style="color: #5B7FFF;">LEARN</span><span style="color: #10B981;">ible</span>?</h2>
+            <div class="features">
+                <div class="feature-card blue">
+                    <div class="feature-icon">💼</div>
+                    <h3>Easy Course Creation</h3>
+                    <p>Upload videos, create quizzes, and build comprehensive courses with our intuitive tools</p>
+                </div>
+                <div class="feature-card green">
+                    <div class="feature-icon">💰</div>
+                    <h3>Earn More</h3>
+                    <p>Keep 60% of your course sales. We only deduct when you earn - no hidden fees</p>
+                </div>
+                <div class="feature-card blue">
+                    <div class="feature-icon">📊</div>
+                    <h3>Detailed Analytics</h3>
+                    <p>Track your earnings, student progress, and performance with comprehensive reports</p>
+                </div>
+                <div class="feature-card green">
+                    <div class="feature-icon">🌍</div>
+                    <h3>Global Marketplace</h3>
+                    <p>Reach students worldwide with multi-currency support and international payments</p>
+                </div>
+                <div class="feature-card blue">
+                    <div class="feature-icon">🎓</div>
+                    <h3>Student Success</h3>
+                    <p>Help students learn with interactive content, progress tracking, and certificates</p>
+                </div>
+                <div class="feature-card green">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Secure Platform</h3>
+                    <p>Encrypted content delivery and secure payment processing to protect your work</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pricing Section -->
+        <section class="pricing" id="pricing">
+            <div class="pricing-header">
+                <h2>Simple, Transparent Pricing</h2>
+            </div>
+            
+            <div class="instructor-pricing-card">
+                <div class="plan-badge">Instructor Plan</div>
+                <div class="price-large" id="instructorPrice">$9.99</div>
+                <div class="price-period">per month</div>
+                
+                <div class="pricing-features">
+                    <ul>
+                        <li>Unlimited course creation</li>
+                        <li>Video hosting & streaming</li>
+                        <li>Student analytics dashboard</li>
+                        <li>Marketing tools included</li>
+                        <li>60% of course sales revenue</li>
+                        <li>Multi-currency support</li>
+                        <li>24/7 customer support</li>
+                    </ul>
+                </div>
+                
+                <div class="pricing-cta">
+                    <button class="btn btn-success" onclick="openSignupAsInstructor()">Start Teaching Today</button>
+                    <div class="trial-notice">Try 30-Days Free • No Credit Card Required</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-container">
+                <div class="footer-brand">
+                    <h3><span style="color: #5B7FFF; font-weight: 700;">LEARN</span><span style="color: #10B981; font-weight: 700;">ible</span></h3>
+                    <p>Transform your knowledge into income. Join thousands of instructors earning from their expertise on the world's most instructor-friendly platform.</p>
+                    <div class="social-icons">
+                        <div class="social-icon twitter">𝕏</div>
+                        <div class="social-icon youtube">▶</div>
+                        <div class="social-icon instagram">📷</div>
+                        <div class="social-icon linkedin">in</div>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h4>Platform</h4>
+                    <a onclick="scrollToSection('courses')">Browse Courses</a>
+                    <a onclick="openSignupAsInstructor()">Become Instructor</a>
+                    <a onclick="openSignupAsStudent()">Join as Student</a>
+                    <a onclick="showPage('community')">Community</a>
+                    <a onclick="scrollToSection('pricing')">Pricing</a>
+                </div>
+                <div class="footer-column">
+                    <h4>Popular Categories</h4>
+                    <a>Business & Entrepreneurship</a>
+                    <a>Technology & IT</a>
+                    <a>Data & Analytics</a>
+                    <a>Design & Creativity</a>
+                    <a>Project Management</a>
+                    <a>Marketing & Communication</a>
+                </div>
+                <div class="footer-column">
+                    <h4>Support</h4>
+                    <a>Help Center</a>
+                    <a>Contact Us</a>
+                    <a>Terms of Service</a>
+                    <a>Privacy Policy</a>
+                    <a>About Us</a>
+                    <a onclick="showAdminLogin()" style="color: #FFB800;">👑 Admin Access</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2024 <span style="color: #5B7FFF; font-weight: 600;">LEARN</span><span style="color: #10B981; font-weight: 600;">ible</span>. All rights reserved. | Made with ❤️ for educators worldwide</p>
+                <p>🌍 Available in 10+ countries | 🔒 SSL Secured | ⚡ Powered by Stripe</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Community Page -->
+    <div id="communityPage" class="hidden">
+        <header>
+            <div class="header-container">
+                <div class="logo" onclick="showPage('landing')">
+                    <span class="logo-icon">📖</span>
+                    <span><span class="logo-learn">LEARN</span><span class="logo-ible">ible</span></span>
+                </div>
+                <nav>
+                    <a onclick="showPage('landing')">Home</a>
+                    <a onclick="scrollToSection('courses')">Courses</a>
+                    <a onclick="showPage('community')">Community</a>
+                    <a onclick="scrollToSection('pricing')">Pricing</a>
+                    <a onclick="showPage('landing')">About</a>
+                </nav>
+                <div class="header-right">
+                    <button class="btn btn-outline" onclick="openModal('login')">Login</button>
+                    <button class="btn btn-primary" onclick="openModal('signup')">Sign Up</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="community-page">
+            <div class="community-header">
+                <h1>LEARNible Community</h1>
+                <p>Connect, Learn, and Grow Together</p>
+            </div>
+
+            <div class="community-tabs">
+                <button class="community-tab active">💬 Forums</button>
+                <button class="community-tab">👥 Study Groups</button>
+                <button class="community-tab">🏆 Challenges</button>
+                <button class="community-tab">📅 Events</button>
+            </div>
+
+            <div class="community-content">
+                <div class="forum-list">
+                    <div class="forum-category">
+                        <h3>💻 Web Development</h3>
+                        <p style="color: #718096; margin-bottom: 1rem;">1,234 topics • 8,567 posts</p>
+                        
+                        <div class="forum-topic">
+                            <div class="topic-header">
+                                <div class="topic-title">Best practices for React Hooks in 2024</div>
+                            </div>
+                            <div class="topic-meta">
+                                <span>Started by Sarah Johnson • 2 hours ago</span>
+                                <span>23 replies • 156 views</span>
+                            </div>
+                        </div>
+
+                        <div class="forum-topic">
+                            <div class="topic-header">
+                                <div class="topic-title">Understanding async/await vs Promises</div>
+                            </div>
+                            <div class="topic-meta">
+                                <span>Started by Mike Chen • 5 hours ago</span>
+                                <span>18 replies • 89 views</span>
+                            </div>
+                        </div>
+
+                        <div class="forum-topic">
+                            <div class="topic-header">
+                                <div class="topic-title">CSS Grid vs Flexbox: When to use which?</div>
+                            </div>
+                            <div class="topic-meta">
+                                <span>Started by Emma Davis • 1 day ago</span>
+                                <span>31 replies • 245 views</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="forum-category">
+                        <h3>📊 Data Science & Analytics</h3>
+                        <p style="color: #718096; margin-bottom: 1rem;">892 topics • 5,234 posts</p>
+                        
+                        <div class="forum-topic">
+                            <div class="topic-header">
+                                <div class="topic-title">Pandas performance optimization tips</div>
+                            </div>
+                            <div class="topic-meta">
+                                <span>Started by David Lee • 3 hours ago</span>
+                                <span>15 replies • 78 views</span>
+                            </div>
+                        </div>
+
+                        <div class="forum-topic">
+                            <div class="topic-header">
+                                <div class="topic-title">Getting started with TensorFlow 2.0</div>
+                            </div>
+                            <div class="topic-meta">
+                                <span>Started by Dr. Robert Kim • 8 hours ago</span>
+                                <span>27 replies • 134 views</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="forum-category">
+                        <h3>🎨 Design & Creativity</h3>
+                        <p style="color: #718096; margin-bottom: 1rem;">567 topics • 3,891 posts</p>
+                        
+                        <div class="forum-topic">
+                            <div class="topic-header">
+                                <div class="topic-title">UI Design trends for 2024</div>
+                            </div>
+                            <div class="topic-meta">
+                                <span>Started by Lisa Anderson • 4 hours ago</span>
+                                <span>19 replies • 102 views</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="community-sidebar">
+                    <div class="sidebar-card">
+                        <h3>🔥 Trending Topics</h3>
+                        <div class="trending-item">
+                            <span>React Hooks</span>
+                            <span style="margin-left: auto; color: #FFB800;">234</span>
+                        </div>
+                        <div class="trending-item">
+                            <span>Machine Learning</span>
+                            <span style="margin-left: auto; color: #FFB800;">180</span>
+                        </div>
+                        <div class="trending-item">
+                            <span>UI Design</span>
+                            <span style="margin-left: auto; color: #FFB800;">156</span>
+                        </div>
+                        <div class="trending-item">
+                            <span>Startup Advice</span>
+                            <span style="margin-left: auto; color: #FFB800;">143</span>
+                        </div>
+                        <div class="trending-item">
+                            <span>Python Tips</span>
+                            <span style="margin-left: auto; color: #FFB800;">127</span>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-card">
+                        <h3>👥 Online Now (247)</h3>
+                        <div class="online-user">
+                            <div class="user-avatar">SJ</div>
+                            <div>
+                                <div style="font-weight: 600;">Sarah Johnson</div>
+                                <div style="font-size: 0.85rem; color: #718096;">Teaching React</div>
+                            </div>
+                            <div class="online-indicator"></div>
+                        </div>
+                        <div class="online-user">
+                            <div class="user-avatar">MC</div>
+                            <div>
+                                <div style="font-weight: 600;">Mike Chen</div>
+                                <div style="font-size: 0.85rem; color: #718096;">In Data Science forum</div>
+                            </div>
+                            <div class="online-indicator"></div>
+                        </div>
+                        <div class="online-user">
+                            <div class="user-avatar">ED</div>
+                            <div>
+                                <div style="font-weight: 600;">Emma Davis</div>
+                                <div style="font-size: 0.85rem; color: #718096;">Designing UI</div>
+                            </div>
+                            <div class="online-indicator"></div>
+                        </div>
+                        <div class="online-user">
+                            <div class="user-avatar">DL</div>
+                            <div>
+                                <div style="font-weight: 600;">David Lee</div>
+                                <div style="font-size: 0.85rem; color: #718096;">Coding Python</div>
+                            </div>
+                            <div class="online-indicator"></div>
+                        </div>
+                    </div>
+
+                    <div class="community-guidelines">
+                        <h4>📋 Community Guidelines</h4>
+                        <ul class="guidelines-list">
+                            <li>Be Respectful - Treat all members with kindness and respect</li>
+                            <li>Share Knowledge - Help others by sharing your expertise</li>
+                            <li>Stay On Topic - Keep discussions relevant to learning</li>
+                            <li>No Spam - Avoid promotional content or irrelevant links</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <div class="footer-container">
+                <div class="footer-brand">
+                    <h3><span style="color: #5B7FFF; font-weight: 700;">LEARN</span><span style="color: #10B981; font-weight: 700;">ible</span></h3>
+                    <p>Transform your knowledge into income.</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2024 <span style="color: #5B7FFF; font-weight: 600;">LEARN</span><span style="color: #10B981; font-weight: 600;">ible</span>. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Student Dashboard -->
+    <div id="studentDashboard" class="dashboard hidden">
+        <header>
+            <div class="header-container">
+                <div class="logo" onclick="showPage('landing')">
+                    <span class="logo-icon">📖</span>
+                    <span><span class="logo-learn">LEARN</span><span class="logo-ible">ible</span></span>
+                </div>
+                <nav>
+                    <span style="font-weight: 600;">Student Portal</span>
+                </nav>
+                <div class="header-right">
+                    <button class="btn btn-outline" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </header>
+        
+        <div class="dashboard-container">
+            <aside class="sidebar">
+                <ul class="sidebar-menu">
+                    <li><a class="active">📊 Dashboard</a></li>
+                    <li><a>📚 My Courses</a></li>
+                    <li><a>🎯 Learning Path</a></li>
+                    <li><a>❤️ Wishlist</a></li>
+                    <li><a>🎓 Certificates</a></li>
+                    <li><a onclick="showPage('community')">👥 Community</a></li>
+                    <li><a>✉️ Messages</a></li>
+                    <li><a>⚙️ Settings</a></li>
+                </ul>
+            </aside>
+            
+            <main class="main-content">
+                <div class="dashboard-header">
+                    <h1>Welcome back, Student! 👋</h1>
+                    <p>Continue your learning journey</p>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📚</div>
+                        <div class="stat-value">5</div>
+                        <div class="stat-label">Enrolled Courses</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-value">2</div>
+                        <div class="stat-label">Completed</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⏱️</div>
+                        <div class="stat-value">24h</div>
+                        <div class="stat-label">Learning Time</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🎓</div>
+                        <div class="stat-value">2</div>
+                        <div class="stat-label">Certificates</div>
+                    </div>
+                </div>
+                
+                <div class="content-card">
+                    <h2>Continue Learning</h2>
+                    <div class="drm-notice">
+                        🔒 All courses are protected with DRM - Stream only, no downloads available
+                    </div>
+                    <p>Pick up where you left off in your enrolled courses</p>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Instructor Dashboard -->
+    <div id="instructorDashboard" class="dashboard hidden">
+        <header>
+            <div class="header-container">
+                <div class="logo" onclick="showPage('landing')">
+                    <span class="logo-icon">📖</span>
+                    <span><span class="logo-learn">LEARN</span><span class="logo-ible">ible</span></span>
+                </div>
+                <nav>
+                    <span style="font-weight: 600;">Instructor Portal</span>
+                </nav>
+                <div class="header-right">
+                    <button class="btn btn-outline" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </header>
+        
+        <div class="dashboard-container">
+            <aside class="sidebar">
+                <ul class="sidebar-menu">
+                    <li><a class="active">📊 Dashboard</a></li>
+                    <li><a>📚 My Courses</a></li>
+                    <li><a onclick="openModal('createCourse')">➕ Create Course</a></li>
+                    <li><a>👥 Students</a></li>
+                    <li><a>💰 Revenue</a></li>
+                    <li><a>📈 Analytics</a></li>
+                    <li><a>⭐ Reviews</a></li>
+                    <li><a>✉️ Messages</a></li>
+                    <li><a>⚙️ Settings</a></li>
+                </ul>
+            </aside>
+            
+            <main class="main-content">
+                <div class="dashboard-header">
+                    <h1>Welcome back, Instructor! 👨‍🏫</h1>
+                    <p>Your teaching dashboard</p>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card" style="border-left: 4px solid #10B981;">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-value">$2,450</div>
+                        <div class="stat-label">Total Revenue</div>
+                    </div>
+                    <div class="stat-card" style="border-left: 4px solid #4F7CFF;">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-value">324</div>
+                        <div class="stat-label">Total Students</div>
+                    </div>
+                    <div class="stat-card" style="border-left: 4px solid #FFB800;">
+                        <div class="stat-icon">⭐</div>
+                        <div class="stat-value">4.8</div>
+                        <div class="stat-label">Average Rating</div>
+                    </div>
+                    <div class="stat-card" style="border-left: 4px solid #8B7CFF;">
+                        <div class="stat-icon">📚</div>
+                        <div class="stat-value">8</div>
+                        <div class="stat-label">Active Courses</div>
+                    </div>
+                </div>
+                
+                <div class="content-card">
+                    <h2>Course Creation Features</h2>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                        <div style="border: 1px solid #E2E8F0; padding: 1rem; border-radius: 6px;">
+                            <h4>📸 Custom Course Covers</h4>
+                            <p style="color: #718096; font-size: 0.9rem;">Upload your own cover images or use our defaults</p>
+                        </div>
+                        <div style="border: 1px solid #E2E8F0; padding: 1rem; border-radius: 6px;">
+                            <h4>🎬 Course Previews</h4>
+                            <p style="color: #718096; font-size: 0.9rem;">Add optional preview videos to attract students</p>
+                        </div>
+                        <div style="border: 1px solid #E2E8F0; padding: 1rem; border-radius: 6px;">
+                            <h4>🔒 DRM Protected</h4>
+                            <p style="color: #718096; font-size: 0.9rem;">All content is streaming-only, no downloads</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="content-card">
+                    <h2>Recent Enrollments</h2>
+                    <p>New students joined your courses this week</p>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="adminDashboard" class="dashboard hidden">
+        <header>
+            <div class="header-container">
+                <div class="logo" onclick="showPage('landing')">
+                    <span class="logo-icon">📖</span>
+                    <span><span class="logo-learn">LEARN</span><span class="logo-ible">ible</span></span>
+                </div>
+                <nav>
+                    <span style="font-weight: 600;">Admin Portal</span>
+                </nav>
+                <div class="header-right">
+                    <button class="btn btn-outline" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </header>
+        
+        <div class="dashboard-container">
+            <aside class="sidebar">
+                <ul class="sidebar-menu">
+                    <li><a class="active">📊 Dashboard</a></li>
+                    <li><a id="adminUsersLink">👥 Users</a></li>
+                    <li><a id="adminCoursesLink">📚 Courses</a></li>
+                    <li><a id="adminReviewLink">✅ Pending Review</a></li>
+                    <li><a id="adminCommunityLink">👥 Community</a></li>
+                    <li><a id="adminContentLink">📝 Content Pages</a></li>
+                    <li><a id="adminFinancialsLink">💰 Financials</a></li>
+                    <li><a id="adminSettingsLink">⚙️ Settings</a></li>
+                    <li><a id="adminAnalyticsLink">📈 Analytics</a></li>
+                    <li><a id="adminLogsLink">📋 Logs</a></li>
+                </ul>
+            </aside>
+            
+            <main class="main-content">
+                <div class="dashboard-header">
+                    <h1>Admin Dashboard 👑</h1>
+                    <p>Platform management and oversight</p>
+                    <div style="background: #FFF5E6; padding: 1rem; border-radius: 6px; margin-top: 1rem; font-size: 0.9rem;">
+                        ⚠️ Your permissions are managed by Super Admin
+                    </div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-value">1,248</div>
+                        <div class="stat-label">Total Users</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📚</div>
+                        <div class="stat-value">156</div>
+                        <div class="stat-label">Published Courses</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⏳</div>
+                        <div class="stat-value">12</div>
+                        <div class="stat-label">Pending Review</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-value">$52,340</div>
+                        <div class="stat-label">Total Revenue</div>
+                    </div>
+                </div>
+                
+                <div class="content-card">
+                    <h2>Pending Course Reviews</h2>
+                    <p>Courses awaiting approval by admin team</p>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Super Admin Dashboard -->
+    <div id="superAdminDashboard" class="dashboard hidden">
+        <header>
+            <div class="header-container">
+                <div class="logo" onclick="showPage('landing')">
+                    <span class="logo-icon">📖</span>
+                    <span><span class="logo-learn">LEARN</span><span class="logo-ible">ible</span></span>
+                </div>
+                <nav>
+                    <span style="font-weight: 600;">Super Admin Portal</span>
+                </nav>
+                <div class="header-right">
+                    <button class="btn btn-outline" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </header>
+        
+        <div class="dashboard-container">
+            <aside class="sidebar">
+                <ul class="sidebar-menu">
+                    <li><a class="active">📊 Dashboard</a></li>
+                    <li><a>👥 All Users</a></li>
+                    <li><a>👑 Admin Management</a></li>
+                    <li><a>🔑 Access Codes</a></li>
+                    <li><a>📚 All Courses</a></li>
+                    <li><a>💰 Revenue & Payouts</a></li>
+                    <li><a>💳 Pricing Settings</a></li>
+                    <li><a>📝 Content Management</a></li>
+                    <li><a>🎨 Site Settings</a></li>
+                    <li><a>📈 Analytics</a></li>
+                    <li><a>📋 System Logs</a></li>
+                </ul>
+            </aside>
+            
+            <main class="main-content">
+                <div class="dashboard-header">
+                    <h1>Super Admin Dashboard 👑</h1>
+                    <p>Full platform control and configuration</p>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-value">1,248</div>
+                        <div class="stat-label">Total Users</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">👨‍🏫</div>
+                        <div class="stat-value">89</div>
+                        <div class="stat-label">Instructors</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">👨‍🎓</div>
+                        <div class="stat-value">1,157</div>
+                        <div class="stat-label">Students</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">👑</div>
+                        <div class="stat-value">2</div>
+                        <div class="stat-label">Admins (Max: 2)</div>
+                    </div>
+                </div>
+
+                <div class="stripe-integration">
+                    <h3>💳 Stripe Payment Integration</h3>
+                    <div class="stripe-status">Status: ✅ Connected</div>
+                    <p style="margin-bottom: 1rem;">Manage your Stripe payment gateway integration</p>
+                    <button class="btn btn-outline" style="background: white; color: #635BFF; border-color: white;">Configure Stripe Settings</button>
+                    <button class="btn btn-outline" style="background: rgba(255,255,255,0.2); color: white; border-color: white; margin-left: 0.5rem;">View Transactions</button>
+                </div>
+
+                <div class="content-card">
+                    <h2>Admin Permission Management</h2>
+                    <p style="margin-bottom: 1.5rem;">Assign specific functions to admin users (Max 2 admins)</p>
+                    
+                    <div class="permissions-grid">
+                        <div class="permission-item">
+                            <input type="checkbox" id="perm1" checked>
+                            <label for="perm1">User Management</label>
+                        </div>
+                        <div class="permission-item">
+                            <input type="checkbox" id="perm2" checked>
+                            <label for="perm2">Course Review</label>
+                        </div>
+                        <div class="permission-item">
+                            <input type="checkbox" id="perm3">
+                            <label for="perm3">Financial Reports</label>
+                        </div>
+                        <div class="permission-item">
+                            <input type="checkbox" id="perm4" checked>
+                            <label for="perm4">Community Moderation</label>
+                        </div>
+                        <div class="permission-item">
+                            <input type="checkbox" id="perm5">
+                            <label for="perm5">Content Management</label>
+                        </div>
+                        <div class="permission-item">
+                            <input type="checkbox" id="perm6" checked>
+                            <label for="perm6">Analytics Access</label>
+                        </div>
+                        <div class="permission-item">
+                            <input type="checkbox" id="perm7">
+                            <label for="perm7">Settings Configuration</label>
+                        </div>
+                        <div class="permission-item">
+                            <input type="checkbox" id="perm8" checked>
+                            <label for="perm8">System Logs</label>
+                        </div>
+                    </div>
+                    <button class="btn btn-success" style="margin-top: 1rem;">Save Permissions</button>
+                </div>
+                
+                <div class="content-card">
+                    <h2>Admin Access Code Generator</h2>
+                    <p>Generate codes for new admin users (Maximum 2 admins enforced)</p>
+                    <div style="background: #F5F7FA; padding: 1rem; border-radius: 6px; margin: 1rem 0;">
+                        <strong>Current Admin Count:</strong> 2/2 (Maximum reached)
+                    </div>
+                    <button class="btn btn-primary" disabled>Generate New Code (Max Reached)</button>
+                </div>
+                
+                <div class="content-card">
+                    <h2>Platform Settings</h2>
+                    <div class="form-group">
+                        <label>Instructor Monthly Fee</label>
+                        <input type="number" value="9.99" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Revenue Share (Instructor %)</label>
+                        <input type="number" value="60" min="0" max="100">
+                    </div>
+                    <button class="btn btn-success">Save Settings</button>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Shopping Cart Sidebar -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>Shopping Cart</h3>
+            <button class="close-cart" onclick="toggleCart()">×</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <div class="empty-cart">
+                <p style="font-size: 3rem;">🛒</p>
+                <p>Your cart is empty</p>
+                <p style="font-size: 0.9rem;">Browse our courses and add some to your cart!</p>
+            </div>
+        </div>
+        <div class="cart-footer" id="cartFooter" style="display: none;">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cartTotal">$0.00</span>
+            </div>
+            <button class="btn btn-success" style="width: 100%;" onclick="checkout()">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('login')">×</button>
+            <h2>Welcome Back</h2>
+            <p>Login to continue your journey</p>
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="loginEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                </div>
+                <div class="form-group">
+                    <label>Select Role</label>
+                    <select id="loginRole" required onchange="toggleAdminCode('login')">
+                        <option value="">-- Select Role --</option>
+                        <option value="student">Student</option>
+                        <option value="instructor">Instructor</option>
+                        <option value="admin">Admin (Requires Access Code)</option>
+                        <option value="superadmin">Super Admin (Requires Access Code)</option>
+                    </select>
+                </div>
+                <div class="form-group hidden" id="loginAdminCodeGroup">
+                    <label>Admin Access Code</label>
+                    <input type="text" id="loginAdminCode" placeholder="Enter admin access code">
+                    <div class="admin-access-notice">
+                        🔑 Admin access requires a valid access code from Super Admin
+                    </div>
+                </div>
+                <div class="remember-forgot">
+                    <label><input type="checkbox"> Remember Me</label>
+                    <a href="#" class="forgot-password">Forgot Password?</a>
+                </div>
+                <button type="submit" class="btn btn-success" style="width: 100%;">Login</button>
+                <div class="divider">Or continue with</div>
+                <div class="social-login">
+                    <button type="button" class="social-btn">🔵 Google</button>
+                    <button type="button" class="social-btn">🔷 Facebook</button>
+                </div>
+                <div class="modal-footer">
+                    Don't have an account? <a onclick="closeModal('login'); openModal('signup');">Sign Up</a><br>
+                    <a onclick="showAdminLogin()" class="admin-link">👑 Login As Admin</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signupModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('signup')">×</button>
+            <h2>Join <span style="color: #5B7FFF;">LEARN</span><span style="color: #10B981;">ible</span></h2>
+            <p>Start your learning or teaching journey</p>
+            <div class="role-selector">
+                <button type="button" class="role-btn active" id="studentRoleBtn" onclick="selectRole('student')">👨‍🎓 Student</button>
+                <button type="button" class="role-btn" id="instructorRoleBtn" onclick="selectRole('instructor')">👨‍🏫 Instructor</button>
+            </div>
+            <form onsubmit="handleSignup(event)">
+                <input type="hidden" id="signupRole" value="student">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="signupName" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="signupEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="signupPassword" placeholder="Minimum 8 characters" required minlength="8">
+                </div>
+                <div class="form-group">
+                    <label>Confirm Password</label>
+                    <input type="password" id="signupConfirmPassword" placeholder="Re-enter your password" required>
+                </div>
+                <div class="form-group">
+                    <label style="font-weight: normal;">
+                        <input type="checkbox" required> I agree to the <a href="#">Terms & Conditions</a> and <a href="#">Privacy Policy</a>
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-success" style="width: 100%;">Create Account</button>
+                <div class="divider">Or continue with</div>
+                <div class="social-login">
+                    <button type="button" class="social-btn">🔵 Google</button>
+                    <button type="button" class="social-btn">💼 LinkedIn</button>
+                </div>
+                <div class="modal-footer">
+                    Already have an account? <a onclick="closeModal('signup'); openModal('login');">Login</a><br>
+                    <a onclick="showAdminSignup()" class="admin-link">👑 Signup As Admin</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Signup Modal -->
+    <div id="adminSignupModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('adminSignup')">×</button>
+            <h2>Admin Signup</h2>
+            <p>Create your admin account</p>
+            <form onsubmit="handleAdminSignup(event)">
+                <div class="admin-access-notice">
+                    🔑 You need a valid admin access code from Super Admin to create an admin account. Maximum 2 admins allowed.
+                </div>
+                <div class="form-group">
+                    <label>Admin Access Code</label>
+                    <input type="text" id="adminSignupCode" placeholder="Enter your access code" required>
+                </div>
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="adminSignupName" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="adminSignupEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="adminSignupPassword" placeholder="Minimum 8 characters" required minlength="8">
+                </div>
+                <div class="form-group">
+                    <label>Confirm Password</label>
+                    <input type="password" id="adminSignupConfirmPassword" placeholder="Re-enter your password" required>
+                </div>
+                <button type="submit" class="btn btn-success" style="width: 100%;">Create Admin Account</button>
+                <div class="modal-footer">
+                    <a onclick="closeModal('adminSignup'); openModal('signup');">← Back to Regular Signup</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Create Course Modal -->
+    <div id="createCourseModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('createCourse')">×</button>
+            <h2>Create New Course</h2>
+            <p>Build your course with custom covers and previews</p>
+            <form onsubmit="handleCreateCourse(event)">
+                <div class="form-group">
+                    <label>Course Title</label>
+                    <input type="text" placeholder="Enter course title" required>
+                </div>
+                <div class="form-group">
+                    <label>Course Description</label>
+                    <textarea rows="4" placeholder="Describe your course..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Course Cover Image</label>
+                    <select id="coverOption" onchange="toggleCoverUpload()">
+                        <option value="default">Use Default Cover</option>
+                        <option value="custom">Upload Custom Cover</option>
+                    </select>
+                </div>
+                <div class="form-group hidden" id="customCoverUpload">
+                    <label onclick="document.getElementById('coverFile').click()" class="file-upload-area">
+                        📸 Click to upload cover image<br>
+                        <small style="color: #718096;">Recommended: 1280x720px</small>
+                        <input type="file" id="coverFile" accept="image/*">
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>Course Preview Video (Optional)</label>
+                    <label onclick="document.getElementById('previewFile').click()" class="file-upload-area">
+                        🎬 Click to upload preview video<br>
+                        <small style="color: #718096;">Max: 5 minutes</small>
+                        <input type="file" id="previewFile" accept="video/*">
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select required>
+                        <option value="">Select category</option>
+                        <option>Technology & IT</option>
+                        <option>Business</option>
+                        <option>Design</option>
+                        <option>Marketing</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Price (<span id="courseCurrency">USD</span>)</label>
+                    <input type="number" step="0.01" placeholder="0.00" required>
+                </div>
+                <div class="drm-notice">
+                    🔒 All course content will be DRM protected - students can stream but not download
+                </div>
+                <button type="submit" class="btn btn-success" style="width: 100%; margin-top: 1rem;">Create Course</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Chatbot -->
+    <div class="chatbot">
+        <div class="chatbot-window" id="chatbotWindow">
+            <div class="chatbot-header">
+                <h3><span style="color: white; font-weight: 700;">LEARN</span><span style="color: white; font-weight: 700;">ible</span> Help</h3>
+                <button class="chatbot-minimize" onclick="toggleChatbot()">−</button>
+            </div>
+            <div class="chatbot-body">
+                <div class="chatbot-message">
+                    <p>👋 Hi! I'm your <span style="color: #5B7FFF; font-weight: 600;">LEARN</span><span style="color: #10B981; font-weight: 600;">ible</span> assistant. How can I help?</p>
+                </div>
+                <div class="faq-buttons">
+                    <button class="faq-btn">💰 How does pricing work?</button>
+                    <button class="faq-btn">👨‍🏫 How do I become an instructor?</button>
+                    <button class="faq-btn">💵 How much can I earn?</button>
+                    <button class="faq-btn">💳 What payment methods do you accept?</button>
+                    <button class="faq-btn">🌍 Which currencies are supported?</button>
+                </div>
+            </div>
+            <div class="chatbot-input">
+                <input type="text" placeholder="Type your message...">
+                <button>→</button>
+            </div>
+        </div>
+        <button class="chatbot-toggle" onclick="toggleChatbot()">💬</button>
+    </div>
+
+    <script>
+        // Currency conversion rates (as of 2024)
+        const currencyRates = {
+            'US': { symbol: '$', rate: 1, name: 'USD' },
+            'NG': { symbol: '₦', rate: 1550, name: 'NGN' },
+            'GB': { symbol: '£', rate: 0.79, name: 'GBP' },
+            'EU': { symbol: '€', rate: 0.92, name: 'EUR' },
+            'CA': { symbol: 'C$', rate: 1.36, name: 'CAD' }
+        };
+
+        let currentCountry = 'US';
+
+        // Sample courses data
+        const courses = [
+            {
+                id: 1,
+                title: "Complete Web Development Bootcamp",
+                instructor: "Sarah Johnson",
+                priceUSD: 49.99,
+                rating: 4.8,
+                image: "💻",
+                hasPreview: true
+            },
+            {
+                id: 2,
+                title: "Python for Data Science",
+                instructor: "Dr. Mike Chen",
+                priceUSD: 59.99,
+                rating: 4.9,
+                image: "🐍",
+                hasPreview: true
+            },
+            {
+                id: 3,
+                title: "UI/UX Design Masterclass",
+                instructor: "Emma Davis",
+                priceUSD: 39.99,
+                rating: 4.7,
+                image: "🎨",
+                hasPreview: false
+            },
+            {
+                id: 4,
+                title: "Digital Marketing Fundamentals",
+                instructor: "David Lee",
+                priceUSD: 34.99,
+                rating: 4.6,
+                image: "📱",
+                hasPreview: true
+            },
+            {
+                id: 5,
+                title: "Machine Learning A-Z",
+                instructor: "Dr. Robert Kim",
+                priceUSD: 69.99,
+                rating: 4.9,
+                image: "🤖",
+                hasPreview: false
+            },
+            {
+                id: 6,
+                title: "React - The Complete Guide",
+                instructor: "Lisa Anderson",
+                priceUSD: 44.99,
+                rating: 4.8,
+                image: "⚛️",
+                hasPreview: true
+            }
+        ];
+
+        // Shopping cart
+        let cart = [];
+
+        // Convert price to current currency
+        function convertPrice(priceUSD) {
+            const rate = currencyRates[currentCountry].rate;
+            const symbol = currencyRates[currentCountry].symbol;
+            const converted = (priceUSD * rate).toFixed(2);
+            return `${symbol}${converted}`;
+        }
+
+        // Change country/currency
+        function changeCountry() {
+            currentCountry = document.getElementById('countrySelector').value;
+            loadCourses();
+            updateInstructorPrice();
+            updateCart();
+        }
+
+        // Update instructor pricing
+        function updateInstructorPrice() {
+            const priceElement = document.getElementById('instructorPrice');
+            const rate = currencyRates[currentCountry].rate;
+            const symbol = currencyRates[currentCountry].symbol;
+            const converted = (9.99 * rate).toFixed(2);
+            priceElement.textContent = `${symbol}${converted}`;
+        }
+
+        // Load courses
+        function loadCourses() {
+            const grid = document.getElementById('coursesGrid');
+            grid.innerHTML = courses.map(course => `
+                <div class="course-card">
+                    <div class="course-image" style="position: relative;">
+                        ${course.image}
+                        ${course.hasPreview ? '<div class="preview-badge">▶ Preview</div>' : ''}
+                    </div>
+                    <div class="course-content">
+                        <div class="course-title">${course.title}</div>
+                        <div class="course-instructor">By ${course.instructor}</div>
+                        <div class="course-meta">
+                            <div class="course-price">${convertPrice(course.priceUSD)}</div>
+                            <div class="course-rating">⭐ ${course.rating}</div>
+                        </div>
+                        <button class="add-to-cart-btn" onclick="addToCart(${course.id})">Add to Cart</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Add to cart
+        function addToCart(courseId) {
+            const course = courses.find(c => c.id === courseId);
+            if (!cart.find(c => c.id === courseId)) {
+                cart.push(course);
+                updateCart();
+                alert(`${course.title} added to cart!`);
+            } else {
+                alert('Course already in cart!');
+            }
+        }
+
+        // Remove from cart
+        function removeFromCart(courseId) {
+            cart = cart.filter(c => c.id !== courseId);
+            updateCart();
+        }
+
+        // Update cart display
+        function updateCart() {
+            const badge = document.getElementById('cartBadge');
+            const itemsContainer = document.getElementById('cartItems');
+            const footer = document.getElementById('cartFooter');
+            const totalElement = document.getElementById('cartTotal');
+
+            badge.textContent = cart.length;
+
+            if (cart.length === 0) {
+                itemsContainer.innerHTML = `
+                    <div class="empty-cart">
+                        <p style="font-size: 3rem;">🛒</p>
+                        <p>Your cart is empty</p>
+                        <p style="font-size: 0.9rem;">Browse our courses and add some to your cart!</p>
+                    </div>
+                `;
+                footer.style.display = 'none';
+            } else {
+                itemsContainer.innerHTML = cart.map(course => `
+                    <div class="cart-item">
+                        <div class="cart-item-image">${course.image}</div>
+                        <div class="cart-item-details">
+                            <div class="cart-item-title">${course.title}</div>
+                            <div class="cart-item-instructor">By ${course.instructor}</div>
+                            <div class="cart-item-price">${convertPrice(course.priceUSD)}</div>
+                        </div>
+                        <button class="remove-item" onclick="removeFromCart(${course.id})">×</button>
+                    </div>
+                `).join('');
+                
+                const totalUSD = cart.reduce((sum, course) => sum + course.priceUSD, 0);
+                const rate = currencyRates[currentCountry].rate;
+                const symbol = currencyRates[currentCountry].symbol;
+                const converted = (totalUSD * rate).toFixed(2);
+                totalElement.textContent = `${symbol}${converted}`;
+                footer.style.display = 'block';
+            }
+        }
+
+        // Toggle cart
+        function toggleCart() {
+            const sidebar = document.getElementById('cartSidebar');
+            sidebar.classList.toggle('active');
+        }
+
+        // Checkout
+        function checkout() {
+            alert('Proceeding to secure Stripe checkout! Total: ' + document.getElementById('cartTotal').textContent);
+        }
+
+        // Modal functions
+        function openModal(type) {
+            const modal = document.getElementById(type + 'Modal');
+            modal.classList.add('active');
+        }
+
+        function closeModal(type) {
+            const modal = document.getElementById(type + 'Modal');
+            modal.classList.remove('active');
+        }
+
+        function openSignupAsStudent() {
+            selectRole('student');
+            openModal('signup');
+        }
+
+        function openSignupAsInstructor() {
+            selectRole('instructor');
+            openModal('signup');
+        }
+
+        function selectRole(role) {
+            document.getElementById('signupRole').value = role;
+            document.getElementById('studentRoleBtn').classList.toggle('active', role === 'student');
+            document.getElementById('instructorRoleBtn').classList.toggle('active', role === 'instructor');
+        }
+
+        function showAdminLogin() {
+            openModal('login');
+            document.getElementById('loginRole').value = 'admin';
+            toggleAdminCode('login');
+        }
+
+        function showAdminSignup() {
+            closeModal('signup');
+            openModal('adminSignup');
+        }
+
+        function toggleAdminCode(type) {
+            const role = document.getElementById(type + 'Role').value;
+            const codeGroup = document.getElementById(type + 'AdminCodeGroup');
+            if (codeGroup) {
+                if (role === 'admin' || role === 'superadmin') {
+                    codeGroup.classList.remove('hidden');
+                } else {
+                    codeGroup.classList.add('hidden');
+                }
+            }
+        }
+
+        function toggleCoverUpload() {
+            const option = document.getElementById('coverOption').value;
+            const uploadDiv = document.getElementById('customCoverUpload');
+            if (option === 'custom') {
+                uploadDiv.classList.remove('hidden');
+            } else {
+                uploadDiv.classList.add('hidden');
+            }
+        }
+
+        // Handle login
+        function handleLogin(e) {
+            e.preventDefault();
+            const role = document.getElementById('loginRole').value;
+            const email = document.getElementById('loginEmail').value;
+            const adminCode = document.getElementById('loginAdminCode')?.value;
+            
+            // Verify admin code for admin/superadmin
+            if ((role === 'admin' || role === 'superadmin') && !adminCode) {
+                alert('Admin access code is required!');
+                return;
+            }
+
+            if ((role === 'admin' || role === 'superadmin') && adminCode !== 'ADMIN2024') {
+                alert('Invalid admin access code!');
+                return;
+            }
+            
+            closeModal('login');
+            
+            // Show appropriate dashboard based on role
+            if (role === 'student') {
+                showPage('studentDashboard');
+            } else if (role === 'instructor') {
+                showPage('instructorDashboard');
+            } else if (role === 'admin') {
+                showPage('adminDashboard');
+            } else if (role === 'superadmin') {
+                showPage('superAdminDashboard');
+            }
+        }
+
+        // Handle signup
+        function handleSignup(e) {
+            e.preventDefault();
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('signupConfirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
+            
+            const role = document.getElementById('signupRole').value;
+            const name = document.getElementById('signupName').value;
+            
+            alert(`Account created successfully for ${name} as ${role}!`);
+            closeModal('signup');
+            
+            // Auto-login after signup
+            if (role === 'student') {
+                showPage('studentDashboard');
+            } else if (role === 'instructor') {
+                showPage('instructorDashboard');
+            }
+        }
+
+        // Handle admin signup
+        function handleAdminSignup(e) {
+            e.preventDefault();
+            const code = document.getElementById('adminSignupCode').value;
+            const password = document.getElementById('adminSignupPassword').value;
+            const confirmPassword = document.getElementById('adminSignupConfirmPassword').value;
+            
+            if (code !== 'ADMIN2024') {
+                alert('Invalid admin access code! Contact Super Admin for a valid code.');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
+            
+            const name = document.getElementById('adminSignupName').value;
+            alert(`Admin account created successfully for ${name}!`);
+            closeModal('adminSignup');
+            showPage('adminDashboard');
+        }
+
+        // Handle create course
+        function handleCreateCourse(e) {
+            e.preventDefault();
+            alert('Course created successfully! Your content is protected with DRM - students can stream but not download.');
+            closeModal('createCourse');
+        }
+
+        // Page navigation
+        function showPage(pageName) {
+            // Hide all pages
+            document.getElementById('landingPage').classList.add('hidden');
+            document.getElementById('communityPage').classList.add('hidden');
+            document.getElementById('studentDashboard').classList.add('hidden');
+            document.getElementById('instructorDashboard').classList.add('hidden');
+            document.getElementById('adminDashboard').classList.add('hidden');
+            document.getElementById('superAdminDashboard').classList.add('hidden');
+            
+            // Show selected page
+            if (pageName === 'landing') {
+                document.getElementById('landingPage').classList.remove('hidden');
+            } else if (pageName === 'community') {
+                document.getElementById('communityPage').classList.remove('hidden');
+            } else if (pageName === 'studentDashboard') {
+                document.getElementById('studentDashboard').classList.remove('hidden');
+            } else if (pageName === 'instructorDashboard') {
+                document.getElementById('instructorDashboard').classList.remove('hidden');
+            } else if (pageName === 'adminDashboard') {
+                document.getElementById('adminDashboard').classList.remove('hidden');
+            } else if (pageName === 'superAdminDashboard') {
+                document.getElementById('superAdminDashboard').classList.remove('hidden');
+            }
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Logout
+        function logout() {
+            showPage('landing');
+        }
+
+        // Scroll to section
+        function scrollToSection(sectionId) {
+            showPage('landing');
+            setTimeout(() => {
+                const element = document.getElementById(sectionId);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                }
+            }, 100);
+        }
+
+        // Toggle chatbot
+        function toggleChatbot() {
+            const window = document.getElementById('chatbotWindow');
+            window.classList.toggle('active');
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCourses();
+            
+            // Disable right-click on course videos (basic protection)
+            document.addEventListener('contextmenu', function(e) {
+                if (e.target.tagName === 'VIDEO') {
+                    e.preventDefault();
+                    alert('Content is protected. Streaming only - no downloads allowed.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
