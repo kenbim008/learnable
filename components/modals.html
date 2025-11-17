@@ -1,0 +1,194 @@
+<!-- Login Modal -->
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeModal('login')">×</button>
+        <h2>Welcome Back</h2>
+        <p>Login to continue your journey</p>
+        <form onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="loginEmail" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="loginPassword" placeholder="Enter your password" required>
+            </div>
+            <div class="form-group">
+                <label>Select Role</label>
+                <select id="loginRole" required onchange="toggleAdminCode('login')">
+                    <option value="">-- Select Role --</option>
+                    <option value="student">Student</option>
+                    <option value="instructor">Instructor</option>
+                    <option value="admin">Admin (Requires Access Code)</option>
+                    <option value="superadmin">Super Admin (Requires Access Code)</option>
+                </select>
+            </div>
+            <div class="form-group hidden" id="loginAdminCodeGroup">
+                <label>Admin Access Code</label>
+                <input type="text" id="loginAdminCode" placeholder="Enter admin access code">
+                <div class="admin-access-notice">
+                    🔑 Admin access requires a valid access code from Super Admin
+                </div>
+            </div>
+            <div class="remember-forgot">
+                <label><input type="checkbox"> Remember Me</label>
+                <a href="#" class="forgot-password">Forgot Password?</a>
+            </div>
+            <button type="submit" class="btn btn-success" style="width: 100%;">Login</button>
+            <div class="divider">Or continue with</div>
+            <div class="social-login">
+                <button type="button" class="social-btn">🔵 Google</button>
+                <button type="button" class="social-btn">🔷 Facebook</button>
+            </div>
+            <div class="modal-footer">
+                Don't have an account? <a onclick="closeModal('login'); openModal('signup');">Sign Up</a><br>
+                <a onclick="showAdminLogin()" class="admin-link">👑 Login As Admin</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Signup Modal -->
+<div id="signupModal" class="modal">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeModal('signup')">×</button>
+        <h2>Join <span style="color: #5B7FFF;">LEARN</span><span style="color: #10B981;">ible</span></h2>
+        <p>Start your learning or teaching journey</p>
+        <div class="role-selector">
+            <button type="button" class="role-btn active" id="studentRoleBtn" onclick="selectRole('student')">👨‍🎓 Student</button>
+            <button type="button" class="role-btn" id="instructorRoleBtn" onclick="selectRole('instructor')">👨‍🏫 Instructor</button>
+        </div>
+        <form onsubmit="handleSignup(event)">
+            <input type="hidden" id="signupRole" value="student">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="signupName" placeholder="Enter your full name" required>
+            </div>
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="signupEmail" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="signupPassword" placeholder="Minimum 8 characters" required minlength="8">
+            </div>
+            <div class="form-group">
+                <label>Confirm Password</label>
+                <input type="password" id="signupConfirmPassword" placeholder="Re-enter your password" required>
+            </div>
+            <div class="form-group">
+                <label style="font-weight: normal;">
+                    <input type="checkbox" required> I agree to the <a href="#">Terms & Conditions</a> and <a href="#">Privacy Policy</a>
+                </label>
+            </div>
+            <button type="submit" class="btn btn-success" style="width: 100%;">Create Account</button>
+            <div class="divider">Or continue with</div>
+            <div class="social-login">
+                <button type="button" class="social-btn">🔵 Google</button>
+                <button type="button" class="social-btn">💼 LinkedIn</button>
+            </div>
+            <div class="modal-footer">
+                Already have an account? <a onclick="closeModal('signup'); openModal('login');">Login</a><br>
+                <a onclick="showAdminSignup()" class="admin-link">👑 Signup As Admin</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Admin Signup Modal -->
+<div id="adminSignupModal" class="modal">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeModal('adminSignup')">×</button>
+        <h2>Admin Signup</h2>
+        <p>Create your admin account</p>
+        <form onsubmit="handleAdminSignup(event)">
+            <div class="admin-access-notice">
+                🔑 You need a valid admin access code from Super Admin to create an admin account. Maximum 2 admins allowed.
+            </div>
+            <div class="form-group">
+                <label>Admin Access Code</label>
+                <input type="text" id="adminSignupCode" placeholder="Enter your access code" required>
+            </div>
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="adminSignupName" placeholder="Enter your full name" required>
+            </div>
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="adminSignupEmail" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="adminSignupPassword" placeholder="Minimum 8 characters" required minlength="8">
+            </div>
+            <div class="form-group">
+                <label>Confirm Password</label>
+                <input type="password" id="adminSignupConfirmPassword" placeholder="Re-enter your password" required>
+            </div>
+            <button type="submit" class="btn btn-success" style="width: 100%;">Create Admin Account</button>
+            <div class="modal-footer">
+                <a onclick="closeModal('adminSignup'); openModal('signup');">← Back to Regular Signup</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Create Course Modal -->
+<div id="createCourseModal" class="modal">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeModal('createCourse')">×</button>
+        <h2>Create New Course</h2>
+        <p>Build your course with custom covers and previews</p>
+        <form onsubmit="handleCreateCourse(event)">
+            <div class="form-group">
+                <label>Course Title</label>
+                <input type="text" placeholder="Enter course title" required>
+            </div>
+            <div class="form-group">
+                <label>Course Description</label>
+                <textarea rows="4" placeholder="Describe your course..." required></textarea>
+            </div>
+            <div class="form-group">
+                <label>Course Cover Image</label>
+                <select id="coverOption" onchange="toggleCoverUpload()">
+                    <option value="default">Use Default Cover</option>
+                    <option value="custom">Upload Custom Cover</option>
+                </select>
+            </div>
+            <div class="form-group hidden" id="customCoverUpload">
+                <label onclick="document.getElementById('coverFile').click()" class="file-upload-area">
+                    📸 Click to upload cover image<br>
+                    <small style="color: #718096;">Recommended: 1280x720px</small>
+                    <input type="file" id="coverFile" accept="image/*">
+                </label>
+            </div>
+            <div class="form-group">
+                <label>Course Preview Video (Optional)</label>
+                <label onclick="document.getElementById('previewFile').click()" class="file-upload-area">
+                    🎬 Click to upload preview video<br>
+                    <small style="color: #718096;">Max: 5 minutes</small>
+                    <input type="file" id="previewFile" accept="video/*">
+                </label>
+            </div>
+            <div class="form-group">
+                <label>Category</label>
+                <select required>
+                    <option value="">Select category</option>
+                    <option>Technology & IT</option>
+                    <option>Business</option>
+                    <option>Design</option>
+                    <option>Marketing</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Price (<span id="courseCurrency">USD</span>)</label>
+                <input type="number" step="0.01" placeholder="0.00" required>
+            </div>
+            <div class="drm-notice">
+                🔒 All course content will be DRM protected - students can stream but not download
+            </div>
+            <button type="submit" class="btn btn-success" style="width: 100%; margin-top: 1rem;">Create Course</button>
+        </form>
+    </div>
+</div>
+

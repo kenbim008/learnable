@@ -1,0 +1,31 @@
+<header>
+    <div class="header-container">
+        <div class="logo" onclick="showPage('landing')">
+            <span class="logo-icon">📖</span>
+            <span><span class="logo-learn">LEARN</span><span class="logo-ible">ible</span></span>
+        </div>
+        <nav>
+            <a onclick="showPage('landing')">Home</a>
+            <a onclick="scrollToSection('courses')">Courses</a>
+            <a onclick="showPage('community')">Community</a>
+            <a onclick="scrollToSection('pricing')">Pricing</a>
+            <a onclick="showPage('landing')">About</a>
+        </nav>
+        <div class="header-right">
+            <select class="currency-selector" id="countrySelector" onchange="changeCountry()">
+                <option value="US">US - USD</option>
+                <option value="NG">Nigeria - NGN</option>
+                <option value="GB">UK - GBP</option>
+                <option value="EU">Europe - EUR</option>
+                <option value="CA">Canada - CAD</option>
+            </select>
+            <div class="cart-icon" onclick="toggleCart()">
+                🛒
+                <span class="cart-badge" id="cartBadge">0</span>
+            </div>
+            <button class="btn btn-outline" onclick="openModal('login')">Login</button>
+            <button class="btn btn-primary" onclick="openModal('signup')">Sign Up</button>
+        </div>
+    </div>
+</header>
+

@@ -1,0 +1,22 @@
+<!-- Shopping Cart Sidebar -->
+<div class="cart-sidebar" id="cartSidebar">
+    <div class="cart-header">
+        <h3>Shopping Cart</h3>
+        <button class="close-cart" onclick="toggleCart()">×</button>
+    </div>
+    <div class="cart-items" id="cartItems">
+        <div class="empty-cart">
+            <p style="font-size: 3rem;">🛒</p>
+            <p>Your cart is empty</p>
+            <p style="font-size: 0.9rem;">Browse our courses and add some to your cart!</p>
+        </div>
+    </div>
+    <div class="cart-footer" id="cartFooter" style="display: none;">
+        <div class="cart-total">
+            <span>Total:</span>
+            <span id="cartTotal">$0.00</span>
+        </div>
+        <button class="btn btn-success" style="width: 100%;" onclick="checkout()">Proceed to Checkout</button>
+    </div>
+</div>
+
