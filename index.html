@@ -676,16 +676,16 @@
             <aside class="sidebar">
                 <ul class="sidebar-menu">
                     <li><a class="active" onclick="showSuperAdminSection('dashboard', event)">📊 Dashboard</a></li>
-                    <li><a>👥 All Users</a></li>
-                    <li><a>👑 Admin Management</a></li>
-                    <li><a>🔑 Access Codes</a></li>
-                    <li><a>📚 All Courses</a></li>
-                    <li><a>💰 Revenue & Payouts</a></li>
-                    <li><a>💳 Pricing Settings</a></li>
+                    <li><a onclick="showSuperAdminSection('allUsers', event)">👥 All Users</a></li>
+                    <li><a onclick="showSuperAdminSection('adminManagement', event)">👑 Admin Management</a></li>
+                    <li><a onclick="showSuperAdminSection('accessCodes', event)">🔑 Access Codes</a></li>
+                    <li><a onclick="showSuperAdminSection('allCourses', event)">📚 All Courses</a></li>
+                    <li><a onclick="showSuperAdminSection('revenuePayouts', event)">💰 Revenue & Payouts</a></li>
+                    <li><a onclick="showSuperAdminSection('pricingSettings', event)">💳 Pricing Settings</a></li>
                     <li><a onclick="showSuperAdminSection('contentManagement', event)">📝 Content Management</a></li>
-                    <li><a>🎨 Site Settings</a></li>
-                    <li><a>📈 Analytics</a></li>
-                    <li><a>📋 System Logs</a></li>
+                    <li><a onclick="showSuperAdminSection('siteSettings', event)">🎨 Site Settings</a></li>
+                    <li><a onclick="showSuperAdminSection('analytics', event)">📈 Analytics</a></li>
+                    <li><a onclick="showSuperAdminSection('systemLogs', event)">📋 System Logs</a></li>
                 </ul>
             </aside>
             
@@ -912,6 +912,411 @@
                             </div>
                         </div>
                         <button class="btn btn-primary" style="margin-top: 1rem;">+ Create New Announcement</button>
+                    </div>
+                </div>
+                
+                <!-- All Users Section -->
+                <div id="superAdminAllUsersSection" class="super-admin-section hidden">
+                    <div class="dashboard-header">
+                        <h1>👥 All Users</h1>
+                        <p>Manage all platform users, instructors, and students</p>
+                    </div>
+                    
+                    <div class="content-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <div>
+                                <h2>User Management</h2>
+                                <p>Total: 1,248 users (89 Instructors, 1,157 Students, 2 Admins)</p>
+                            </div>
+                            <button class="btn btn-primary">+ Add New User</button>
+                        </div>
+                        
+                        <div style="margin-bottom: 1rem;">
+                            <input type="text" placeholder="Search users..." style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                        </div>
+                        
+                        <div class="content-list">
+                            <div class="content-item">
+                                <div>
+                                    <h3>John Doe</h3>
+                                    <p>Instructor • john.doe@example.com • Joined: Jan 2024</p>
+                                </div>
+                                <div>
+                                    <button class="btn btn-outline">View Details</button>
+                                    <button class="btn btn-outline" style="margin-left: 0.5rem;">Edit</button>
+                                </div>
+                            </div>
+                            <div class="content-item">
+                                <div>
+                                    <h3>Jane Smith</h3>
+                                    <p>Student • jane.smith@example.com • Joined: Feb 2024</p>
+                                </div>
+                                <div>
+                                    <button class="btn btn-outline">View Details</button>
+                                    <button class="btn btn-outline" style="margin-left: 0.5rem;">Edit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Admin Management Section -->
+                <div id="superAdminAdminManagementSection" class="super-admin-section hidden">
+                    <div class="dashboard-header">
+                        <h1>👑 Admin Management</h1>
+                        <p>Manage admin users and their permissions</p>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h2>Admin Users (2/2 Maximum)</h2>
+                        <p style="margin-bottom: 1.5rem;">Current admin accounts and their assigned permissions</p>
+                        
+                        <div class="content-list">
+                            <div class="content-item">
+                                <div>
+                                    <h3>Admin User 1</h3>
+                                    <p>admin1@learnable.com • Permissions: User Management, Course Review, Community Moderation</p>
+                                </div>
+                                <div>
+                                    <button class="btn btn-outline">Edit Permissions</button>
+                                    <button class="btn btn-outline" style="margin-left: 0.5rem;">Remove Admin</button>
+                                </div>
+                            </div>
+                            <div class="content-item">
+                                <div>
+                                    <h3>Admin User 2</h3>
+                                    <p>admin2@learnable.com • Permissions: Analytics Access, System Logs</p>
+                                </div>
+                                <div>
+                                    <button class="btn btn-outline">Edit Permissions</button>
+                                    <button class="btn btn-outline" style="margin-left: 0.5rem;">Remove Admin</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Access Codes Section -->
+                <div id="superAdminAccessCodesSection" class="super-admin-section hidden">
+                    <div class="dashboard-header">
+                        <h1>🔑 Access Codes</h1>
+                        <p>Generate and manage admin access codes</p>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h2>Admin Access Code Generator</h2>
+                        <p style="margin-bottom: 1.5rem;">Generate codes for new admin users (Maximum 2 admins enforced)</p>
+                        <div style="background: #F5F7FA; padding: 1rem; border-radius: 6px; margin: 1rem 0;">
+                            <strong>Current Admin Count:</strong> 2/2 (Maximum reached)
+                        </div>
+                        <button class="btn btn-primary" disabled>Generate New Code (Max Reached)</button>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h2>Recent Access Codes</h2>
+                        <div class="content-list">
+                            <div class="content-item">
+                                <div>
+                                    <h3>ADMIN-2024-ABC123</h3>
+                                    <p>Generated: Jan 15, 2024 • Used: Yes • Expires: Never</p>
+                                </div>
+                                <button class="btn btn-outline">Revoke</button>
+                            </div>
+                            <div class="content-item">
+                                <div>
+                                    <h3>ADMIN-2024-XYZ789</h3>
+                                    <p>Generated: Jan 10, 2024 • Used: Yes • Expires: Never</p>
+                                </div>
+                                <button class="btn btn-outline">Revoke</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- All Courses Section -->
+                <div id="superAdminAllCoursesSection" class="super-admin-section hidden">
+                    <div class="dashboard-header">
+                        <h1>📚 All Courses</h1>
+                        <p>View and manage all courses on the platform</p>
+                    </div>
+                    
+                    <div class="content-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <div>
+                                <h2>Course Management</h2>
+                                <p>Total: 156 published courses, 12 pending review</p>
+                            </div>
+                            <button class="btn btn-primary">+ Create Course</button>
+                        </div>
+                        
+                        <div style="margin-bottom: 1rem;">
+                            <input type="text" placeholder="Search courses..." style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                        </div>
+                        
+                        <div class="content-list">
+                            <div class="content-item">
+                                <div>
+                                    <h3>Introduction to Web Development</h3>
+                                    <p>By John Doe • Published • 234 students • $49.99</p>
+                                </div>
+                                <div>
+                                    <button class="btn btn-outline">View</button>
+                                    <button class="btn btn-outline" style="margin-left: 0.5rem;">Edit</button>
+                                </div>
+                            </div>
+                            <div class="content-item">
+                                <div>
+                                    <h3>Advanced JavaScript</h3>
+                                    <p>By Jane Smith • Pending Review • $79.99</p>
+                                </div>
+                                <div>
+                                    <button class="btn btn-outline">Review</button>
+                                    <button class="btn btn-outline" style="margin-left: 0.5rem;">Edit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Revenue & Payouts Section -->
+                <div id="superAdminRevenuePayoutsSection" class="super-admin-section hidden">
+                    <div class="dashboard-header">
+                        <h1>💰 Revenue & Payouts</h1>
+                        <p>Monitor revenue, manage payouts, and view financial reports</p>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">💰</div>
+                            <div class="stat-value">$52,340</div>
+                            <div class="stat-label">Total Revenue</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📊</div>
+                            <div class="stat-value">$31,404</div>
+                            <div class="stat-label">Instructor Payouts</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">💵</div>
+                            <div class="stat-value">$20,936</div>
+                            <div class="stat-label">Platform Revenue</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">⏳</div>
+                            <div class="stat-value">$3,450</div>
+                            <div class="stat-label">Pending Payouts</div>
+                        </div>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h2>Recent Transactions</h2>
+                        <div class="content-list">
+                            <div class="content-item">
+                                <div>
+                                    <h3>Course Purchase - Web Development</h3>
+                                    <p>Student: jane.smith@example.com • Amount: $49.99 • Date: Jan 20, 2024</p>
+                                </div>
+                                <button class="btn btn-outline">View Details</button>
+                            </div>
+                            <div class="content-item">
+                                <div>
+                                    <h3>Instructor Payout - John Doe</h3>
+                                    <p>Amount: $1,200.00 • Status: Completed • Date: Jan 18, 2024</p>
+                                </div>
+                                <button class="btn btn-outline">View Details</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pricing Settings Section -->
+                <div id="superAdminPricingSettingsSection" class="super-admin-section hidden">
+                    <div class="dashboard-header">
+                        <h1>💳 Pricing Settings</h1>
+                        <p>Configure platform pricing and revenue sharing</p>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h2>Instructor Subscription</h2>
+                        <div class="form-group">
+                            <label>Monthly Subscription Fee</label>
+                            <input type="number" value="9.99" step="0.01" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                            <p style="font-size: 0.9rem; color: #718096; margin-top: 0.5rem;">Monthly fee charged to instructors</p>
+                        </div>
+                        <button class="btn btn-success">Save Changes</button>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h2>Revenue Sharing</h2>
+                        <div class="form-group">
+                            <label>Instructor Revenue Share (%)</label>
+                            <input type="number" value="60" min="0" max="100" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                            <p style="font-size: 0.9rem; color: #718096; margin-top: 0.5rem;">Percentage of course sales that go to instructors</p>
+                        </div>
+                        <div class="form-group">
+                            <label>Platform Revenue Share (%)</label>
+                            <input type="number" value="40" min="0" max="100" disabled style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px; background: #F7F9FC;">
+                            <p style="font-size: 0.9rem; color: #718096; margin-top: 0.5rem;">Automatically calculated (100% - Instructor Share)</p>
+                        </div>
+                        <button class="btn btn-success">Save Changes</button>
+                    </div>
+                </div>
+                
+                <!-- Site Settings Section -->
+                <div id="superAdminSiteSettingsSection" class="super-admin-section hidden">
+                    <div class="dashboard-header">
+                        <h1>🎨 Site Settings</h1>
+                        <p>Configure site appearance, branding, and general settings</p>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h2>Branding</h2>
+                        <div class="form-group">
+                            <label>Site Name</label>
+                            <input type="text" value="LEARNible" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                        </div>
+                        <div class="form-group">
+                            <label>Site Logo</label>
+                            <input type="file" accept="image/*" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                        </div>
+                        <div class="form-group">
+                            <label>Favicon</label>
+                            <input type="file" accept="image/*" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                        </div>
+                        <button class="btn btn-success">Save Changes</button>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h2>General Settings</h2>
+                        <div class="form-group">
+                            <label>Default Currency</label>
+                            <select style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                                <option>USD - US Dollar</option>
+                                <option>NGN - Nigerian Naira</option>
+                                <option>GBP - British Pound</option>
+                                <option>EUR - Euro</option>
+                                <option>CAD - Canadian Dollar</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Time Zone</label>
+                            <select style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                                <option>UTC</option>
+                                <option>America/New_York</option>
+                                <option>Europe/London</option>
+                                <option>Africa/Lagos</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-success">Save Changes</button>
+                    </div>
+                </div>
+                
+                <!-- Analytics Section -->
+                <div id="superAdminAnalyticsSection" class="super-admin-section hidden">
+                    <div class="dashboard-header">
+                        <h1>📈 Analytics</h1>
+                        <p>View detailed platform analytics and insights</p>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">👥</div>
+                            <div class="stat-value">1,248</div>
+                            <div class="stat-label">Total Users</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📚</div>
+                            <div class="stat-value">156</div>
+                            <div class="stat-label">Total Courses</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">💰</div>
+                            <div class="stat-value">$52,340</div>
+                            <div class="stat-label">Total Revenue</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📊</div>
+                            <div class="stat-value">89%</div>
+                            <div class="stat-label">User Satisfaction</div>
+                        </div>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h2>User Growth</h2>
+                        <p style="margin-bottom: 1.5rem;">User registration trends over the last 6 months</p>
+                        <div style="background: #F7F9FC; padding: 3rem; border-radius: 8px; text-align: center; color: #718096;">
+                            📊 Chart visualization would appear here
+                        </div>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h2>Course Performance</h2>
+                        <p style="margin-bottom: 1.5rem;">Top performing courses by enrollment and revenue</p>
+                        <div class="content-list">
+                            <div class="content-item">
+                                <div>
+                                    <h3>Introduction to Web Development</h3>
+                                    <p>234 students • $11,466 revenue • 4.8★ rating</p>
+                                </div>
+                                <button class="btn btn-outline">View Details</button>
+                            </div>
+                            <div class="content-item">
+                                <div>
+                                    <h3>Advanced JavaScript</h3>
+                                    <p>189 students • $15,021 revenue • 4.9★ rating</p>
+                                </div>
+                                <button class="btn btn-outline">View Details</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- System Logs Section -->
+                <div id="superAdminSystemLogsSection" class="super-admin-section hidden">
+                    <div class="dashboard-header">
+                        <h1>📋 System Logs</h1>
+                        <p>View system activity, errors, and audit logs</p>
+                    </div>
+                    
+                    <div class="content-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <div>
+                                <h2>Activity Logs</h2>
+                                <p>Real-time system activity and events</p>
+                            </div>
+                            <button class="btn btn-outline">Export Logs</button>
+                        </div>
+                        
+                        <div class="content-list">
+                            <div class="content-item">
+                                <div>
+                                    <h3>User Login</h3>
+                                    <p>User: admin1@learnable.com • IP: 192.168.1.1 • Time: Jan 20, 2024 10:30 AM</p>
+                                </div>
+                                <span style="padding: 0.25rem 0.75rem; background: #10B981; color: white; border-radius: 4px; font-size: 0.85rem;">Success</span>
+                            </div>
+                            <div class="content-item">
+                                <div>
+                                    <h3>Course Published</h3>
+                                    <p>Course: Advanced JavaScript • Instructor: Jane Smith • Time: Jan 20, 2024 9:15 AM</p>
+                                </div>
+                                <span style="padding: 0.25rem 0.75rem; background: #5B7FFF; color: white; border-radius: 4px; font-size: 0.85rem;">Info</span>
+                            </div>
+                            <div class="content-item">
+                                <div>
+                                    <h3>Payment Processed</h3>
+                                    <p>Transaction ID: TXN-12345 • Amount: $49.99 • Time: Jan 20, 2024 8:45 AM</p>
+                                </div>
+                                <span style="padding: 0.25rem 0.75rem; background: #10B981; color: white; border-radius: 4px; font-size: 0.85rem;">Success</span>
+                            </div>
+                            <div class="content-item">
+                                <div>
+                                    <h3>Error: Database Connection</h3>
+                                    <p>Failed to connect to database • Time: Jan 19, 2024 11:20 PM</p>
+                                </div>
+                                <span style="padding: 0.25rem 0.75rem; background: #EF4444; color: white; border-radius: 4px; font-size: 0.85rem;">Error</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </main>

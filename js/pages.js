@@ -53,7 +53,16 @@ function showSuperAdminSection(sectionName, event) {
     // Show selected section
     const sectionMap = {
         'dashboard': 'superAdminDashboardSection',
-        'contentManagement': 'superAdminContentManagementSection'
+        'allUsers': 'superAdminAllUsersSection',
+        'adminManagement': 'superAdminAdminManagementSection',
+        'accessCodes': 'superAdminAccessCodesSection',
+        'allCourses': 'superAdminAllCoursesSection',
+        'revenuePayouts': 'superAdminRevenuePayoutsSection',
+        'pricingSettings': 'superAdminPricingSettingsSection',
+        'contentManagement': 'superAdminContentManagementSection',
+        'siteSettings': 'superAdminSiteSettingsSection',
+        'analytics': 'superAdminAnalyticsSection',
+        'systemLogs': 'superAdminSystemLogsSection'
     };
     
     const targetSectionId = sectionMap[sectionName] || sectionName;
