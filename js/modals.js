@@ -91,6 +91,15 @@ function handleLogin(e) {
     
     closeModal('login');
     
+    // Save session data
+    const sessionData = {
+        role: role,
+        email: email,
+        timestamp: Date.now(),
+        expiresAt: Date.now() + (15 * 60 * 1000) // 15 minutes
+    };
+    localStorage.setItem('userSession', JSON.stringify(sessionData));
+    
     // Show appropriate dashboard based on role
     if (role === 'student') {
         showPage('studentDashboard');

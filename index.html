@@ -724,8 +724,8 @@
                     <h3>💳 Stripe Payment Integration</h3>
                     <div class="stripe-status">Status: ✅ Connected</div>
                     <p style="margin-bottom: 1rem;">Manage your Stripe payment gateway integration</p>
-                    <button class="btn btn-outline" style="background: white; color: #635BFF; border-color: white;">Configure Stripe Settings</button>
-                    <button class="btn btn-outline" style="background: rgba(255,255,255,0.2); color: white; border-color: white; margin-left: 0.5rem;">View Transactions</button>
+                    <button class="btn btn-outline" style="background: white; color: #635BFF; border-color: white;" onclick="showSuperAdminSection('stripeSettings', event)">Configure Stripe Settings</button>
+                    <button class="btn btn-outline" style="background: rgba(255,255,255,0.2); color: white; border-color: white; margin-left: 0.5rem;" onclick="showSuperAdminSection('viewTransactions', event)">View Transactions</button>
                 </div>
 
                 <div class="content-card">
@@ -1315,6 +1315,205 @@
                                     <p>Failed to connect to database • Time: Jan 19, 2024 11:20 PM</p>
                                 </div>
                                 <span style="padding: 0.25rem 0.75rem; background: #EF4444; color: white; border-radius: 4px; font-size: 0.85rem;">Error</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Stripe Settings Section -->
+                <div id="superAdminStripeSettingsSection" class="super-admin-section hidden">
+                    <div class="dashboard-header">
+                        <h1>💳 Configure Stripe Settings</h1>
+                        <p>Manage your Stripe payment gateway integration and configuration</p>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h2>Stripe Connection Status</h2>
+                        <div style="background: #10B981; color: white; padding: 1rem; border-radius: 6px; margin-bottom: 1.5rem;">
+                            <strong>✅ Connected</strong> - Your Stripe account is successfully connected
+                        </div>
+                        <p style="margin-bottom: 1.5rem;">Connected Account: acct_1234567890</p>
+                        <button class="btn btn-outline">Disconnect Stripe</button>
+                        <button class="btn btn-primary" style="margin-left: 0.5rem;">Reconnect</button>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h2>API Keys</h2>
+                        <div class="form-group">
+                            <label>Publishable Key</label>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <input type="text" value="pk_live_51..." readonly style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px; background: #F7F9FC;">
+                                <button class="btn btn-outline">Copy</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Secret Key</label>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <input type="password" value="sk_live_51..." readonly style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px; background: #F7F9FC;">
+                                <button class="btn btn-outline">Show</button>
+                                <button class="btn btn-outline">Copy</button>
+                            </div>
+                            <p style="font-size: 0.9rem; color: #718096; margin-top: 0.5rem;">⚠️ Keep your secret key secure and never share it publicly</p>
+                        </div>
+                        <button class="btn btn-primary">Regenerate Keys</button>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h2>Webhook Configuration</h2>
+                        <div class="form-group">
+                            <label>Webhook Endpoint URL</label>
+                            <input type="text" value="https://learnable.com/api/stripe/webhook" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                            <p style="font-size: 0.9rem; color: #718096; margin-top: 0.5rem;">URL where Stripe will send event notifications</p>
+                        </div>
+                        <div class="form-group">
+                            <label>Webhook Secret</label>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <input type="password" value="whsec_..." readonly style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px; background: #F7F9FC;">
+                                <button class="btn btn-outline">Show</button>
+                                <button class="btn btn-outline">Copy</button>
+                            </div>
+                        </div>
+                        <button class="btn btn-success">Save Webhook Settings</button>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h2>Payment Settings</h2>
+                        <div class="form-group">
+                            <label>Supported Payment Methods</label>
+                            <div style="margin-top: 0.5rem;">
+                                <label style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                                    <input type="checkbox" checked style="margin-right: 0.5rem;"> Credit/Debit Cards
+                                </label>
+                                <label style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                                    <input type="checkbox" checked style="margin-right: 0.5rem;"> Bank Transfer
+                                </label>
+                                <label style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                                    <input type="checkbox" style="margin-right: 0.5rem;"> Digital Wallets (Apple Pay, Google Pay)
+                                </label>
+                                <label style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                                    <input type="checkbox" style="margin-right: 0.5rem;"> Cryptocurrency
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Currency</label>
+                            <select style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                                <option>USD - US Dollar</option>
+                                <option>NGN - Nigerian Naira</option>
+                                <option>GBP - British Pound</option>
+                                <option>EUR - Euro</option>
+                                <option>CAD - Canadian Dollar</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-success">Save Payment Settings</button>
+                    </div>
+                </div>
+                
+                <!-- View Transactions Section -->
+                <div id="superAdminViewTransactionsSection" class="super-admin-section hidden">
+                    <div class="dashboard-header">
+                        <h1>💰 View Transactions</h1>
+                        <p>Monitor all payment transactions and financial activity</p>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">💰</div>
+                            <div class="stat-value">$52,340</div>
+                            <div class="stat-label">Total Revenue</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">✅</div>
+                            <div class="stat-value">1,234</div>
+                            <div class="stat-label">Successful</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">❌</div>
+                            <div class="stat-value">23</div>
+                            <div class="stat-label">Failed</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">⏳</div>
+                            <div class="stat-value">12</div>
+                            <div class="stat-label">Pending</div>
+                        </div>
+                    </div>
+                    
+                    <div class="content-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <div>
+                                <h2>Transaction History</h2>
+                                <p>All payment transactions processed through Stripe</p>
+                            </div>
+                            <div>
+                                <select style="padding: 0.5rem; border: 1px solid #E2E8F0; border-radius: 6px; margin-right: 0.5rem;">
+                                    <option>All Status</option>
+                                    <option>Successful</option>
+                                    <option>Failed</option>
+                                    <option>Pending</option>
+                                </select>
+                                <button class="btn btn-outline">Export CSV</button>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 1rem;">
+                            <input type="text" placeholder="Search transactions by ID, email, or amount..." style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                        </div>
+                        
+                        <div class="content-list">
+                            <div class="content-item">
+                                <div>
+                                    <h3>Transaction: ch_1234567890</h3>
+                                    <p>Customer: jane.smith@example.com • Amount: $49.99 • Course: Introduction to Web Development</p>
+                                    <p style="font-size: 0.85rem; color: #718096; margin-top: 0.25rem;">Date: Jan 20, 2024 10:30 AM • Status: ✅ Successful</p>
+                                </div>
+                                <button class="btn btn-outline">View Details</button>
+                            </div>
+                            <div class="content-item">
+                                <div>
+                                    <h3>Transaction: ch_0987654321</h3>
+                                    <p>Customer: john.doe@example.com • Amount: $79.99 • Course: Advanced JavaScript</p>
+                                    <p style="font-size: 0.85rem; color: #718096; margin-top: 0.25rem;">Date: Jan 20, 2024 9:15 AM • Status: ✅ Successful</p>
+                                </div>
+                                <button class="btn btn-outline">View Details</button>
+                            </div>
+                            <div class="content-item">
+                                <div>
+                                    <h3>Transaction: ch_1122334455</h3>
+                                    <p>Customer: student@example.com • Amount: $29.99 • Course: Python Basics</p>
+                                    <p style="font-size: 0.85rem; color: #718096; margin-top: 0.25rem;">Date: Jan 19, 2024 3:45 PM • Status: ⏳ Pending</p>
+                                </div>
+                                <button class="btn btn-outline">View Details</button>
+                            </div>
+                            <div class="content-item">
+                                <div>
+                                    <h3>Transaction: ch_5566778899</h3>
+                                    <p>Customer: user@example.com • Amount: $99.99 • Course: Full Stack Development</p>
+                                    <p style="font-size: 0.85rem; color: #718096; margin-top: 0.25rem;">Date: Jan 18, 2024 2:20 PM • Status: ❌ Failed</p>
+                                </div>
+                                <button class="btn btn-outline">View Details</button>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: center; margin-top: 2rem;">
+                            <button class="btn btn-outline">Load More Transactions</button>
+                        </div>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h2>Refund Management</h2>
+                        <p style="margin-bottom: 1.5rem;">Process refunds for transactions</p>
+                        <div class="content-list">
+                            <div class="content-item">
+                                <div>
+                                    <h3>Refund Request</h3>
+                                    <p>Transaction: ch_1234567890 • Amount: $49.99 • Requested by: jane.smith@example.com</p>
+                                    <p style="font-size: 0.85rem; color: #718096; margin-top: 0.25rem;">Request Date: Jan 21, 2024 11:00 AM</p>
+                                </div>
+                                <div>
+                                    <button class="btn btn-success">Approve Refund</button>
+                                    <button class="btn btn-outline" style="margin-left: 0.5rem;">Deny</button>
+                                </div>
                             </div>
                         </div>
                     </div>

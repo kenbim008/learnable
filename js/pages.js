@@ -31,8 +31,68 @@ function showPage(pageName) {
 
 // Logout
 function logout() {
+    // Clear session data
+    localStorage.removeItem('userSession');
     showPage('landing');
 }
+
+// Check and restore session on page load
+function checkSession() {
+    const sessionData = localStorage.getItem('userSession');
+    if (sessionData) {
+        try {
+            const session = JSON.parse(sessionData);
+            const now = Date.now();
+            
+            // Check if session is still valid (not expired)
+            if (session.expiresAt && now < session.expiresAt) {
+                // Restore the session
+                if (session.role === 'superadmin') {
+                    showPage('superAdminDashboard');
+                } else if (session.role === 'admin') {
+                    showPage('adminDashboard');
+                } else if (session.role === 'instructor') {
+                    showPage('instructorDashboard');
+                } else if (session.role === 'student') {
+                    showPage('studentDashboard');
+                }
+            } else {
+                // Session expired, clear it
+                localStorage.removeItem('userSession');
+            }
+        } catch (e) {
+            // Invalid session data, clear it
+            localStorage.removeItem('userSession');
+        }
+    }
+}
+
+// Check session expiration periodically (every minute)
+setInterval(function() {
+    const sessionData = localStorage.getItem('userSession');
+    if (sessionData) {
+        try {
+            const session = JSON.parse(sessionData);
+            const now = Date.now();
+            
+            // If session expired, redirect to landing page
+            if (session.expiresAt && now >= session.expiresAt) {
+                localStorage.removeItem('userSession');
+                if (document.getElementById('superAdminDashboard') && !document.getElementById('superAdminDashboard').classList.contains('hidden')) {
+                    showPage('landing');
+                    alert('Your session has expired. Please login again.');
+                }
+            }
+        } catch (e) {
+            // Invalid session data
+        }
+    }
+}, 60000); // Check every minute
+
+// Check session when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    checkSession();
+});
 
 // Toggle chatbot
 function toggleChatbot() {
@@ -62,7 +122,9 @@ function showSuperAdminSection(sectionName, event) {
         'contentManagement': 'superAdminContentManagementSection',
         'siteSettings': 'superAdminSiteSettingsSection',
         'analytics': 'superAdminAnalyticsSection',
-        'systemLogs': 'superAdminSystemLogsSection'
+        'systemLogs': 'superAdminSystemLogsSection',
+        'stripeSettings': 'superAdminStripeSettingsSection',
+        'viewTransactions': 'superAdminViewTransactionsSection'
     };
     
     const targetSectionId = sectionMap[sectionName] || sectionName;
