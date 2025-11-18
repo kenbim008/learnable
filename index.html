@@ -875,27 +875,29 @@
         <div class="dashboard-container">
             <aside class="sidebar">
                 <ul class="sidebar-menu">
-                    <li><a class="active">📊 Dashboard</a></li>
-                    <li><a id="adminUsersLink">👥 Users</a></li>
-                    <li><a id="adminCoursesLink">📚 Courses</a></li>
-                    <li><a id="adminReviewLink">✅ Pending Review</a></li>
-                    <li><a id="adminCommunityLink">👥 Community</a></li>
-                    <li><a id="adminContentLink">📝 Content Pages</a></li>
-                    <li><a id="adminFinancialsLink">💰 Financials</a></li>
-                    <li><a id="adminSettingsLink">⚙️ Settings</a></li>
-                    <li><a id="adminAnalyticsLink">📈 Analytics</a></li>
-                    <li><a id="adminLogsLink">📋 Logs</a></li>
+                    <li><a class="active" onclick="showAdminSection('dashboard', event)">📊 Dashboard</a></li>
+                    <li><a onclick="showAdminSection('users', event)">👥 Users</a></li>
+                    <li><a onclick="showAdminSection('courses', event)">📚 Courses</a></li>
+                    <li><a onclick="showAdminSection('pendingReview', event)">✅ Pending Review</a></li>
+                    <li><a onclick="showAdminSection('community', event)">👥 Community</a></li>
+                    <li><a onclick="showAdminSection('contentPages', event)">📝 Content Pages</a></li>
+                    <li><a onclick="showAdminSection('financials', event)">💰 Financials</a></li>
+                    <li><a onclick="showAdminSection('settings', event)">⚙️ Settings</a></li>
+                    <li><a onclick="showAdminSection('analytics', event)">📈 Analytics</a></li>
+                    <li><a onclick="showAdminSection('logs', event)">📋 Logs</a></li>
                 </ul>
             </aside>
             
             <main class="main-content">
-                <div class="dashboard-header">
-                    <h1>Admin Dashboard 👑</h1>
-                    <p>Platform management and oversight</p>
-                    <div style="background: #FFF5E6; padding: 1rem; border-radius: 6px; margin-top: 1rem; font-size: 0.9rem;">
-                        ⚠️ Your permissions are managed by Super Admin
+                <!-- Dashboard Section -->
+                <div id="adminDashboardSection" class="admin-section">
+                    <div class="dashboard-header">
+                        <h1>Admin Dashboard 👑</h1>
+                        <p>Platform management and oversight</p>
+                        <div style="background: #FFF5E6; padding: 1rem; border-radius: 6px; margin-top: 1rem; font-size: 0.9rem;">
+                            ⚠️ Your permissions are managed by Super Admin
+                        </div>
                     </div>
-                </div>
                 
                 <div class="stats-grid">
                     <div class="stat-card">
@@ -923,6 +925,362 @@
                 <div class="content-card">
                     <h2>Pending Course Reviews</h2>
                     <p>Courses awaiting approval by admin team</p>
+                </div>
+                </div>
+                
+                <!-- Users Section -->
+                <div id="adminUsersSection" class="admin-section hidden">
+                    <div class="dashboard-header">
+                        <h1>👥 Users</h1>
+                        <p>Manage platform users, instructors, and students</p>
+                    </div>
+                    
+                    <div class="content-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <div>
+                                <h2>User Management</h2>
+                                <p>Total: 1,248 users (89 Instructors, 1,157 Students, 2 Admins)</p>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 1rem;">
+                            <input type="text" placeholder="Search users..." style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                        </div>
+                        
+                        <div class="content-list">
+                            <div class="content-item">
+                                <div>
+                                    <h3>John Doe</h3>
+                                    <p>Instructor • john.doe@example.com • Joined: Jan 2024</p>
+                                </div>
+                                <button class="btn btn-outline">View Details</button>
+                            </div>
+                            <div class="content-item">
+                                <div>
+                                    <h3>Jane Smith</h3>
+                                    <p>Student • jane.smith@example.com • Joined: Feb 2024</p>
+                                </div>
+                                <button class="btn btn-outline">View Details</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Courses Section -->
+                <div id="adminCoursesSection" class="admin-section hidden">
+                    <div class="dashboard-header">
+                        <h1>📚 Courses</h1>
+                        <p>View and manage all courses on the platform</p>
+                    </div>
+                    
+                    <div class="content-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <div>
+                                <h2>Course Management</h2>
+                                <p>Total: 156 published courses, 12 pending review</p>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 1rem;">
+                            <input type="text" placeholder="Search courses..." style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                        </div>
+                        
+                        <div class="content-list">
+                            <div class="content-item">
+                                <div>
+                                    <h3>Introduction to Web Development</h3>
+                                    <p>By John Doe • Published • 234 students • $49.99</p>
+                                </div>
+                                <div>
+                                    <button class="btn btn-outline">View</button>
+                                    <button class="btn btn-outline" style="margin-left: 0.5rem;">Edit</button>
+                                </div>
+                            </div>
+                            <div class="content-item">
+                                <div>
+                                    <h3>Advanced JavaScript</h3>
+                                    <p>By Jane Smith • Published • 189 students • $79.99</p>
+                                </div>
+                                <div>
+                                    <button class="btn btn-outline">View</button>
+                                    <button class="btn btn-outline" style="margin-left: 0.5rem;">Edit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pending Review Section -->
+                <div id="adminPendingReviewSection" class="admin-section hidden">
+                    <div class="dashboard-header">
+                        <h1>✅ Pending Review</h1>
+                        <p>Review and approve courses awaiting publication</p>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h2>Courses Pending Approval</h2>
+                        <p style="margin-bottom: 1.5rem;">12 courses waiting for review</p>
+                        
+                        <div class="content-list">
+                            <div class="content-item">
+                                <div>
+                                    <h3>Python for Beginners</h3>
+                                    <p>By Instructor Name • Submitted: Jan 20, 2024 • Price: $39.99</p>
+                                    <p style="font-size: 0.85rem; color: #718096; margin-top: 0.25rem;">Category: Technology & IT</p>
+                                </div>
+                                <div>
+                                    <button class="btn btn-success">Approve</button>
+                                    <button class="btn btn-outline" style="margin-left: 0.5rem;">Review</button>
+                                    <button class="btn btn-outline" style="margin-left: 0.5rem;">Reject</button>
+                                </div>
+                            </div>
+                            <div class="content-item">
+                                <div>
+                                    <h3>Digital Marketing Mastery</h3>
+                                    <p>By Instructor Name • Submitted: Jan 19, 2024 • Price: $59.99</p>
+                                    <p style="font-size: 0.85rem; color: #718096; margin-top: 0.25rem;">Category: Marketing</p>
+                                </div>
+                                <div>
+                                    <button class="btn btn-success">Approve</button>
+                                    <button class="btn btn-outline" style="margin-left: 0.5rem;">Review</button>
+                                    <button class="btn btn-outline" style="margin-left: 0.5rem;">Reject</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Community Section -->
+                <div id="adminCommunitySection" class="admin-section hidden">
+                    <div class="dashboard-header">
+                        <h1>👥 Community</h1>
+                        <p>Moderate community content and interactions</p>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h2>Community Moderation</h2>
+                        <p style="margin-bottom: 1.5rem;">Manage forums, study groups, and community posts</p>
+                        
+                        <div class="content-list">
+                            <div class="content-item">
+                                <div>
+                                    <h3>Forum Post - Web Development Discussion</h3>
+                                    <p>Posted by: jane.smith@example.com • Date: Jan 20, 2024</p>
+                                    <p style="font-size: 0.85rem; color: #718096; margin-top: 0.25rem;">Status: Active • 15 replies</p>
+                                </div>
+                                <div>
+                                    <button class="btn btn-outline">View</button>
+                                    <button class="btn btn-outline" style="margin-left: 0.5rem;">Moderate</button>
+                                </div>
+                            </div>
+                            <div class="content-item">
+                                <div>
+                                    <h3>Study Group - JavaScript Study Group</h3>
+                                    <p>Created by: john.doe@example.com • Date: Jan 18, 2024</p>
+                                    <p style="font-size: 0.85rem; color: #718096; margin-top: 0.25rem;">Status: Active • 23 members</p>
+                                </div>
+                                <div>
+                                    <button class="btn btn-outline">View</button>
+                                    <button class="btn btn-outline" style="margin-left: 0.5rem;">Moderate</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Content Pages Section -->
+                <div id="adminContentPagesSection" class="admin-section hidden">
+                    <div class="dashboard-header">
+                        <h1>📝 Content Pages</h1>
+                        <p>Manage static pages and content</p>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h2>Content Pages</h2>
+                        <p style="margin-bottom: 1.5rem;">Manage static pages across the platform</p>
+                        <div class="content-list">
+                            <div class="content-item">
+                                <div>
+                                    <h3>Home Page</h3>
+                                    <p>Landing page content and hero section</p>
+                                </div>
+                                <button class="btn btn-outline">Edit</button>
+                            </div>
+                            <div class="content-item">
+                                <div>
+                                    <h3>About Page</h3>
+                                    <p>Platform information and company details</p>
+                                </div>
+                                <button class="btn btn-outline">Edit</button>
+                            </div>
+                            <div class="content-item">
+                                <div>
+                                    <h3>Terms of Service</h3>
+                                    <p>Legal terms and conditions</p>
+                                </div>
+                                <button class="btn btn-outline">Edit</button>
+                            </div>
+                            <div class="content-item">
+                                <div>
+                                    <h3>Privacy Policy</h3>
+                                    <p>Data protection and privacy information</p>
+                                </div>
+                                <button class="btn btn-outline">Edit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Financials Section -->
+                <div id="adminFinancialsSection" class="admin-section hidden">
+                    <div class="dashboard-header">
+                        <h1>💰 Financials</h1>
+                        <p>View financial reports and transactions</p>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">💰</div>
+                            <div class="stat-value">$52,340</div>
+                            <div class="stat-label">Total Revenue</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📊</div>
+                            <div class="stat-value">$31,404</div>
+                            <div class="stat-label">Instructor Payouts</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">💵</div>
+                            <div class="stat-value">$20,936</div>
+                            <div class="stat-label">Platform Revenue</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">⏳</div>
+                            <div class="stat-value">$3,450</div>
+                            <div class="stat-label">Pending Payouts</div>
+                        </div>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h2>Recent Transactions</h2>
+                        <div class="content-list">
+                            <div class="content-item">
+                                <div>
+                                    <h3>Course Purchase - Web Development</h3>
+                                    <p>Student: jane.smith@example.com • Amount: $49.99 • Date: Jan 20, 2024</p>
+                                </div>
+                                <button class="btn btn-outline">View Details</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Settings Section -->
+                <div id="adminSettingsSection" class="admin-section hidden">
+                    <div class="dashboard-header">
+                        <h1>⚙️ Settings</h1>
+                        <p>Configure admin settings and preferences</p>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h2>Admin Settings</h2>
+                        <div class="form-group">
+                            <label>Notification Preferences</label>
+                            <div style="margin-top: 0.5rem;">
+                                <label style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                                    <input type="checkbox" checked style="margin-right: 0.5rem;"> Email notifications for pending reviews
+                                </label>
+                                <label style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                                    <input type="checkbox" checked style="margin-right: 0.5rem;"> Email notifications for new users
+                                </label>
+                                <label style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                                    <input type="checkbox" style="margin-right: 0.5rem;"> Email notifications for community reports
+                                </label>
+                            </div>
+                        </div>
+                        <button class="btn btn-success">Save Preferences</button>
+                    </div>
+                </div>
+                
+                <!-- Analytics Section -->
+                <div id="adminAnalyticsSection" class="admin-section hidden">
+                    <div class="dashboard-header">
+                        <h1>📈 Analytics</h1>
+                        <p>View platform analytics and insights</p>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">👥</div>
+                            <div class="stat-value">1,248</div>
+                            <div class="stat-label">Total Users</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📚</div>
+                            <div class="stat-value">156</div>
+                            <div class="stat-label">Total Courses</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">💰</div>
+                            <div class="stat-value">$52,340</div>
+                            <div class="stat-label">Total Revenue</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📊</div>
+                            <div class="stat-value">89%</div>
+                            <div class="stat-label">User Satisfaction</div>
+                        </div>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h2>Platform Overview</h2>
+                        <p style="margin-bottom: 1.5rem;">Key metrics and performance indicators</p>
+                        <div style="background: #F7F9FC; padding: 3rem; border-radius: 8px; text-align: center; color: #718096;">
+                            📊 Chart visualization would appear here
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Logs Section -->
+                <div id="adminLogsSection" class="admin-section hidden">
+                    <div class="dashboard-header">
+                        <h1>📋 Logs</h1>
+                        <p>View system activity and audit logs</p>
+                    </div>
+                    
+                    <div class="content-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <div>
+                                <h2>Activity Logs</h2>
+                                <p>System activity and events</p>
+                            </div>
+                            <button class="btn btn-outline">Export Logs</button>
+                        </div>
+                        
+                        <div class="content-list">
+                            <div class="content-item">
+                                <div>
+                                    <h3>User Login</h3>
+                                    <p>User: admin@learnable.com • IP: 192.168.1.1 • Time: Jan 20, 2024 10:30 AM</p>
+                                </div>
+                                <span style="padding: 0.25rem 0.75rem; background: #10B981; color: white; border-radius: 4px; font-size: 0.85rem;">Success</span>
+                            </div>
+                            <div class="content-item">
+                                <div>
+                                    <h3>Course Approved</h3>
+                                    <p>Course: Advanced JavaScript • Admin: admin@learnable.com • Time: Jan 20, 2024 9:15 AM</p>
+                                </div>
+                                <span style="padding: 0.25rem 0.75rem; background: #5B7FFF; color: white; border-radius: 4px; font-size: 0.85rem;">Info</span>
+                            </div>
+                            <div class="content-item">
+                                <div>
+                                    <h3>User Created</h3>
+                                    <p>New user: jane.smith@example.com • Time: Jan 20, 2024 8:45 AM</p>
+                                </div>
+                                <span style="padding: 0.25rem 0.75rem; background: #10B981; color: white; border-radius: 4px; font-size: 0.85rem;">Success</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </main>
         </div>

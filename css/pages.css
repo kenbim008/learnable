@@ -723,6 +723,15 @@
     display: none;
 }
 
+/* Admin Section Navigation */
+.admin-section {
+    width: 100%;
+}
+
+.admin-section.hidden {
+    display: none;
+}
+
 /* Content Management Styles */
 .content-list {
     display: flex;
