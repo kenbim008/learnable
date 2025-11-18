@@ -47,6 +47,143 @@ function showAdminSignup() {
     openModal('adminSignup');
 }
 
+function showSuperAdminSignup() {
+    closeModal('signup');
+    openModal('superAdminSignup');
+}
+
+// Initialize access codes in localStorage if not exists
+function initializeAccessCodes() {
+    if (!localStorage.getItem('superAdminAccessCode')) {
+        localStorage.setItem('superAdminAccessCode', 'SUPERADMIN2024');
+    }
+    if (!localStorage.getItem('adminAccessCodes')) {
+        localStorage.setItem('adminAccessCodes', JSON.stringify(['ADMIN2024']));
+    }
+    // Update display
+    updateAccessCodeDisplay();
+}
+
+// Update access code display
+function updateAccessCodeDisplay() {
+    const superAdminCode = localStorage.getItem('superAdminAccessCode') || 'SUPERADMIN2024';
+    const currentCodeElement = document.getElementById('currentSuperAdminCode');
+    if (currentCodeElement) {
+        currentCodeElement.textContent = superAdminCode;
+    }
+}
+
+// Get Super Admin access code
+function getSuperAdminAccessCode() {
+    return localStorage.getItem('superAdminAccessCode') || 'SUPERADMIN2024';
+}
+
+// Get Admin access codes
+function getAdminAccessCodes() {
+    const codes = localStorage.getItem('adminAccessCodes');
+    return codes ? JSON.parse(codes) : ['ADMIN2024'];
+}
+
+// Update Super Admin access code
+function updateSuperAdminAccessCode() {
+    const newCode = document.getElementById('superAdminAccessCode').value.trim();
+    if (!newCode) {
+        alert('Please enter a new access code!');
+        return;
+    }
+    if (newCode.length < 6) {
+        alert('Access code must be at least 6 characters long!');
+        return;
+    }
+    localStorage.setItem('superAdminAccessCode', newCode);
+    updateAccessCodeDisplay();
+    document.getElementById('superAdminAccessCode').value = '';
+    alert('Super Admin access code updated successfully!');
+}
+
+// Generate Admin access code
+function generateAdminAccessCode() {
+    const customCode = document.getElementById('newAdminCode').value.trim();
+    let newCode;
+    
+    if (customCode) {
+        newCode = customCode;
+    } else {
+        // Auto-generate code
+        const timestamp = Date.now().toString(36).toUpperCase();
+        const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+        newCode = `ADMIN-${timestamp}-${random}`;
+    }
+    
+    // Get existing codes
+    const codes = getAdminAccessCodes();
+    codes.push(newCode);
+    localStorage.setItem('adminAccessCodes', JSON.stringify(codes));
+    
+    // Display generated code
+    document.getElementById('displayAdminCode').textContent = newCode;
+    document.getElementById('generatedAdminCode').style.display = 'block';
+    document.getElementById('newAdminCode').value = '';
+    
+    // Add to recent codes list
+    addCodeToList(newCode);
+}
+
+// Copy admin code to clipboard
+function copyAdminCode() {
+    const code = document.getElementById('displayAdminCode').textContent;
+    navigator.clipboard.writeText(code).then(() => {
+        alert('Access code copied to clipboard!');
+    }).catch(() => {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = code;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        alert('Access code copied to clipboard!');
+    });
+}
+
+// Add code to recent codes list
+function addCodeToList(code) {
+    const list = document.getElementById('adminCodesList');
+    if (list) {
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const newItem = document.createElement('div');
+        newItem.className = 'content-item';
+        newItem.innerHTML = `
+            <div>
+                <h3>${code}</h3>
+                <p>Generated: ${dateStr} • Used: No • Expires: Never</p>
+            </div>
+            <button class="btn btn-outline" onclick="revokeAdminCode('${code}', this)">Revoke</button>
+        `;
+        list.insertBefore(newItem, list.firstChild);
+    }
+}
+
+// Revoke admin code
+function revokeAdminCode(code, button) {
+    if (confirm(`Are you sure you want to revoke access code: ${code}?`)) {
+        const codes = getAdminAccessCodes();
+        const index = codes.indexOf(code);
+        if (index > -1) {
+            codes.splice(index, 1);
+            localStorage.setItem('adminAccessCodes', JSON.stringify(codes));
+        }
+        button.closest('.content-item').remove();
+        alert('Access code revoked successfully!');
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    initializeAccessCodes();
+});
+
 function toggleAdminCode(type) {
     const role = document.getElementById(type + 'Role');
     const codeGroup = document.getElementById(type + 'AdminCodeGroup');
@@ -84,9 +221,19 @@ function handleLogin(e) {
         return;
     }
 
-    if ((role === 'admin' || role === 'superadmin') && adminCode !== 'ADMIN2024') {
-        alert('Invalid admin access code!');
-        return;
+    // Check access codes dynamically
+    if (role === 'superadmin') {
+        const superAdminCode = getSuperAdminAccessCode();
+        if (adminCode !== superAdminCode) {
+            alert('Invalid Super Admin access code!');
+            return;
+        }
+    } else if (role === 'admin') {
+        const adminCodes = getAdminAccessCodes();
+        if (!adminCodes.includes(adminCode)) {
+            alert('Invalid admin access code!');
+            return;
+        }
     }
     
     closeModal('login');
@@ -144,7 +291,9 @@ function handleAdminSignup(e) {
     const password = document.getElementById('adminSignupPassword').value;
     const confirmPassword = document.getElementById('adminSignupConfirmPassword').value;
     
-    if (code !== 'ADMIN2024') {
+    // Check against stored admin access codes
+    const adminCodes = getAdminAccessCodes();
+    if (!adminCodes.includes(code)) {
         alert('Invalid admin access code! Contact Super Admin for a valid code.');
         return;
     }
@@ -158,6 +307,31 @@ function handleAdminSignup(e) {
     alert(`Admin account created successfully for ${name}!`);
     closeModal('adminSignup');
     showPage('adminDashboard');
+}
+
+// Handle Super Admin signup
+function handleSuperAdminSignup(e) {
+    e.preventDefault();
+    const code = document.getElementById('superAdminSignupCode').value;
+    const password = document.getElementById('superAdminSignupPassword').value;
+    const confirmPassword = document.getElementById('superAdminSignupConfirmPassword').value;
+    
+    // Check against stored Super Admin access code
+    const superAdminCode = getSuperAdminAccessCode();
+    if (code !== superAdminCode) {
+        alert('Invalid Super Admin access code!');
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        alert('Passwords do not match!');
+        return;
+    }
+    
+    const name = document.getElementById('superAdminSignupName').value;
+    alert(`Super Admin account created successfully for ${name}!`);
+    closeModal('superAdminSignup');
+    showPage('superAdminDashboard');
 }
 
 // Toggle course structure (single vs modules)
@@ -296,6 +470,116 @@ function handleCreateCourse(e) {
     
     alert(`Course created successfully!\n\n${videoInfo}\n\nYour content is protected with DRM - students can stream but not download.`);
     closeModal('createCourse');
+}
+
+// Open Add User Modal
+function openAddUserModal() {
+    openModal('addUser');
+}
+
+// Handle Add User
+function handleAddUser(e) {
+    e.preventDefault();
+    const name = document.getElementById('newUserName').value;
+    const email = document.getElementById('newUserEmail').value;
+    const role = document.getElementById('newUserRole').value;
+    const password = document.getElementById('newUserPassword').value;
+    const confirmPassword = document.getElementById('newUserConfirmPassword').value;
+    
+    if (password !== confirmPassword) {
+        alert('Passwords do not match!');
+        return;
+    }
+    
+    if (!role) {
+        alert('Please select a role!');
+        return;
+    }
+    
+    alert(`User "${name}" (${role}) created successfully!`);
+    closeModal('addUser');
+    
+    // Reset form
+    document.getElementById('newUserName').value = '';
+    document.getElementById('newUserEmail').value = '';
+    document.getElementById('newUserRole').value = '';
+    document.getElementById('newUserPassword').value = '';
+    document.getElementById('newUserConfirmPassword').value = '';
+}
+
+// Save Admin Permissions (Super Admin Portal)
+function saveAdminPermissions() {
+    const permissions = {
+        userManagement: document.getElementById('perm1').checked,
+        courseReview: document.getElementById('perm2').checked,
+        financialReports: document.getElementById('perm3').checked,
+        communityModeration: document.getElementById('perm4').checked,
+        contentManagement: document.getElementById('perm5').checked,
+        analyticsAccess: document.getElementById('perm6').checked,
+        settingsConfiguration: document.getElementById('perm7').checked,
+        systemLogs: document.getElementById('perm8').checked
+    };
+    
+    // Store in localStorage
+    localStorage.setItem('adminPermissions', JSON.stringify(permissions));
+    
+    alert('Admin permissions saved successfully!');
+}
+
+// Save Platform Settings (Super Admin Portal)
+function savePlatformSettings() {
+    const monthlyFee = document.getElementById('instructorMonthlyFee').value;
+    const revenueShare = document.getElementById('instructorRevenueShare').value;
+    
+    if (!monthlyFee || monthlyFee <= 0) {
+        alert('Please enter a valid monthly fee!');
+        return;
+    }
+    
+    if (!revenueShare || revenueShare < 0 || revenueShare > 100) {
+        alert('Revenue share must be between 0 and 100!');
+        return;
+    }
+    
+    const settings = {
+        instructorMonthlyFee: parseFloat(monthlyFee),
+        instructorRevenueShare: parseInt(revenueShare),
+        platformRevenueShare: 100 - parseInt(revenueShare)
+    };
+    
+    // Store in localStorage
+    localStorage.setItem('platformSettings', JSON.stringify(settings));
+    
+    alert('Platform settings saved successfully!');
+}
+
+// Save Admin Preferences (Admin Portal)
+function saveAdminPreferences() {
+    const preferences = {
+        pendingReviews: document.getElementById('adminNotifPendingReviews').checked,
+        newUsers: document.getElementById('adminNotifNewUsers').checked,
+        communityReports: document.getElementById('adminNotifCommunityReports').checked
+    };
+    
+    // Store in localStorage
+    localStorage.setItem('adminPreferences', JSON.stringify(preferences));
+    
+    alert('Preferences saved successfully!');
+}
+
+// Generate Admin Code from Dashboard (Super Admin Portal)
+function generateAdminCodeFromDashboard() {
+    // Check admin count (this would normally come from backend)
+    const adminCount = 2; // This should be dynamic
+    if (adminCount >= 2) {
+        if (confirm('Maximum admin count reached (2/2). Do you want to generate a code anyway? This will allow creating a new admin but you may need to remove an existing one first.')) {
+            // Navigate to Access Codes section to generate code
+            showSuperAdminSection('accessCodes', {target: document.querySelector('[onclick*="accessCodes"]')});
+        }
+    } else {
+        // Navigate to Access Codes section to generate code
+        showSuperAdminSection('accessCodes', {target: document.querySelector('[onclick*="accessCodes"]')});
+    }
 }
 
 // Close modals when clicking outside

@@ -941,6 +941,7 @@
                                 <h2>User Management</h2>
                                 <p>Total: 1,248 users (89 Instructors, 1,157 Students, 2 Admins)</p>
                             </div>
+                            <button class="btn btn-primary" onclick="openAddUserModal()">+ Add New User</button>
                         </div>
                         
                         <div style="margin-bottom: 1rem;">
@@ -1188,17 +1189,17 @@
                             <label>Notification Preferences</label>
                             <div style="margin-top: 0.5rem;">
                                 <label style="display: flex; align-items: center; margin-bottom: 0.5rem;">
-                                    <input type="checkbox" checked style="margin-right: 0.5rem;"> Email notifications for pending reviews
+                                    <input type="checkbox" id="adminNotifPendingReviews" checked style="margin-right: 0.5rem;"> Email notifications for pending reviews
                                 </label>
                                 <label style="display: flex; align-items: center; margin-bottom: 0.5rem;">
-                                    <input type="checkbox" checked style="margin-right: 0.5rem;"> Email notifications for new users
+                                    <input type="checkbox" id="adminNotifNewUsers" checked style="margin-right: 0.5rem;"> Email notifications for new users
                                 </label>
                                 <label style="display: flex; align-items: center; margin-bottom: 0.5rem;">
-                                    <input type="checkbox" style="margin-right: 0.5rem;"> Email notifications for community reports
+                                    <input type="checkbox" id="adminNotifCommunityReports" style="margin-right: 0.5rem;"> Email notifications for community reports
                                 </label>
                             </div>
                         </div>
-                        <button class="btn btn-success">Save Preferences</button>
+                        <button class="btn btn-success" onclick="saveAdminPreferences()">Save Preferences</button>
                     </div>
                 </div>
                 
@@ -1397,7 +1398,7 @@
                             <label for="perm8">System Logs</label>
                         </div>
                     </div>
-                    <button class="btn btn-success" style="margin-top: 1rem;">Save Permissions</button>
+                    <button class="btn btn-success" style="margin-top: 1rem;" onclick="saveAdminPermissions()">Save Permissions</button>
                 </div>
                 
                 <div class="content-card">
@@ -1406,20 +1407,20 @@
                     <div style="background: #F5F7FA; padding: 1rem; border-radius: 6px; margin: 1rem 0;">
                         <strong>Current Admin Count:</strong> 2/2 (Maximum reached)
                     </div>
-                    <button class="btn btn-primary" disabled>Generate New Code (Max Reached)</button>
+                    <button class="btn btn-primary" onclick="generateAdminCodeFromDashboard()">Generate New Code</button>
                 </div>
                 
                 <div class="content-card">
                     <h2>Platform Settings</h2>
                     <div class="form-group">
                         <label>Instructor Monthly Fee</label>
-                        <input type="number" value="9.99" step="0.01">
+                        <input type="number" id="instructorMonthlyFee" value="9.99" step="0.01" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
                     </div>
                     <div class="form-group">
                         <label>Revenue Share (Instructor %)</label>
-                        <input type="number" value="60" min="0" max="100">
+                        <input type="number" id="instructorRevenueShare" value="60" min="0" max="100" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
                     </div>
-                    <button class="btn btn-success">Save Settings</button>
+                    <button class="btn btn-success" onclick="savePlatformSettings()">Save Settings</button>
                 </div>
                 </div>
                 
@@ -1635,17 +1636,40 @@
                     </div>
                     
                     <div class="content-card">
+                        <h2>Super Admin Access Code</h2>
+                        <p style="margin-bottom: 1.5rem;">Set or change the access code required for Super Admin signup</p>
+                        <div class="form-group">
+                            <label>Super Admin Access Code</label>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <input type="text" id="superAdminAccessCode" placeholder="Enter new Super Admin access code" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                                <button class="btn btn-primary" onclick="updateSuperAdminAccessCode()">Update Code</button>
+                            </div>
+                            <p style="font-size: 0.9rem; color: #718096; margin-top: 0.5rem;">Current Code: <strong id="currentSuperAdminCode">SUPERADMIN2024</strong></p>
+                        </div>
+                    </div>
+                    
+                    <div class="content-card">
                         <h2>Admin Access Code Generator</h2>
                         <p style="margin-bottom: 1.5rem;">Generate codes for new admin users (Maximum 2 admins enforced)</p>
                         <div style="background: #F5F7FA; padding: 1rem; border-radius: 6px; margin: 1rem 0;">
-                            <strong>Current Admin Count:</strong> 2/2 (Maximum reached)
+                            <strong>Current Admin Count:</strong> <span id="adminCount">2</span>/2 (Maximum reached)
                         </div>
-                        <button class="btn btn-primary" disabled>Generate New Code (Max Reached)</button>
+                        <div class="form-group">
+                            <label>Generate New Admin Access Code</label>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <input type="text" id="newAdminCode" placeholder="Enter custom code or leave blank for auto-generate" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                                <button class="btn btn-primary" onclick="generateAdminAccessCode()">Generate Code</button>
+                            </div>
+                        </div>
+                        <div id="generatedAdminCode" style="display: none; background: #10B981; color: white; padding: 1rem; border-radius: 6px; margin-top: 1rem;">
+                            <strong>Generated Code:</strong> <span id="displayAdminCode"></span>
+                            <button class="btn btn-outline" style="background: white; color: #10B981; margin-left: 0.5rem;" onclick="copyAdminCode()">Copy</button>
+                        </div>
                     </div>
                     
                     <div class="content-card">
                         <h2>Recent Access Codes</h2>
-                        <div class="content-list">
+                        <div class="content-list" id="adminCodesList">
                             <div class="content-item">
                                 <div>
                                     <h3>ADMIN-2024-ABC123</h3>
@@ -2266,7 +2290,8 @@
                 </div>
                 <div class="modal-footer">
                     Already have an account? <a onclick="closeModal('signup'); openModal('login');">Login</a><br>
-                    <a onclick="showAdminSignup()" class="admin-link">👑 Signup As Admin</a>
+                    <a onclick="showAdminSignup()" class="admin-link">👑 Signup As Admin</a><br>
+                    <a onclick="showSuperAdminSignup()" class="admin-link">👑 Signup As Super Admin</a>
                 </div>
             </form>
         </div>
@@ -2305,6 +2330,44 @@
                 <button type="submit" class="btn btn-success" style="width: 100%;">Create Admin Account</button>
                 <div class="modal-footer">
                     <a onclick="closeModal('adminSignup'); openModal('signup');">← Back to Regular Signup</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Super Admin Signup Modal -->
+    <div id="superAdminSignupModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('superAdminSignup')">×</button>
+            <h2>Super Admin Signup</h2>
+            <p>Create your Super Admin account</p>
+            <form onsubmit="handleSuperAdminSignup(event)">
+                <div class="admin-access-notice">
+                    🔑 You need a valid Super Admin access code to create a Super Admin account.
+                </div>
+                <div class="form-group">
+                    <label>Super Admin Access Code</label>
+                    <input type="text" id="superAdminSignupCode" placeholder="Enter your Super Admin access code" required>
+                </div>
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="superAdminSignupName" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="superAdminSignupEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="superAdminSignupPassword" placeholder="Minimum 8 characters" required minlength="8">
+                </div>
+                <div class="form-group">
+                    <label>Confirm Password</label>
+                    <input type="password" id="superAdminSignupConfirmPassword" placeholder="Re-enter your password" required>
+                </div>
+                <button type="submit" class="btn btn-success" style="width: 100%;">Create Super Admin Account</button>
+                <div class="modal-footer">
+                    <a onclick="closeModal('superAdminSignup'); openModal('signup');">← Back to Regular Signup</a>
                 </div>
             </form>
         </div>
@@ -2412,6 +2475,42 @@
                     🔒 All course content will be DRM protected - students can stream but not download
                 </div>
                 <button type="submit" class="btn btn-success" style="width: 100%; margin-top: 1rem;">Create Course</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add New User Modal -->
+    <div id="addUserModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('addUser')">×</button>
+            <h2>Add New User</h2>
+            <p>Create a new user account</p>
+            <form onsubmit="handleAddUser(event)">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="newUserName" placeholder="Enter full name" required style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="newUserEmail" placeholder="Enter email address" required style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                </div>
+                <div class="form-group">
+                    <label>Role</label>
+                    <select id="newUserRole" required style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                        <option value="">Select role</option>
+                        <option value="student">Student</option>
+                        <option value="instructor">Instructor</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="newUserPassword" placeholder="Minimum 8 characters" required minlength="8" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                </div>
+                <div class="form-group">
+                    <label>Confirm Password</label>
+                    <input type="password" id="newUserConfirmPassword" placeholder="Re-enter password" required style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                </div>
+                <button type="submit" class="btn btn-success" style="width: 100%;">Create User</button>
             </form>
         </div>
     </div>

@@ -228,6 +228,11 @@ function showSuperAdminSection(sectionName, event) {
         event.target.classList.add('active');
     }
     
+    // Refresh access code display if Access Codes section is opened
+    if (sectionName === 'accessCodes' && typeof updateAccessCodeDisplay === 'function') {
+        updateAccessCodeDisplay();
+    }
+    
     // Scroll to top
     window.scrollTo(0, 0);
 }
