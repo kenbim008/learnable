@@ -675,14 +675,14 @@
         <div class="dashboard-container">
             <aside class="sidebar">
                 <ul class="sidebar-menu">
-                    <li><a class="active">📊 Dashboard</a></li>
+                    <li><a class="active" onclick="showSuperAdminSection('dashboard', event)">📊 Dashboard</a></li>
                     <li><a>👥 All Users</a></li>
                     <li><a>👑 Admin Management</a></li>
                     <li><a>🔑 Access Codes</a></li>
                     <li><a>📚 All Courses</a></li>
                     <li><a>💰 Revenue & Payouts</a></li>
                     <li><a>💳 Pricing Settings</a></li>
-                    <li><a>📝 Content Management</a></li>
+                    <li><a onclick="showSuperAdminSection('contentManagement', event)">📝 Content Management</a></li>
                     <li><a>🎨 Site Settings</a></li>
                     <li><a>📈 Analytics</a></li>
                     <li><a>📋 System Logs</a></li>
@@ -690,10 +690,12 @@
             </aside>
             
             <main class="main-content">
-                <div class="dashboard-header">
-                    <h1>Super Admin Dashboard 👑</h1>
-                    <p>Full platform control and configuration</p>
-                </div>
+                <!-- Dashboard Section -->
+                <div id="superAdminDashboardSection" class="super-admin-section">
+                    <div class="dashboard-header">
+                        <h1>Super Admin Dashboard 👑</h1>
+                        <p>Full platform control and configuration</p>
+                    </div>
                 
                 <div class="stats-grid">
                     <div class="stat-card">
@@ -787,6 +789,130 @@
                         <input type="number" value="60" min="0" max="100">
                     </div>
                     <button class="btn btn-success">Save Settings</button>
+                </div>
+                </div>
+                
+                <!-- Content Management Section -->
+                <div id="superAdminContentManagementSection" class="super-admin-section hidden">
+                    <div class="dashboard-header">
+                        <h1>📝 Content Management</h1>
+                        <p>Manage all platform content, pages, and media</p>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h2>Content Pages</h2>
+                        <p style="margin-bottom: 1.5rem;">Manage static pages and content across the platform</p>
+                        <div class="content-list">
+                            <div class="content-item">
+                                <div>
+                                    <h3>Home Page</h3>
+                                    <p>Landing page content and hero section</p>
+                                </div>
+                                <button class="btn btn-outline">Edit</button>
+                            </div>
+                            <div class="content-item">
+                                <div>
+                                    <h3>About Page</h3>
+                                    <p>Platform information and company details</p>
+                                </div>
+                                <button class="btn btn-outline">Edit</button>
+                            </div>
+                            <div class="content-item">
+                                <div>
+                                    <h3>Terms of Service</h3>
+                                    <p>Legal terms and conditions</p>
+                                </div>
+                                <button class="btn btn-outline">Edit</button>
+                            </div>
+                            <div class="content-item">
+                                <div>
+                                    <h3>Privacy Policy</h3>
+                                    <p>Data protection and privacy information</p>
+                                </div>
+                                <button class="btn btn-outline">Edit</button>
+                            </div>
+                            <div class="content-item">
+                                <div>
+                                    <h3>Help Center</h3>
+                                    <p>FAQ and support documentation</p>
+                                </div>
+                                <button class="btn btn-outline">Edit</button>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" style="margin-top: 1rem;">+ Create New Page</button>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h2>Media Library</h2>
+                        <p style="margin-bottom: 1.5rem;">Upload and manage images, videos, and other media files</p>
+                        <div class="media-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">1,234</div>
+                                <div class="stat-label">Total Files</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">2.4 GB</div>
+                                <div class="stat-label">Storage Used</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">8.6 GB</div>
+                                <div class="stat-label">Storage Available</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" style="margin-top: 1rem;">📤 Upload Media</button>
+                        <button class="btn btn-outline" style="margin-top: 1rem; margin-left: 0.5rem;">Browse Library</button>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h2>Email Templates</h2>
+                        <p style="margin-bottom: 1.5rem;">Customize email notifications and communications</p>
+                        <div class="content-list">
+                            <div class="content-item">
+                                <div>
+                                    <h3>Welcome Email</h3>
+                                    <p>Sent to new users upon registration</p>
+                                </div>
+                                <button class="btn btn-outline">Edit Template</button>
+                            </div>
+                            <div class="content-item">
+                                <div>
+                                    <h3>Course Purchase Confirmation</h3>
+                                    <p>Sent after successful course purchase</p>
+                                </div>
+                                <button class="btn btn-outline">Edit Template</button>
+                            </div>
+                            <div class="content-item">
+                                <div>
+                                    <h3>Password Reset</h3>
+                                    <p>Sent when user requests password reset</p>
+                                </div>
+                                <button class="btn btn-outline">Edit Template</button>
+                            </div>
+                            <div class="content-item">
+                                <div>
+                                    <h3>Course Published Notification</h3>
+                                    <p>Sent to instructors when course is approved</p>
+                                </div>
+                                <button class="btn btn-outline">Edit Template</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h2>Announcements & Banners</h2>
+                        <p style="margin-bottom: 1.5rem;">Manage site-wide announcements and promotional banners</p>
+                        <div class="content-list">
+                            <div class="content-item">
+                                <div>
+                                    <h3>Site Banner</h3>
+                                    <p>Top banner announcement - Currently: Active</p>
+                                </div>
+                                <button class="btn btn-outline">Edit</button>
+                                <button class="btn btn-success" style="margin-left: 0.5rem;">Active</button>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" style="margin-top: 1rem;">+ Create New Announcement</button>
+                    </div>
                 </div>
             </main>
         </div>
