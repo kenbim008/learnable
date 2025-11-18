@@ -102,6 +102,47 @@ function toggleChatbot() {
     }
 }
 
+// Instructor section navigation
+function showInstructorSection(sectionName, event) {
+    // Hide all instructor sections
+    const sections = document.querySelectorAll('.instructor-section');
+    sections.forEach(section => {
+        section.classList.add('hidden');
+    });
+    
+    // Show selected section
+    const sectionMap = {
+        'dashboard': 'instructorDashboardSection',
+        'myCourses': 'instructorMyCoursesSection',
+        'students': 'instructorStudentsSection',
+        'revenue': 'instructorRevenueSection',
+        'analytics': 'instructorAnalyticsSection',
+        'reviews': 'instructorReviewsSection',
+        'messages': 'instructorMessagesSection',
+        'settings': 'instructorSettingsSection'
+    };
+    
+    const targetSectionId = sectionMap[sectionName] || sectionName;
+    const targetSection = document.getElementById(targetSectionId);
+    if (targetSection) {
+        targetSection.classList.remove('hidden');
+    }
+    
+    // Update active state in sidebar
+    const sidebarLinks = document.querySelectorAll('#instructorDashboard .sidebar-menu li a');
+    sidebarLinks.forEach(link => {
+        link.classList.remove('active');
+    });
+    
+    // Set active state on clicked link
+    if (event && event.target) {
+        event.target.classList.add('active');
+    }
+    
+    // Scroll to top
+    window.scrollTo(0, 0);
+}
+
 // Super Admin section navigation
 function showSuperAdminSection(sectionName, event) {
     // Hide all super admin sections

@@ -515,23 +515,25 @@
         <div class="dashboard-container">
             <aside class="sidebar">
                 <ul class="sidebar-menu">
-                    <li><a class="active">📊 Dashboard</a></li>
-                    <li><a>📚 My Courses</a></li>
+                    <li><a class="active" onclick="showInstructorSection('dashboard', event)">📊 Dashboard</a></li>
+                    <li><a onclick="showInstructorSection('myCourses', event)">📚 My Courses</a></li>
                     <li><a onclick="openModal('createCourse')">➕ Create Course</a></li>
-                    <li><a>👥 Students</a></li>
-                    <li><a>💰 Revenue</a></li>
-                    <li><a>📈 Analytics</a></li>
-                    <li><a>⭐ Reviews</a></li>
-                    <li><a>✉️ Messages</a></li>
-                    <li><a>⚙️ Settings</a></li>
+                    <li><a onclick="showInstructorSection('students', event)">👥 Students</a></li>
+                    <li><a onclick="showInstructorSection('revenue', event)">💰 Revenue</a></li>
+                    <li><a onclick="showInstructorSection('analytics', event)">📈 Analytics</a></li>
+                    <li><a onclick="showInstructorSection('reviews', event)">⭐ Reviews</a></li>
+                    <li><a onclick="showInstructorSection('messages', event)">✉️ Messages</a></li>
+                    <li><a onclick="showInstructorSection('settings', event)">⚙️ Settings</a></li>
                 </ul>
             </aside>
             
             <main class="main-content">
-                <div class="dashboard-header">
-                    <h1>Welcome back, Instructor! 👨‍🏫</h1>
-                    <p>Your teaching dashboard</p>
-                </div>
+                <!-- Dashboard Section -->
+                <div id="instructorDashboardSection" class="instructor-section">
+                    <div class="dashboard-header">
+                        <h1>Welcome back, Instructor! 👨‍🏫</h1>
+                        <p>Your teaching dashboard</p>
+                    </div>
                 
                 <div class="stats-grid">
                     <div class="stat-card" style="border-left: 4px solid #10B981;">
@@ -577,6 +579,277 @@
                 <div class="content-card">
                     <h2>Recent Enrollments</h2>
                     <p>New students joined your courses this week</p>
+                </div>
+                </div>
+                
+                <!-- My Courses Section -->
+                <div id="instructorMyCoursesSection" class="instructor-section hidden">
+                    <div class="dashboard-header">
+                        <h1>📚 My Courses</h1>
+                        <p>Manage all your published and draft courses</p>
+                    </div>
+                    
+                    <div class="content-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <div>
+                                <h2>Your Courses</h2>
+                                <p>8 active courses, 2 drafts</p>
+                            </div>
+                            <button class="btn btn-primary" onclick="openModal('createCourse')">+ Create New Course</button>
+                        </div>
+                        
+                        <div class="content-list">
+                            <div class="content-item">
+                                <div>
+                                    <h3>Introduction to Web Development</h3>
+                                    <p>234 students • $49.99 • Published • 4.8★ rating</p>
+                                </div>
+                                <div>
+                                    <button class="btn btn-outline">Edit</button>
+                                    <button class="btn btn-outline" style="margin-left: 0.5rem;">View</button>
+                                </div>
+                            </div>
+                            <div class="content-item">
+                                <div>
+                                    <h3>Advanced JavaScript</h3>
+                                    <p>189 students • $79.99 • Published • 4.9★ rating</p>
+                                </div>
+                                <div>
+                                    <button class="btn btn-outline">Edit</button>
+                                    <button class="btn btn-outline" style="margin-left: 0.5rem;">View</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Students Section -->
+                <div id="instructorStudentsSection" class="instructor-section hidden">
+                    <div class="dashboard-header">
+                        <h1>👥 Students</h1>
+                        <p>View and manage your students</p>
+                    </div>
+                    
+                    <div class="content-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <div>
+                                <h2>Your Students</h2>
+                                <p>Total: 324 students across all courses</p>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 1rem;">
+                            <input type="text" placeholder="Search students..." style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                        </div>
+                        
+                        <div class="content-list">
+                            <div class="content-item">
+                                <div>
+                                    <h3>Jane Smith</h3>
+                                    <p>Enrolled in: Introduction to Web Development • Progress: 75%</p>
+                                </div>
+                                <button class="btn btn-outline">View Profile</button>
+                            </div>
+                            <div class="content-item">
+                                <div>
+                                    <h3>John Doe</h3>
+                                    <p>Enrolled in: Advanced JavaScript • Progress: 90%</p>
+                                </div>
+                                <button class="btn btn-outline">View Profile</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Revenue Section -->
+                <div id="instructorRevenueSection" class="instructor-section hidden">
+                    <div class="dashboard-header">
+                        <h1>💰 Revenue</h1>
+                        <p>Track your earnings and payouts</p>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">💰</div>
+                            <div class="stat-value">$2,450</div>
+                            <div class="stat-label">Total Revenue</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">💵</div>
+                            <div class="stat-value">$1,470</div>
+                            <div class="stat-label">Your Share (60%)</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📊</div>
+                            <div class="stat-value">$980</div>
+                            <div class="stat-label">Platform Share (40%)</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">⏳</div>
+                            <div class="stat-value">$450</div>
+                            <div class="stat-label">Pending Payout</div>
+                        </div>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h2>Recent Sales</h2>
+                        <div class="content-list">
+                            <div class="content-item">
+                                <div>
+                                    <h3>Introduction to Web Development</h3>
+                                    <p>Sold to: jane.smith@example.com • Amount: $49.99 • Your Share: $29.99</p>
+                                    <p style="font-size: 0.85rem; color: #718096; margin-top: 0.25rem;">Date: Jan 20, 2024</p>
+                                </div>
+                                <button class="btn btn-outline">View Details</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Analytics Section -->
+                <div id="instructorAnalyticsSection" class="instructor-section hidden">
+                    <div class="dashboard-header">
+                        <h1>📈 Analytics</h1>
+                        <p>View detailed insights about your courses</p>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">👥</div>
+                            <div class="stat-value">324</div>
+                            <div class="stat-label">Total Students</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📚</div>
+                            <div class="stat-value">8</div>
+                            <div class="stat-label">Active Courses</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">⭐</div>
+                            <div class="stat-value">4.8</div>
+                            <div class="stat-label">Average Rating</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📊</div>
+                            <div class="stat-value">78%</div>
+                            <div class="stat-label">Completion Rate</div>
+                        </div>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h2>Course Performance</h2>
+                        <p style="margin-bottom: 1.5rem;">Top performing courses by enrollment</p>
+                        <div class="content-list">
+                            <div class="content-item">
+                                <div>
+                                    <h3>Introduction to Web Development</h3>
+                                    <p>234 students • $11,466 revenue • 4.8★ rating • 75% completion rate</p>
+                                </div>
+                                <button class="btn btn-outline">View Details</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Reviews Section -->
+                <div id="instructorReviewsSection" class="instructor-section hidden">
+                    <div class="dashboard-header">
+                        <h1>⭐ Reviews</h1>
+                        <p>View and respond to student reviews</p>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h2>Student Reviews</h2>
+                        <div class="content-list">
+                            <div class="content-item">
+                                <div>
+                                    <h3>Jane Smith ⭐⭐⭐⭐⭐</h3>
+                                    <p>"Excellent course! Very well explained and easy to follow."</p>
+                                    <p style="font-size: 0.85rem; color: #718096; margin-top: 0.25rem;">Course: Introduction to Web Development • Jan 15, 2024</p>
+                                </div>
+                                <button class="btn btn-outline">Reply</button>
+                            </div>
+                            <div class="content-item">
+                                <div>
+                                    <h3>John Doe ⭐⭐⭐⭐</h3>
+                                    <p>"Great content, but could use more examples."</p>
+                                    <p style="font-size: 0.85rem; color: #718096; margin-top: 0.25rem;">Course: Advanced JavaScript • Jan 12, 2024</p>
+                                </div>
+                                <button class="btn btn-outline">Reply</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Messages Section -->
+                <div id="instructorMessagesSection" class="instructor-section hidden">
+                    <div class="dashboard-header">
+                        <h1>✉️ Messages</h1>
+                        <p>Communicate with your students</p>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h2>Inbox</h2>
+                        <div class="content-list">
+                            <div class="content-item">
+                                <div>
+                                    <h3>Jane Smith</h3>
+                                    <p>"I have a question about the course material..."</p>
+                                    <p style="font-size: 0.85rem; color: #718096; margin-top: 0.25rem;">Jan 20, 2024 10:30 AM</p>
+                                </div>
+                                <button class="btn btn-outline">Reply</button>
+                            </div>
+                            <div class="content-item">
+                                <div>
+                                    <h3>John Doe</h3>
+                                    <p>"Thank you for the great course!"</p>
+                                    <p style="font-size: 0.85rem; color: #718096; margin-top: 0.25rem;">Jan 19, 2024 3:45 PM</p>
+                                </div>
+                                <button class="btn btn-outline">Reply</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Settings Section -->
+                <div id="instructorSettingsSection" class="instructor-section hidden">
+                    <div class="dashboard-header">
+                        <h1>⚙️ Settings</h1>
+                        <p>Manage your instructor profile and preferences</p>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h2>Profile Settings</h2>
+                        <div class="form-group">
+                            <label>Display Name</label>
+                            <input type="text" value="Your Name" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                        </div>
+                        <div class="form-group">
+                            <label>Bio</label>
+                            <textarea rows="4" placeholder="Tell students about yourself..." style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Profile Picture</label>
+                            <input type="file" accept="image/*" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                        </div>
+                        <button class="btn btn-success">Save Changes</button>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h2>Notification Settings</h2>
+                        <div style="margin-top: 0.5rem;">
+                            <label style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                                <input type="checkbox" checked style="margin-right: 0.5rem;"> Email notifications for new enrollments
+                            </label>
+                            <label style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                                <input type="checkbox" checked style="margin-right: 0.5rem;"> Email notifications for reviews
+                            </label>
+                            <label style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                                <input type="checkbox" style="margin-right: 0.5rem;"> Email notifications for messages
+                            </label>
+                        </div>
+                        <button class="btn btn-success" style="margin-top: 1rem;">Save Preferences</button>
+                    </div>
                 </div>
             </main>
         </div>
@@ -1716,6 +1989,53 @@
                         <input type="file" id="previewFile" accept="video/*">
                     </label>
                 </div>
+                <div class="form-group">
+                    <label>Course Structure</label>
+                    <select id="courseStructure" onchange="toggleCourseStructure()" required>
+                        <option value="single">Single Course Video</option>
+                        <option value="modules">Module-based Course</option>
+                    </select>
+                </div>
+                
+                <!-- Single Course Video Upload -->
+                <div id="singleCourseVideo" class="form-group">
+                    <label>Course Video</label>
+                    <label onclick="document.getElementById('courseVideoFile').click()" class="file-upload-area">
+                        🎥 Click to upload course video<br>
+                        <small style="color: #718096;">Upload your complete course video (Max: 2GB)</small>
+                        <input type="file" id="courseVideoFile" accept="video/*">
+                    </label>
+                    <div id="singleVideoStatus" style="margin-top: 0.5rem; font-size: 0.9rem; color: #718096;"></div>
+                </div>
+                
+                <!-- Module-based Course Videos -->
+                <div id="moduleCourseVideos" class="form-group hidden">
+                    <label>Course Modules</label>
+                    <p style="font-size: 0.9rem; color: #718096; margin-bottom: 1rem;">Add modules and upload videos for each module</p>
+                    <div id="modulesContainer">
+                        <div class="module-item" style="border: 1px solid #E2E8F0; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
+                            <div class="form-group">
+                                <label>Module 1 Title</label>
+                                <input type="text" placeholder="Enter module title" class="module-title" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                            </div>
+                            <div class="form-group">
+                                <label>Module 1 Description</label>
+                                <textarea rows="2" placeholder="Describe this module..." class="module-description" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Module 1 Video</label>
+                                <label onclick="this.querySelector('input[type=file]').click()" class="file-upload-area">
+                                    🎥 Click to upload module video<br>
+                                    <small style="color: #718096;">Upload video for this module (Max: 1GB per module)</small>
+                                    <input type="file" class="module-video" accept="video/*" onchange="updateModuleVideoStatus(this)">
+                                </label>
+                                <div class="module-video-status" style="margin-top: 0.5rem; font-size: 0.9rem; color: #718096;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-outline" onclick="addModule()" style="margin-top: 0.5rem;">+ Add Another Module</button>
+                </div>
+                
                 <div class="form-group">
                     <label>Category</label>
                     <select required>

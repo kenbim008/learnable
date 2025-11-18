@@ -714,6 +714,15 @@
     display: none;
 }
 
+/* Instructor Section Navigation */
+.instructor-section {
+    width: 100%;
+}
+
+.instructor-section.hidden {
+    display: none;
+}
+
 /* Content Management Styles */
 .content-list {
     display: flex;
