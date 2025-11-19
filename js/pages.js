@@ -1,7 +1,7 @@
 // Page navigation
 function showPage(pageName) {
     // Hide all pages
-    const pages = ['landingPage', 'communityPage', 'studentDashboard', 'instructorDashboard', 'adminDashboard', 'superAdminDashboard'];
+    const pages = ['landingPage', 'communityPage', 'aboutPage', 'studentDashboard', 'instructorDashboard', 'adminDashboard', 'superAdminDashboard'];
     pages.forEach(pageId => {
         const page = document.getElementById(pageId);
         if (page) {
@@ -13,6 +13,7 @@ function showPage(pageName) {
     const pageMap = {
         'landing': 'landingPage',
         'community': 'communityPage',
+        'about': 'aboutPage',
         'studentDashboard': 'studentDashboard',
         'instructorDashboard': 'instructorDashboard',
         'adminDashboard': 'adminDashboard',
@@ -27,6 +28,25 @@ function showPage(pageName) {
     
     // Scroll to top
     window.scrollTo(0, 0);
+}
+
+// Show About Page
+function showAboutPage() {
+    // Load content from localStorage if available
+    const contentPages = JSON.parse(localStorage.getItem('contentPages') || '{}');
+    const aboutContent = contentPages['about'];
+    
+    if (aboutContent) {
+        const contentDiv = document.getElementById('aboutPageContent');
+        if (contentDiv) {
+            contentDiv.innerHTML = `
+                <h2>${aboutContent.title}</h2>
+                <div style="white-space: pre-line;">${aboutContent.content}</div>
+            `;
+        }
+    }
+    
+    showPage('about');
 }
 
 // Logout
@@ -244,6 +264,7 @@ function showSuperAdminSection(sectionName, event) {
         'revenuePayouts': 'superAdminRevenuePayoutsSection',
         'pricingSettings': 'superAdminPricingSettingsSection',
         'contentManagement': 'superAdminContentManagementSection',
+        'dataManagement': 'superAdminDataManagementSection',
         'siteSettings': 'superAdminSiteSettingsSection',
         'analytics': 'superAdminAnalyticsSection',
         'systemLogs': 'superAdminSystemLogsSection',
@@ -271,6 +292,11 @@ function showSuperAdminSection(sectionName, event) {
     // Refresh access code display if Access Codes section is opened
     if (sectionName === 'accessCodes' && typeof updateAccessCodeDisplay === 'function') {
         updateAccessCodeDisplay();
+    }
+    
+    // Load data when opening data management section
+    if (sectionName === 'dataManagement' && typeof loadDataManagementTable === 'function') {
+        loadDataManagementTable();
     }
     
     // Scroll to top

@@ -542,6 +542,21 @@ footer {
     gap: 0.5rem;
 }
 
+#faqAnswer {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .faq-btn {
     background: white;
     border: 1px solid #E2E8F0;

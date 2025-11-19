@@ -204,6 +204,62 @@ function toggleCoverUpload() {
             uploadDiv.classList.remove('hidden');
         } else {
             uploadDiv.classList.add('hidden');
+            // Reset cover file input
+            const coverFile = document.getElementById('coverFile');
+            if (coverFile) {
+                coverFile.value = '';
+                document.getElementById('coverFileStatus').textContent = '📸 Click to upload cover image';
+                document.getElementById('coverFilePreview').style.display = 'none';
+            }
+        }
+    }
+}
+
+// Handle cover file selection
+function handleCoverFileSelect(input) {
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+        document.getElementById('coverFileStatus').textContent = `✅ ${file.name} (${fileSizeMB} MB)`;
+        
+        // Show preview
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const previewImg = document.getElementById('coverPreviewImg');
+            const previewDiv = document.getElementById('coverFilePreview');
+            if (previewImg && previewDiv) {
+                previewImg.src = e.target.result;
+                previewDiv.style.display = 'block';
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+// Handle preview video file selection
+function handlePreviewFileSelect(input) {
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+        document.getElementById('previewFileStatus').textContent = `✅ ${file.name} (${fileSizeMB} MB)`;
+        document.getElementById('previewFileInfo').textContent = `File selected: ${file.name} | Size: ${fileSizeMB} MB`;
+        document.getElementById('previewFileInfo').style.display = 'block';
+    }
+}
+
+// Handle course video file selection
+function handleCourseVideoSelect(input) {
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+        const statusEl = document.getElementById('courseVideoFileStatus');
+        if (statusEl) {
+            statusEl.textContent = `✅ ${file.name} (${fileSizeMB} MB)`;
+        }
+        const infoEl = document.getElementById('singleVideoStatus');
+        if (infoEl) {
+            infoEl.textContent = `File selected: ${file.name} | Size: ${fileSizeMB} MB`;
+            infoEl.style.display = 'block';
         }
     }
 }
@@ -490,7 +546,8 @@ function handleCreateCourse(e) {
     const title = document.querySelector('#createCourseModal input[type="text"]').value;
     const description = document.querySelector('#createCourseModal textarea').value;
     const price = document.querySelector('#createCourseModal input[type="number"]').value;
-    const category = document.querySelector('#createCourseModal select').value;
+    const category = document.getElementById('courseCategory').value;
+    const subcategory = document.getElementById('courseSubcategory').value;
     const structure = document.getElementById('courseStructure').value;
     
     // Get cover image
@@ -556,6 +613,7 @@ function handleCreateCourse(e) {
             description: description,
             price: parseFloat(price),
             category: category,
+            subcategory: subcategory,
             structure: structure,
             coverImage: coverURL || 'default',
             previewVideo: previewURL || null,
@@ -927,9 +985,10 @@ function getApprovedCourses() {
     return courses.filter(c => c.status === 'approved');
 }
 
-// Initialize courses on page load
+// Initialize courses and access codes on page load
 document.addEventListener('DOMContentLoaded', function() {
     initializeCourses();
+    initializeAccessCodes();
 });
 
 // Close modals when clicking outside

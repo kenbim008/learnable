@@ -3,14 +3,19 @@ function loadCourses() {
     const grid = document.getElementById('coursesGrid');
     if (!grid) return;
     
+    // Load featured courses first in featured section
+    loadFeaturedCourses();
+    
     // Get approved courses from localStorage
     const approvedCourses = typeof getApprovedCourses === 'function' ? getApprovedCourses() : [];
+    const featuredCourses = JSON.parse(localStorage.getItem('featuredCourses') || '[]');
     
     // Combine with default courses
     let allCourses = [...courses];
     
     // Add approved courses to the list
     approvedCourses.forEach(approvedCourse => {
+        const isFeatured = featuredCourses.includes(approvedCourse.id) || approvedCourse.isFeatured;
         const courseCard = {
             id: approvedCourse.id,
             title: approvedCourse.title,
@@ -22,15 +27,24 @@ function loadCourses() {
                 : '<div style="width: 100%; height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">📚</div>',
             hasPreview: !!approvedCourse.previewVideo,
             category: approvedCourse.category,
+            isFeatured: isFeatured,
             approvedCourse: approvedCourse // Store reference
         };
         allCourses.push(courseCard);
     });
     
+    // Sort: featured courses first
+    allCourses.sort((a, b) => {
+        if (a.isFeatured && !b.isFeatured) return -1;
+        if (!a.isFeatured && b.isFeatured) return 1;
+        return 0;
+    });
+    
     grid.innerHTML = allCourses.map(course => `
-        <div class="course-card">
+        <div class="course-card" ${course.isFeatured ? 'style="border: 2px solid #5B7FFF;"' : ''}>
             <div class="course-image" style="position: relative;">
                 ${course.image}
+                ${course.isFeatured ? '<div style="position: absolute; top: 10px; right: 10px; background: #5B7FFF; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">⭐ Featured</div>' : ''}
                 ${course.hasPreview ? '<div class="preview-badge" onclick="playCoursePreview(\'' + course.id + '\', event)">▶ Preview</div>' : ''}
             </div>
             <div class="course-content">
@@ -245,5 +259,539 @@ function saveStripeWebhookSettings() {
 
 function saveStripePaymentSettings() {
     alert('Stripe payment settings saved successfully!');
+}
+
+// Data Management Functions
+function loadDataManagementTable() {
+    const tbody = document.getElementById('dataManagementTableBody');
+    if (!tbody) return;
+    
+    // Get all users from localStorage
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    const courses = typeof getAllCourses === 'function' ? getAllCourses() : [];
+    
+    // Combine user data with course/enrollment data
+    const dataRows = users.map(user => {
+        const userCourses = courses.filter(c => c.instructor === user.email);
+        const enrollments = JSON.parse(localStorage.getItem('enrollments') || '[]').filter(e => e.userEmail === user.email);
+        const revenue = userCourses.reduce((sum, course) => sum + (course.revenue || 0), 0);
+        
+        return {
+            id: user.id || user.email,
+            name: user.name || 'N/A',
+            email: user.email,
+            role: user.role || 'student',
+            status: user.status || 'active',
+            courses: userCourses.length,
+            enrollments: enrollments.length,
+            revenue: `$${revenue.toFixed(2)}`,
+            created: user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A',
+            lastActive: user.lastActive ? new Date(user.lastActive).toLocaleDateString() : 'N/A'
+        };
+    });
+    
+    // Render table rows
+    tbody.innerHTML = dataRows.map(row => `
+        <tr style="border-bottom: 1px solid #E2E8F0;">
+            <td class="column-cell" data-column="id" style="padding: 0.75rem;">${row.id}</td>
+            <td class="column-cell" data-column="name" style="padding: 0.75rem;">${row.name}</td>
+            <td class="column-cell" data-column="email" style="padding: 0.75rem;">${row.email}</td>
+            <td class="column-cell" data-column="role" style="padding: 0.75rem;">
+                <span style="padding: 0.25rem 0.5rem; border-radius: 4px; background: ${row.role === 'admin' ? '#E3F2FD' : row.role === 'instructor' ? '#F3E5F5' : '#E8F5E9'}; color: ${row.role === 'admin' ? '#1976D2' : row.role === 'instructor' ? '#7B1FA2' : '#388E3C'};">${row.role}</span>
+            </td>
+            <td class="column-cell" data-column="status" style="padding: 0.75rem;">
+                <span style="padding: 0.25rem 0.5rem; border-radius: 4px; background: ${row.status === 'active' ? '#E8F5E9' : '#FFEBEE'}; color: ${row.status === 'active' ? '#388E3C' : '#D32F2F'};">${row.status}</span>
+            </td>
+            <td class="column-cell" data-column="courses" style="padding: 0.75rem;">${row.courses}</td>
+            <td class="column-cell" data-column="enrollments" style="padding: 0.75rem;">${row.enrollments}</td>
+            <td class="column-cell" data-column="revenue" style="padding: 0.75rem;">${row.revenue}</td>
+            <td class="column-cell" data-column="created" style="padding: 0.75rem;">${row.created}</td>
+            <td class="column-cell" data-column="lastActive" style="padding: 0.75rem;">${row.lastActive}</td>
+            <td style="padding: 0.75rem;">
+                <button class="btn btn-outline" style="padding: 0.25rem 0.5rem; font-size: 0.85rem;" onclick="viewUserDetails('${row.email}')">View</button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function filterDataByRole() {
+    const filter = document.getElementById('dataFilterRole').value;
+    const rows = document.querySelectorAll('#dataManagementTableBody tr');
+    
+    rows.forEach(row => {
+        const roleCell = row.querySelector('[data-column="role"]');
+        if (roleCell) {
+            const role = roleCell.textContent.trim().toLowerCase();
+            if (filter === 'all' || role === filter) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        }
+    });
+}
+
+function toggleColumn(columnName) {
+    const checkbox = event.target;
+    const isChecked = checkbox.checked;
+    const columnCells = document.querySelectorAll(`[data-column="${columnName}"]`);
+    
+    columnCells.forEach(cell => {
+        cell.style.display = isChecked ? '' : 'none';
+    });
+}
+
+function toggleColumnVisibility() {
+    alert('Column visibility can be toggled using the checkboxes in the table header. Uncheck a checkbox to hide that column.');
+}
+
+function exportData() {
+    const rows = [];
+    const headers = [];
+    const headerCells = document.querySelectorAll('#dataManagementTable thead th');
+    
+    headerCells.forEach(th => {
+        const checkbox = th.querySelector('input[type="checkbox"]');
+        if (checkbox && checkbox.checked) {
+            headers.push(th.textContent.trim());
+        }
+    });
+    
+    const visibleRows = Array.from(document.querySelectorAll('#dataManagementTableBody tr')).filter(row => row.style.display !== 'none');
+    visibleRows.forEach(row => {
+        const rowData = [];
+        row.querySelectorAll('[data-column]').forEach(cell => {
+            const column = cell.getAttribute('data-column');
+            const header = headerCells[Array.from(headerCells).findIndex(th => th.getAttribute('data-column') === column)];
+            if (header && header.querySelector('input[type="checkbox"]').checked) {
+                rowData.push(cell.textContent.trim());
+            }
+        });
+        rows.push(rowData);
+    });
+    
+    // Create CSV
+    let csv = headers.join(',') + '\n';
+    rows.forEach(row => {
+        csv += row.join(',') + '\n';
+    });
+    
+    // Download CSV
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `data_export_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+    
+    alert('Data exported successfully!');
+}
+
+function viewUserDetails(email) {
+    alert(`Viewing details for user: ${email}\n\nThis would open a detailed user profile page.`);
+}
+
+// Admin Management Functions
+function editAdminPermissions(adminEmail) {
+    alert(`Editing permissions for: ${adminEmail}\n\nThis would open a permissions editor modal.`);
+}
+
+function removeAdmin(adminEmail) {
+    if (confirm(`Are you sure you want to remove admin privileges for ${adminEmail}?`)) {
+        // Remove admin from localStorage
+        const users = JSON.parse(localStorage.getItem('users') || '[]');
+        const userIndex = users.findIndex(u => u.email === adminEmail);
+        if (userIndex !== -1) {
+            users[userIndex].role = 'student';
+            localStorage.setItem('users', JSON.stringify(users));
+        }
+        
+        // Remove from admin codes list if applicable
+        const adminCodes = JSON.parse(localStorage.getItem('adminAccessCodes') || '[]');
+        // Note: This is simplified - in real app, you'd track which code belongs to which admin
+        
+        alert(`Admin privileges removed for ${adminEmail}. They have been converted to a student account.`);
+        
+        // Refresh admin management section
+        if (typeof showSuperAdminSection === 'function') {
+            showSuperAdminSection('adminManagement', null);
+        }
+    }
+}
+
+// Site Settings Save Functions
+function saveSiteSettings(category) {
+    if (category === 'branding') {
+        const siteName = document.querySelector('#superAdminSiteSettingsSection input[type="text"]')?.value;
+        if (siteName) {
+            localStorage.setItem('siteName', siteName);
+            document.title = siteName;
+        }
+        alert('Branding settings saved successfully!');
+    } else if (category === 'general') {
+        const currency = document.getElementById('siteDefaultCurrency')?.value;
+        const timezone = document.getElementById('siteTimeZone')?.value;
+        if (currency) localStorage.setItem('siteDefaultCurrency', currency);
+        if (timezone) localStorage.setItem('siteTimeZone', timezone);
+        alert('General settings saved successfully!');
+    }
+}
+
+// Pricing Settings Save Functions
+function savePricingSettings(category) {
+    if (category === 'subscription') {
+        const monthlyFee = document.querySelector('#superAdminPricingSettingsSection input[type="number"]')?.value;
+        if (monthlyFee) {
+            localStorage.setItem('instructorMonthlyFee', monthlyFee);
+        }
+        alert('Subscription settings saved successfully!');
+    } else if (category === 'revenue') {
+        const revenueShare = document.getElementById('pricingRevenueShare')?.value;
+        const platformShare = 100 - (parseInt(revenueShare) || 0);
+        if (revenueShare) {
+            localStorage.setItem('instructorRevenueShare', revenueShare);
+            localStorage.setItem('platformRevenueShare', platformShare.toString());
+            document.getElementById('pricingPlatformShare').value = platformShare;
+        }
+        alert('Revenue sharing settings saved successfully!');
+    }
+}
+
+// Load Featured Courses
+function loadFeaturedCourses() {
+    const featuredSection = document.getElementById('featuredCoursesGrid');
+    if (!featuredSection) return;
+    
+    const approvedCourses = typeof getApprovedCourses === 'function' ? getApprovedCourses() : [];
+    const featuredCourses = JSON.parse(localStorage.getItem('featuredCourses') || '[]');
+    
+    const featured = approvedCourses.filter(c => featuredCourses.includes(c.id) || c.isFeatured);
+    
+    if (featured.length === 0) {
+        featuredSection.innerHTML = '<p style="text-align: center; color: #718096; padding: 2rem;">No featured courses yet. Featured courses will appear here.</p>';
+        return;
+    }
+    
+    featuredSection.innerHTML = featured.slice(0, 6).map(course => {
+        const courseCard = {
+            id: course.id,
+            title: course.title,
+            instructor: course.instructorName || course.instructor,
+            priceUSD: course.price,
+            rating: 4.5,
+            image: course.coverImage && course.coverImage !== 'default' 
+                ? `<img src="${course.coverImage}" alt="${course.title}" style="width: 100%; height: 200px; object-fit: cover;">`
+                : '<div style="width: 100%; height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">📚</div>',
+            hasPreview: !!course.previewVideo
+        };
+        
+        return `
+            <div class="course-card" style="border: 2px solid #5B7FFF;">
+                <div class="course-image" style="position: relative;">
+                    ${courseCard.image}
+                    <div style="position: absolute; top: 10px; right: 10px; background: #5B7FFF; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">⭐ Featured</div>
+                    ${courseCard.hasPreview ? '<div class="preview-badge" onclick="playCoursePreview(\'' + courseCard.id + '\', event)">▶ Preview</div>' : ''}
+                </div>
+                <div class="course-content">
+                    <div class="course-title">${courseCard.title}</div>
+                    <div class="course-instructor">By ${courseCard.instructor}</div>
+                    <div class="course-meta">
+                        <div class="course-price">${convertPrice(courseCard.priceUSD)}</div>
+                        <div class="course-rating">⭐ ${courseCard.rating}</div>
+                    </div>
+                    <button class="add-to-cart-btn" onclick="addToCart('${courseCard.id}')">Add to Cart</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Category and Subcategory Management
+const categorySubcategories = {
+    'technology': ['Web Development', 'Mobile Development', 'Data Science', 'Machine Learning', 'Cybersecurity', 'Cloud Computing', 'DevOps', 'Programming Languages', 'Software Engineering', 'IT & Networking'],
+    'business': ['Entrepreneurship', 'Management', 'Finance', 'Marketing', 'Sales', 'Business Strategy', 'Operations', 'Human Resources', 'Project Management', 'Leadership'],
+    'design': ['Graphic Design', 'UI/UX Design', 'Web Design', 'Product Design', 'Interior Design', 'Fashion Design', '3D Design', 'Animation', 'Illustration', 'Branding'],
+    'marketing': ['Digital Marketing', 'Social Media Marketing', 'Content Marketing', 'Email Marketing', 'SEO', 'PPC Advertising', 'Marketing Analytics', 'Influencer Marketing', 'Brand Marketing', 'Marketing Strategy'],
+    'photography': ['Portrait Photography', 'Landscape Photography', 'Wedding Photography', 'Product Photography', 'Street Photography', 'Wildlife Photography', 'Photo Editing', 'Video Production', 'Cinematography', 'Drone Photography'],
+    'music': ['Music Production', 'Music Theory', 'Instrument Lessons', 'Singing', 'Music Business', 'Audio Engineering', 'Songwriting', 'DJ Skills', 'Music Marketing', 'Music Technology'],
+    'health': ['Fitness Training', 'Yoga', 'Nutrition', 'Mental Health', 'Meditation', 'Weight Loss', 'Strength Training', 'Cardio Workouts', 'Wellness', 'Alternative Medicine'],
+    'language': ['English', 'Spanish', 'French', 'German', 'Chinese', 'Japanese', 'Korean', 'Italian', 'Portuguese', 'Arabic', 'Other Languages'],
+    'personal': ['Time Management', 'Productivity', 'Goal Setting', 'Self-Improvement', 'Communication Skills', 'Public Speaking', 'Confidence Building', 'Stress Management', 'Life Coaching', 'Mindfulness'],
+    'finance': ['Personal Finance', 'Investing', 'Trading', 'Cryptocurrency', 'Accounting', 'Tax Planning', 'Real Estate Investing', 'Financial Planning', 'Wealth Building', 'Retirement Planning'],
+    'education': ['Teaching Methods', 'Curriculum Development', 'Online Teaching', 'Student Assessment', 'Educational Technology', 'Special Education', 'Early Childhood Education', 'Adult Education', 'Test Preparation', 'Learning Strategies'],
+    'lifestyle': ['Cooking', 'Home Improvement', 'Gardening', 'Travel', 'Fashion & Style', 'Beauty & Makeup', 'Parenting', 'Relationships', 'Pet Care', 'Hobbies'],
+    'science': ['Physics', 'Chemistry', 'Biology', 'Mathematics', 'Astronomy', 'Environmental Science', 'Medical Science', 'Engineering', 'Computer Science', 'Research Methods'],
+    'arts': ['Drawing', 'Painting', 'Sculpture', 'Pottery', 'Calligraphy', 'Crafts', 'Knitting & Crochet', 'Woodworking', 'Jewelry Making', 'Mixed Media']
+};
+
+function updateSubcategoryOptions() {
+    const categorySelect = document.getElementById('courseCategory');
+    const subcategorySelect = document.getElementById('courseSubcategory');
+    
+    if (!categorySelect || !subcategorySelect) return;
+    
+    const selectedCategory = categorySelect.value;
+    
+    // Clear existing options
+    subcategorySelect.innerHTML = '<option value="">Select subcategory</option>';
+    
+    // Add subcategories for selected category
+    if (selectedCategory && categorySubcategories[selectedCategory]) {
+        categorySubcategories[selectedCategory].forEach(subcat => {
+            const option = document.createElement('option');
+            option.value = subcat.toLowerCase().replace(/\s+/g, '-');
+            option.textContent = subcat;
+            subcategorySelect.appendChild(option);
+        });
+    }
+}
+
+// Featured Course Management
+function toggleFeaturedCourse(courseId, role) {
+    const courses = typeof getAllCourses === 'function' ? getAllCourses() : [];
+    const courseIndex = courses.findIndex(c => c.id === courseId);
+    
+    if (courseIndex === -1) {
+        // For demo courses, create entry
+        const featuredCourses = JSON.parse(localStorage.getItem('featuredCourses') || '[]');
+        const isFeatured = featuredCourses.includes(courseId);
+        
+        if (isFeatured) {
+            const index = featuredCourses.indexOf(courseId);
+            featuredCourses.splice(index, 1);
+            localStorage.setItem('featuredCourses', JSON.stringify(featuredCourses));
+            alert('Course removed from featured courses.');
+        } else {
+            featuredCourses.push(courseId);
+            localStorage.setItem('featuredCourses', JSON.stringify(featuredCourses));
+            alert('Course added to featured courses!');
+        }
+    } else {
+        const course = courses[courseIndex];
+        course.isFeatured = !course.isFeatured;
+        courses[courseIndex] = course;
+        localStorage.setItem('courses', JSON.stringify(courses));
+        
+        // Also update featured courses list
+        let featuredCourses = JSON.parse(localStorage.getItem('featuredCourses') || '[]');
+        if (course.isFeatured && !featuredCourses.includes(courseId)) {
+            featuredCourses.push(courseId);
+        } else if (!course.isFeatured && featuredCourses.includes(courseId)) {
+            featuredCourses = featuredCourses.filter(id => id !== courseId);
+        }
+        localStorage.setItem('featuredCourses', JSON.stringify(featuredCourses));
+        
+        alert(course.isFeatured ? 'Course added to featured courses!' : 'Course removed from featured courses.');
+    }
+    
+    // Refresh course lists
+    if (typeof refreshCourseLists === 'function') {
+        refreshCourseLists();
+    }
+}
+
+// FAQ Functionality
+function showFAQAnswer(faqType) {
+    const faqAnswer = document.getElementById('faqAnswer');
+    if (!faqAnswer) return;
+    
+    const answers = {
+        'pricing': {
+            title: '💰 How does pricing work?',
+            content: `Course pricing is set by instructors. Here's how it works:
+
+• Instructors set their own course prices
+• Students pay the listed price to enroll
+• LEARNIBLE uses Stripe for secure payment processing
+• Prices are displayed in your local currency
+• All payments are processed securely with DRM protection
+
+Instructors keep 60% of course sales, and we only deduct fees when you earn - no hidden costs!`
+        },
+        'instructor': {
+            title: '👨‍🏫 How do I become an instructor?',
+            content: `Becoming an instructor is easy:
+
+1. Sign up as an instructor
+2. Create your first course with videos, descriptions, and pricing
+3. Submit your course for review
+4. Once approved, your course goes live and students can enroll
+
+You can upload:
+• Course videos (single or module-based)
+• Optional preview videos
+• Custom cover images
+• Course descriptions and materials
+
+Start sharing your knowledge today!`
+        },
+        'earnings': {
+            title: '💵 How much can I earn?',
+            content: `Your earning potential is unlimited! Here's the breakdown:
+
+• You keep 60% of every course sale
+• No monthly fees - we only take a percentage when you make a sale
+• Set your own course prices
+• Track your earnings in real-time through your instructor dashboard
+
+Top instructors earn thousands per month by creating quality courses and building their student base. The more courses you create and the better they are, the more you can earn!`
+        },
+        'payments': {
+            title: '💳 What payment methods do you accept?',
+            content: `We accept all major payment methods through Stripe:
+
+• Credit cards (Visa, Mastercard, American Express)
+• Debit cards
+• Digital wallets (Apple Pay, Google Pay)
+• Bank transfers (in supported regions)
+
+All payments are processed securely through Stripe's industry-leading security. Your payment information is never stored on our servers.`
+        },
+        'currencies': {
+            title: '🌍 Which currencies are supported?',
+            content: `We support multiple currencies for global accessibility:
+
+• USD - US Dollar
+• NGN - Nigerian Naira
+• GBP - British Pound
+• EUR - Euro
+• CAD - Canadian Dollar
+
+Prices are automatically converted to your local currency based on current exchange rates. You can change your currency preference in the header selector.`
+        }
+    };
+    
+    const answer = answers[faqType];
+    if (answer) {
+        faqAnswer.innerHTML = `
+            <h3 style="margin-top: 0; color: #2D3748;">${answer.title}</h3>
+            <div style="white-space: pre-line; color: #4A5568; line-height: 1.6;">${answer.content}</div>
+        `;
+        faqAnswer.style.display = 'block';
+        
+        // Scroll to FAQ answer
+        faqAnswer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+}
+
+// Content Page Management
+function editContentPage(pageId) {
+    // Load existing content from localStorage
+    const contentPages = JSON.parse(localStorage.getItem('contentPages') || '{}');
+    const pageData = contentPages[pageId] || getDefaultContentPage(pageId);
+    
+    // Set modal fields
+    document.getElementById('contentPageId').value = pageId;
+    document.getElementById('contentPageTitle').value = pageData.title;
+    document.getElementById('contentPageContent').value = pageData.content;
+    document.getElementById('contentPageMeta').value = pageData.meta || '';
+    document.getElementById('contentPageEditorTitle').textContent = `Edit ${pageData.title}`;
+    
+    // Open modal
+    openModal('contentPageEditor');
+}
+
+function getDefaultContentPage(pageId) {
+    const defaults = {
+        'home': {
+            title: 'Home Page',
+            content: 'Welcome to LEARNIBLE!\n\nThis is the home page content. You can edit this content to customize your landing page.',
+            meta: 'Learn with LEARNIBLE - Online courses platform'
+        },
+        'about': {
+            title: 'About Page',
+            content: 'About LEARNIBLE\n\nWe are an online learning platform dedicated to providing quality education to students worldwide.',
+            meta: 'About LEARNIBLE - Learn more about our platform'
+        },
+        'terms': {
+            title: 'Terms of Service',
+            content: 'Terms of Service\n\nPlease read these terms carefully before using our platform.',
+            meta: 'Terms of Service - LEARNIBLE'
+        },
+        'privacy': {
+            title: 'Privacy Policy',
+            content: 'Privacy Policy\n\nWe respect your privacy and are committed to protecting your personal data.',
+            meta: 'Privacy Policy - LEARNIBLE'
+        },
+        'help': {
+            title: 'Help Center',
+            content: 'Help Center\n\nFrequently Asked Questions and Support Documentation\n\nHow can we help you today?',
+            meta: 'Help Center - LEARNIBLE Support'
+        }
+    };
+    return defaults[pageId] || { title: 'Content Page', content: '', meta: '' };
+}
+
+function saveContentPage(e) {
+    e.preventDefault();
+    
+    const pageId = document.getElementById('contentPageId').value;
+    const title = document.getElementById('contentPageTitle').value;
+    const content = document.getElementById('contentPageContent').value;
+    const meta = document.getElementById('contentPageMeta').value;
+    
+    // Save to localStorage
+    const contentPages = JSON.parse(localStorage.getItem('contentPages') || '{}');
+    contentPages[pageId] = {
+        title: title,
+        content: content,
+        meta: meta,
+        updatedAt: new Date().toISOString()
+    };
+    localStorage.setItem('contentPages', JSON.stringify(contentPages));
+    
+    // Update site content immediately
+    updateSiteContent(pageId, title, content, meta);
+    
+    alert('Content page saved successfully! The site has been updated.');
+    closeModal('contentPageEditor');
+}
+
+function updateSiteContent(pageId, title, content, meta) {
+    // Update meta tags if applicable
+    if (meta) {
+        let metaDesc = document.querySelector('meta[name="description"]');
+        if (!metaDesc) {
+            metaDesc = document.createElement('meta');
+            metaDesc.name = 'description';
+            document.head.appendChild(metaDesc);
+        }
+        metaDesc.content = meta;
+    }
+    
+    // Update actual page content based on pageId
+    if (pageId === 'home') {
+        // Update landing page if visible
+        const heroSection = document.querySelector('.hero');
+        if (heroSection) {
+            const heroTitle = heroSection.querySelector('h1');
+            const heroSubtitle = heroSection.querySelector('p');
+            if (heroTitle && title) heroTitle.textContent = title;
+            if (heroSubtitle && content) {
+                const lines = content.split('\n');
+                heroSubtitle.textContent = lines.length > 1 ? lines[1] : lines[0];
+            }
+        }
+    } else if (pageId === 'about') {
+        // Update About page if visible
+        const aboutContent = document.getElementById('aboutPageContent');
+        if (aboutContent) {
+            aboutContent.innerHTML = `
+                <h2>${title}</h2>
+                <div style="white-space: pre-line; line-height: 1.8;">${content}</div>
+            `;
+        }
+    } else if (pageId === 'help') {
+        // Update FAQ/Help section
+        const chatbotBody = document.querySelector('.chatbot-body');
+        if (chatbotBody && content) {
+            // Could update FAQ content here
+            console.log('Help content updated:', { title, content });
+        }
+    }
+    
+    // Store the updated content for future display
+    // The content is stored in localStorage and will be loaded when pages are viewed
 }
 

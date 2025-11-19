@@ -24,7 +24,7 @@
                     <a onclick="scrollToSection('courses')">Courses</a>
                     <a onclick="showPage('community')">Community</a>
                     <a onclick="scrollToSection('pricing')">Pricing</a>
-                    <a onclick="showPage('landing')">About</a>
+                    <a onclick="showAboutPage()">About</a>
                 </nav>
                 <div class="header-right">
                     <select class="currency-selector" id="countrySelector" onchange="changeCountry()">
@@ -105,8 +105,13 @@
                 </select>
             </div>
             
+            <div class="courses-grid" id="featuredCoursesGrid">
+                <!-- Featured courses will be dynamically loaded here -->
+            </div>
+            
+            <h2 class="section-title" style="margin-top: 4rem;">All Courses</h2>
             <div class="courses-grid" id="coursesGrid">
-                <!-- Courses will be dynamically loaded here -->
+                <!-- All courses will be dynamically loaded here -->
             </div>
         </section>
 
@@ -224,6 +229,55 @@
         </footer>
     </div>
 
+    <!-- About Page -->
+    <div id="aboutPage" class="hidden">
+        <header>
+            <div class="header-container">
+                <div class="logo" onclick="showPage('landing')">
+                    <span class="logo-icon">📖</span>
+                    <span><span class="logo-learn">LEARN</span><span class="logo-ible">ible</span></span>
+                </div>
+                <nav>
+                    <a onclick="showPage('landing')">Home</a>
+                    <a onclick="scrollToSection('courses')">Courses</a>
+                    <a onclick="showPage('community')">Community</a>
+                    <a onclick="scrollToSection('pricing')">Pricing</a>
+                    <a onclick="showAboutPage()" class="active">About</a>
+                </nav>
+                <div class="header-right">
+                    <button class="btn btn-outline" onclick="openModal('login')">Login</button>
+                    <button class="btn btn-primary" onclick="openModal('signup')">Sign Up</button>
+                </div>
+            </div>
+        </header>
+        
+        <main>
+            <section class="hero" style="padding: 4rem 2rem; text-align: center;">
+                <h1 style="font-size: 3rem; margin-bottom: 1rem;">About LEARNIBLE</h1>
+                <p style="font-size: 1.2rem; color: #718096; max-width: 800px; margin: 0 auto;">Empowering learners and instructors worldwide</p>
+            </section>
+            
+            <section style="padding: 4rem 2rem; max-width: 1200px; margin: 0 auto;">
+                <div id="aboutPageContent" style="line-height: 1.8; color: #4A5568;">
+                    <h2>Our Mission</h2>
+                    <p>LEARNIBLE is dedicated to making quality education accessible to everyone, everywhere. We connect passionate instructors with eager learners, creating a global community of knowledge sharing.</p>
+                    
+                    <h2 style="margin-top: 3rem;">What We Offer</h2>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin: 1rem 0;">✅ Comprehensive course creation tools</li>
+                        <li style="margin: 1rem 0;">✅ Secure payment processing</li>
+                        <li style="margin: 1rem 0;">✅ Global marketplace reach</li>
+                        <li style="margin: 1rem 0;">✅ DRM-protected content</li>
+                        <li style="margin: 1rem 0;">✅ Student progress tracking</li>
+                    </ul>
+                    
+                    <h2 style="margin-top: 3rem;">Join Us</h2>
+                    <p>Whether you're looking to learn new skills or share your expertise, LEARNIBLE is the platform for you.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
     <!-- Community Page -->
     <div id="communityPage" class="hidden">
         <header>
@@ -237,7 +291,7 @@
                     <a onclick="scrollToSection('courses')">Courses</a>
                     <a onclick="showPage('community')">Community</a>
                     <a onclick="scrollToSection('pricing')">Pricing</a>
-                    <a onclick="showPage('landing')">About</a>
+                    <a onclick="showAboutPage()">About</a>
                 </nav>
                 <div class="header-right">
                     <button class="btn btn-outline" onclick="openModal('login')">Login</button>
@@ -504,12 +558,8 @@
                     <div class="content-card">
                         <h2>Enrolled Courses</h2>
                         <div class="content-list">
-                            <div class="content-item">
-                                <div>
-                                    <h3>Introduction to Web Development</h3>
-                                    <p>Progress: 75% • Last accessed: 2 days ago</p>
-                                </div>
-                                <button class="btn btn-primary" onclick="continueLearning('intro-web-dev')">Continue Learning</button>
+                            <div class="content-item" id="enrolledCoursesList">
+                                <p style="color: #718096; text-align: center; padding: 2rem;">No enrolled courses yet. Browse courses to get started!</p>
                             </div>
                         </div>
                     </div>
@@ -732,17 +782,8 @@
                         <div class="content-list">
                             <div class="content-item">
                                 <div>
-                                    <h3>Jane Smith</h3>
-                                    <p>Enrolled in: Introduction to Web Development • Progress: 75%</p>
-                                </div>
-                                <button class="btn btn-outline" onclick="viewStudentProfile('jane-smith')">View Profile</button>
-                            </div>
-                            <div class="content-item">
-                                <div>
-                                    <h3>John Doe</h3>
-                                    <p>Enrolled in: Advanced JavaScript • Progress: 90%</p>
-                                </div>
-                                <button class="btn btn-outline" onclick="viewStudentProfile('john-doe')">View Profile</button>
+                            <div class="content-item" id="studentsList">
+                                <p style="color: #718096; text-align: center; padding: 2rem;">No students enrolled yet.</p>
                             </div>
                         </div>
                     </div>
@@ -1080,8 +1121,9 @@
                                     <p>By John Doe • Published • 234 students • $49.99</p>
                                 </div>
                                 <div>
-                                    <button class="btn btn-outline">View</button>
-                                    <button class="btn btn-outline" style="margin-left: 0.5rem;">Edit</button>
+                                    <button class="btn btn-outline" onclick="viewCourseDetails('course-1')">View</button>
+                                    <button class="btn btn-outline" onclick="editCourse('course-1')" style="margin-left: 0.5rem;">Edit</button>
+                                    <button class="btn btn-primary" onclick="toggleFeaturedCourse('course-1', 'admin')" style="margin-left: 0.5rem;">⭐ Feature</button>
                                 </div>
                             </div>
                             <div class="content-item">
@@ -1090,8 +1132,9 @@
                                     <p>By Jane Smith • Published • 189 students • $79.99</p>
                                 </div>
                                 <div>
-                                    <button class="btn btn-outline">View</button>
-                                    <button class="btn btn-outline" style="margin-left: 0.5rem;">Edit</button>
+                                    <button class="btn btn-outline" onclick="viewCourseDetails('course-2')">View</button>
+                                    <button class="btn btn-outline" onclick="editCourse('course-2')" style="margin-left: 0.5rem;">Edit</button>
+                                    <button class="btn btn-primary" onclick="toggleFeaturedCourse('course-2', 'admin')" style="margin-left: 0.5rem;">⭐ Feature</button>
                                 </div>
                             </div>
                         </div>
@@ -1192,28 +1235,28 @@
                                     <h3>Home Page</h3>
                                     <p>Landing page content and hero section</p>
                                 </div>
-                                <button class="btn btn-outline">Edit</button>
+                                <button class="btn btn-outline" onclick="editContentPage('home')">Edit</button>
                             </div>
                             <div class="content-item">
                                 <div>
                                     <h3>About Page</h3>
                                     <p>Platform information and company details</p>
                                 </div>
-                                <button class="btn btn-outline">Edit</button>
+                                <button class="btn btn-outline" onclick="editContentPage('about')">Edit</button>
                             </div>
                             <div class="content-item">
                                 <div>
                                     <h3>Terms of Service</h3>
                                     <p>Legal terms and conditions</p>
                                 </div>
-                                <button class="btn btn-outline">Edit</button>
+                                <button class="btn btn-outline" onclick="editContentPage('terms')">Edit</button>
                             </div>
                             <div class="content-item">
                                 <div>
                                     <h3>Privacy Policy</h3>
                                     <p>Data protection and privacy information</p>
                                 </div>
-                                <button class="btn btn-outline">Edit</button>
+                                <button class="btn btn-outline" onclick="editContentPage('privacy')">Edit</button>
                             </div>
                         </div>
                     </div>
@@ -1402,6 +1445,7 @@
                     <li><a onclick="showSuperAdminSection('revenuePayouts', event)">💰 Revenue & Payouts</a></li>
                     <li><a onclick="showSuperAdminSection('pricingSettings', event)">💳 Pricing Settings</a></li>
                     <li><a onclick="showSuperAdminSection('contentManagement', event)">📝 Content Management</a></li>
+                    <li><a onclick="showSuperAdminSection('dataManagement', event)">💾 Data Management</a></li>
                     <li><a onclick="showSuperAdminSection('siteSettings', event)">🎨 Site Settings</a></li>
                     <li><a onclick="showSuperAdminSection('analytics', event)">📈 Analytics</a></li>
                     <li><a onclick="showSuperAdminSection('systemLogs', event)">📋 System Logs</a></li>
@@ -1527,35 +1571,35 @@
                                     <h3>Home Page</h3>
                                     <p>Landing page content and hero section</p>
                                 </div>
-                                <button class="btn btn-outline">Edit</button>
+                                <button class="btn btn-outline" onclick="editContentPage('home')">Edit</button>
                             </div>
                             <div class="content-item">
                                 <div>
                                     <h3>About Page</h3>
                                     <p>Platform information and company details</p>
                                 </div>
-                                <button class="btn btn-outline">Edit</button>
+                                <button class="btn btn-outline" onclick="editContentPage('about')">Edit</button>
                             </div>
                             <div class="content-item">
                                 <div>
                                     <h3>Terms of Service</h3>
                                     <p>Legal terms and conditions</p>
                                 </div>
-                                <button class="btn btn-outline">Edit</button>
+                                <button class="btn btn-outline" onclick="editContentPage('terms')">Edit</button>
                             </div>
                             <div class="content-item">
                                 <div>
                                     <h3>Privacy Policy</h3>
                                     <p>Data protection and privacy information</p>
                                 </div>
-                                <button class="btn btn-outline">Edit</button>
+                                <button class="btn btn-outline" onclick="editContentPage('privacy')">Edit</button>
                             </div>
                             <div class="content-item">
                                 <div>
                                     <h3>Help Center</h3>
                                     <p>FAQ and support documentation</p>
                                 </div>
-                                <button class="btn btn-outline">Edit</button>
+                                <button class="btn btn-outline" onclick="editContentPage('help')">Edit</button>
                             </div>
                         </div>
                         <button class="btn btn-primary" style="margin-top: 1rem;">+ Create New Page</button>
@@ -1697,8 +1741,8 @@
                                     <p>admin1@learnable.com • Permissions: User Management, Course Review, Community Moderation</p>
                                 </div>
                                 <div>
-                                    <button class="btn btn-outline">Edit Permissions</button>
-                                    <button class="btn btn-outline" style="margin-left: 0.5rem;">Remove Admin</button>
+                                    <button class="btn btn-outline" onclick="editAdminPermissions('admin1@learnable.com')">Edit Permissions</button>
+                                    <button class="btn btn-outline" style="margin-left: 0.5rem;" onclick="removeAdmin('admin1@learnable.com')">Remove Admin</button>
                                 </div>
                             </div>
                             <div class="content-item">
@@ -1707,8 +1751,8 @@
                                     <p>admin2@learnable.com • Permissions: Analytics Access, System Logs</p>
                                 </div>
                                 <div>
-                                    <button class="btn btn-outline">Edit Permissions</button>
-                                    <button class="btn btn-outline" style="margin-left: 0.5rem;">Remove Admin</button>
+                                    <button class="btn btn-outline" onclick="editAdminPermissions('admin2@learnable.com')">Edit Permissions</button>
+                                    <button class="btn btn-outline" style="margin-left: 0.5rem;" onclick="removeAdmin('admin2@learnable.com')">Remove Admin</button>
                                 </div>
                             </div>
                         </div>
@@ -1802,8 +1846,9 @@
                                     <p>By John Doe • Published • 234 students • $49.99</p>
                                 </div>
                                 <div>
-                                    <button class="btn btn-outline">View</button>
-                                    <button class="btn btn-outline" style="margin-left: 0.5rem;">Edit</button>
+                                    <button class="btn btn-outline" onclick="viewCourseDetails('course-1')">View</button>
+                                    <button class="btn btn-outline" onclick="editCourse('course-1')" style="margin-left: 0.5rem;">Edit</button>
+                                    <button class="btn btn-primary" onclick="toggleFeaturedCourse('course-1', 'superadmin')" style="margin-left: 0.5rem;">⭐ Feature</button>
                                 </div>
                             </div>
                             <div class="content-item">
@@ -1815,8 +1860,78 @@
                                     <button class="btn btn-outline" onclick="reviewCourse('advanced-javascript', 'superadmin')">Review</button>
                                     <button class="btn btn-success" onclick="approveCourse('advanced-javascript', 'superadmin')" style="margin-left: 0.5rem;">Approve</button>
                                     <button class="btn btn-outline" onclick="rejectCourse('advanced-javascript', 'superadmin')" style="margin-left: 0.5rem;">Reject</button>
+                                    <button class="btn btn-primary" onclick="toggleFeaturedCourse('advanced-javascript', 'superadmin')" style="margin-left: 0.5rem;">⭐ Feature</button>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Data Management Section -->
+                <div id="superAdminDataManagementSection" class="super-admin-section hidden">
+                    <div class="dashboard-header">
+                        <h1>💾 Data Management</h1>
+                        <p>Manage all platform data - users, courses, transactions, and more</p>
+                    </div>
+                    
+                    <div class="content-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <h2>Platform Data</h2>
+                            <div style="display: flex; gap: 1rem;">
+                                <select id="dataFilterRole" onchange="filterDataByRole()" style="padding: 0.5rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                                    <option value="all">All Users</option>
+                                    <option value="student">Students Only</option>
+                                    <option value="instructor">Instructors Only</option>
+                                    <option value="admin">Admins Only</option>
+                                </select>
+                                <button class="btn btn-outline" onclick="toggleColumnVisibility()">🔧 Manage Columns</button>
+                                <button class="btn btn-primary" onclick="exportData()">📥 Export Data</button>
+                            </div>
+                        </div>
+                        
+                        <div style="overflow-x: auto;">
+                            <table id="dataManagementTable" style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                                <thead>
+                                    <tr style="background: #F7FAFC; border-bottom: 2px solid #E2E8F0;">
+                                        <th class="column-toggle" data-column="id" style="padding: 0.75rem; text-align: left; cursor: pointer;">
+                                            <input type="checkbox" checked onchange="toggleColumn('id')"> ID
+                                        </th>
+                                        <th class="column-toggle" data-column="name" style="padding: 0.75rem; text-align: left; cursor: pointer;">
+                                            <input type="checkbox" checked onchange="toggleColumn('name')"> Name
+                                        </th>
+                                        <th class="column-toggle" data-column="email" style="padding: 0.75rem; text-align: left; cursor: pointer;">
+                                            <input type="checkbox" checked onchange="toggleColumn('email')"> Email
+                                        </th>
+                                        <th class="column-toggle" data-column="role" style="padding: 0.75rem; text-align: left; cursor: pointer;">
+                                            <input type="checkbox" checked onchange="toggleColumn('role')"> Role
+                                        </th>
+                                        <th class="column-toggle" data-column="status" style="padding: 0.75rem; text-align: left; cursor: pointer;">
+                                            <input type="checkbox" checked onchange="toggleColumn('status')"> Status
+                                        </th>
+                                        <th class="column-toggle" data-column="courses" style="padding: 0.75rem; text-align: left; cursor: pointer;">
+                                            <input type="checkbox" checked onchange="toggleColumn('courses')"> Courses
+                                        </th>
+                                        <th class="column-toggle" data-column="enrollments" style="padding: 0.75rem; text-align: left; cursor: pointer;">
+                                            <input type="checkbox" checked onchange="toggleColumn('enrollments')"> Enrollments
+                                        </th>
+                                        <th class="column-toggle" data-column="revenue" style="padding: 0.75rem; text-align: left; cursor: pointer;">
+                                            <input type="checkbox" checked onchange="toggleColumn('revenue')"> Revenue
+                                        </th>
+                                        <th class="column-toggle" data-column="created" style="padding: 0.75rem; text-align: left; cursor: pointer;">
+                                            <input type="checkbox" checked onchange="toggleColumn('created')"> Created
+                                        </th>
+                                        <th class="column-toggle" data-column="lastActive" style="padding: 0.75rem; text-align: left; cursor: pointer;">
+                                            <input type="checkbox" checked onchange="toggleColumn('lastActive')"> Last Active
+                                        </th>
+                                        <th class="column-toggle" data-column="actions" style="padding: 0.75rem; text-align: left;">
+                                            Actions
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dataManagementTableBody">
+                                    <!-- Data will be dynamically loaded here -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -1886,22 +2001,22 @@
                             <input type="number" value="9.99" step="0.01" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
                             <p style="font-size: 0.9rem; color: #718096; margin-top: 0.5rem;">Monthly fee charged to instructors</p>
                         </div>
-                        <button class="btn btn-success">Save Changes</button>
+                        <button class="btn btn-success" onclick="savePricingSettings('subscription')">Save Changes</button>
                     </div>
                     
                     <div class="content-card">
                         <h2>Revenue Sharing</h2>
                         <div class="form-group">
                             <label>Instructor Revenue Share (%)</label>
-                            <input type="number" value="60" min="0" max="100" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                            <input type="number" id="pricingRevenueShare" value="60" min="0" max="100" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
                             <p style="font-size: 0.9rem; color: #718096; margin-top: 0.5rem;">Percentage of course sales that go to instructors</p>
                         </div>
                         <div class="form-group">
                             <label>Platform Revenue Share (%)</label>
-                            <input type="number" value="40" min="0" max="100" disabled style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px; background: #F7F9FC;">
+                            <input type="number" id="pricingPlatformShare" value="40" min="0" max="100" disabled style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px; background: #F7F9FC;">
                             <p style="font-size: 0.9rem; color: #718096; margin-top: 0.5rem;">Automatically calculated (100% - Instructor Share)</p>
                         </div>
-                        <button class="btn btn-success">Save Changes</button>
+                        <button class="btn btn-success" onclick="savePricingSettings('revenue')">Save Changes</button>
                     </div>
                 </div>
                 
@@ -1926,14 +2041,14 @@
                             <label>Favicon</label>
                             <input type="file" accept="image/*" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
                         </div>
-                        <button class="btn btn-success">Save Changes</button>
+                        <button class="btn btn-success" onclick="saveSiteSettings('branding')">Save Changes</button>
                     </div>
                     
                     <div class="content-card">
                         <h2>General Settings</h2>
                         <div class="form-group">
                             <label>Default Currency</label>
-                            <select style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                            <select id="siteDefaultCurrency" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
                                 <option>USD - US Dollar</option>
                                 <option>NGN - Nigerian Naira</option>
                                 <option>GBP - British Pound</option>
@@ -1943,14 +2058,14 @@
                         </div>
                         <div class="form-group">
                             <label>Time Zone</label>
-                            <select style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                            <select id="siteTimeZone" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
                                 <option>UTC</option>
                                 <option>America/New_York</option>
                                 <option>Europe/London</option>
                                 <option>Africa/Lagos</option>
                             </select>
                         </div>
-                        <button class="btn btn-success">Save Changes</button>
+                        <button class="btn btn-success" onclick="saveSiteSettings('general')">Save Changes</button>
                     </div>
                 </div>
                 
@@ -2485,18 +2600,22 @@
                 </div>
                 <div class="form-group hidden" id="customCoverUpload">
                     <label onclick="document.getElementById('coverFile').click()" class="file-upload-area">
-                        📸 Click to upload cover image<br>
+                        <span id="coverFileStatus">📸 Click to upload cover image</span><br>
                         <small style="color: #718096;">Recommended: 1280x720px</small>
-                        <input type="file" id="coverFile" accept="image/*">
+                        <input type="file" id="coverFile" accept="image/*" onchange="handleCoverFileSelect(this)" style="display: none;">
                     </label>
+                    <div id="coverFilePreview" style="margin-top: 0.5rem; display: none;">
+                        <img id="coverPreviewImg" src="" alt="Preview" style="max-width: 100%; max-height: 200px; border-radius: 6px; border: 1px solid #E2E8F0;">
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>Course Preview Video (Optional)</label>
                     <label onclick="document.getElementById('previewFile').click()" class="file-upload-area">
-                        🎬 Click to upload preview video<br>
+                        <span id="previewFileStatus">🎬 Click to upload preview video</span><br>
                         <small style="color: #718096;">Max: 5 minutes</small>
-                        <input type="file" id="previewFile" accept="video/*">
+                        <input type="file" id="previewFile" accept="video/*" onchange="handlePreviewFileSelect(this)" style="display: none;">
                     </label>
+                    <div id="previewFileInfo" style="margin-top: 0.5rem; font-size: 0.9rem; color: #718096; display: none;"></div>
                 </div>
                 <div class="form-group">
                     <label>Course Structure</label>
@@ -2510,9 +2629,9 @@
                 <div id="singleCourseVideo" class="form-group">
                     <label>Course Video</label>
                     <label onclick="document.getElementById('courseVideoFile').click()" class="file-upload-area">
-                        🎥 Click to upload course video<br>
+                        <span id="courseVideoFileStatus">🎥 Click to upload course video</span><br>
                         <small style="color: #718096;">Upload your complete course video (Max: 2GB)</small>
-                        <input type="file" id="courseVideoFile" accept="video/*">
+                        <input type="file" id="courseVideoFile" accept="video/*" onchange="handleCourseVideoSelect(this)" style="display: none;">
                     </label>
                     <div id="singleVideoStatus" style="margin-top: 0.5rem; font-size: 0.9rem; color: #718096;"></div>
                 </div>
@@ -2547,12 +2666,28 @@
                 
                 <div class="form-group">
                     <label>Category</label>
-                    <select required>
+                    <select id="courseCategory" onchange="updateSubcategoryOptions()" required>
                         <option value="">Select category</option>
-                        <option>Technology & IT</option>
-                        <option>Business</option>
-                        <option>Design</option>
-                        <option>Marketing</option>
+                        <option value="technology">Technology & IT</option>
+                        <option value="business">Business</option>
+                        <option value="design">Design</option>
+                        <option value="marketing">Marketing</option>
+                        <option value="photography">Photography</option>
+                        <option value="music">Music</option>
+                        <option value="health">Health & Fitness</option>
+                        <option value="language">Language</option>
+                        <option value="personal">Personal Development</option>
+                        <option value="finance">Finance & Accounting</option>
+                        <option value="education">Education & Teaching</option>
+                        <option value="lifestyle">Lifestyle</option>
+                        <option value="science">Science</option>
+                        <option value="arts">Arts & Crafts</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Subcategory</label>
+                    <select id="courseSubcategory" required>
+                        <option value="">Select subcategory</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -2648,6 +2783,30 @@
         </div>
     </div>
 
+    <!-- Content Page Editor Modal -->
+    <div id="contentPageEditorModal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <button class="modal-close" onclick="closeModal('contentPageEditor')">×</button>
+            <h2 id="contentPageEditorTitle">Edit Content Page</h2>
+            <form onsubmit="saveContentPage(event)">
+                <input type="hidden" id="contentPageId" value="">
+                <div class="form-group">
+                    <label>Page Title</label>
+                    <input type="text" id="contentPageTitle" required style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                </div>
+                <div class="form-group">
+                    <label>Page Content</label>
+                    <textarea id="contentPageContent" rows="20" required style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px; font-family: inherit;">Enter page content here...</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Meta Description (Optional)</label>
+                    <textarea id="contentPageMeta" rows="3" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">Meta description for SEO</textarea>
+                </div>
+                <button type="submit" class="btn btn-success" style="width: 100%;">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
     <!-- Chatbot -->
     <div class="chatbot">
         <div class="chatbot-window" id="chatbotWindow">
@@ -2660,12 +2819,13 @@
                     <p>👋 Hi! I'm your <span style="color: #5B7FFF; font-weight: 600;">LEARN</span><span style="color: #10B981; font-weight: 600;">ible</span> assistant. How can I help?</p>
                 </div>
                 <div class="faq-buttons">
-                    <button class="faq-btn">💰 How does pricing work?</button>
-                    <button class="faq-btn">👨‍🏫 How do I become an instructor?</button>
-                    <button class="faq-btn">💵 How much can I earn?</button>
-                    <button class="faq-btn">💳 What payment methods do you accept?</button>
-                    <button class="faq-btn">🌍 Which currencies are supported?</button>
+                    <button class="faq-btn" onclick="showFAQAnswer('pricing')">💰 How does pricing work?</button>
+                    <button class="faq-btn" onclick="showFAQAnswer('instructor')">👨‍🏫 How do I become an instructor?</button>
+                    <button class="faq-btn" onclick="showFAQAnswer('earnings')">💵 How much can I earn?</button>
+                    <button class="faq-btn" onclick="showFAQAnswer('payments')">💳 What payment methods do you accept?</button>
+                    <button class="faq-btn" onclick="showFAQAnswer('currencies')">🌍 Which currencies are supported?</button>
                 </div>
+                <div id="faqAnswer" style="display: none; margin-top: 1rem; padding: 1rem; background: #F7FAFC; border-radius: 8px; max-height: 300px; overflow-y: auto;"></div>
             </div>
             <div class="chatbot-input">
                 <input type="text" placeholder="Type your message...">
