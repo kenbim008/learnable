@@ -32,20 +32,7 @@ function showPage(pageName) {
 
 // Show About Page
 function showAboutPage() {
-    // Load content from localStorage if available
-    const contentPages = JSON.parse(localStorage.getItem('contentPages') || '{}');
-    const aboutContent = contentPages['about'];
-    
-    if (aboutContent) {
-        const contentDiv = document.getElementById('aboutPageContent');
-        if (contentDiv) {
-            contentDiv.innerHTML = `
-                <h2>${aboutContent.title}</h2>
-                <div style="white-space: pre-line;">${aboutContent.content}</div>
-            `;
-        }
-    }
-    
+    // Show the About page (content is static in HTML now)
     showPage('about');
 }
 
