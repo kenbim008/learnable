@@ -260,89 +260,110 @@
                         <p class="lead">At LEARNible, we are driven by a simple, powerful belief: everyone has valuable knowledge to share and the right to learn. We are building a platform where educators can thrive and learners can access quality education without barriers.</p>
                     </header>
 
-                    <div class="vision-mission-section">
-                        <div class="vision-mission-grid">
-                            <div class="vision-card">
-                                <h2>Our Vision</h2>
-                                <blockquote>
-                                    "To create a world where knowledge flows freely, where educators can easily share and teach their knowledge and anyone with curiosity can learn without barriers"
-                                </blockquote>
-                            </div>
-                            
-                            <div class="mission-card">
-                                <h2>Our Mission</h2>
-                                <p>We empower knowledge creators to build thriving educational businesses by providing simple, powerful tools for course creation and student engagement. Through our transparent platform and fair revenue-sharing model, we make quality education accessible to learners everywhere while supporting instructors in turning their expertise into sustainable income.</p>
+                    <!-- Tab Navigation -->
+                    <div class="about-tabs">
+                        <button class="about-tab active" onclick="showAboutTab('vision-mission')">Vision / Mission</button>
+                        <button class="about-tab" onclick="showAboutTab('drives-us')">What Drives Us</button>
+                        <button class="about-tab" onclick="showAboutTab('values')">Our Values</button>
+                        <button class="about-tab" onclick="showAboutTab('commitment')">Our Commitment</button>
+                    </div>
+
+                    <!-- Tab Content Sections -->
+                    <!-- Vision / Mission Tab -->
+                    <div id="vision-mission-tab" class="about-tab-content active">
+                        <div class="vision-mission-section">
+                            <div class="vision-mission-grid">
+                                <div class="vision-card">
+                                    <h2>Our Vision</h2>
+                                    <blockquote>
+                                        "To create a world where knowledge flows freely, where educators can easily share and teach their knowledge and anyone with curiosity can learn without barriers"
+                                    </blockquote>
+                                </div>
+                                
+                                <div class="mission-card">
+                                    <h2>Our Mission</h2>
+                                    <p>We empower knowledge creators to build thriving educational businesses by providing simple, powerful tools for course creation and student engagement. Through our transparent platform and fair revenue-sharing model, we make quality education accessible to learners everywhere while supporting instructors in turning their expertise into sustainable income.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="drives-us-section">
-                        <h2>What Drives Us</h2>
-                        <div class="drives-grid">
-                            <div class="drive-card">
-                                <h3>Empowering Educators</h3>
-                                <p>Every expert deserves the tools to share their knowledge and build a sustainable teaching business</p>
-                            </div>
-                            <div class="drive-card">
-                                <h3>Accessible Learning</h3>
-                                <p>Quality education shouldn't be limited by geography, budget, or traditional institutions</p>
-                            </div>
-                            <div class="drive-card">
-                                <h3>Fair Partnership</h3>
-                                <p>Success should be shared—our revenue model reflects our commitment to instructor prosperity</p>
-                            </div>
-                            <div class="drive-card">
-                                <h3>Simplicity First</h3>
-                                <p>Powerful doesn't have to mean complicated—we make course creation intuitive and enjoyable</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="values-section">
-                        <h2>Our Values</h2>
-                        <div class="values-grid">
-                            <div class="value-card">
-                                <h3>Empowerment Through Knowledge</h3>
-                                <p>We empower instructors to transform their expertise into thriving educational businesses while giving students access to practical, real-world skills.</p>
-                            </div>
-                            <div class="value-card">
-                                <h3>Global Accessibility</h3>
-                                <p>Education should know no borders. We support multiple currencies and payment methods to ensure quality learning is accessible to students worldwide.</p>
-                            </div>
-                            <div class="value-card">
-                                <h3>Trust & Security</h3>
-                                <p>We protect both instructors and students with secure payment processing, encrypted content delivery, and robust data privacy measures. Your trust is our foundation.</p>
-                            </div>
-                            <div class="value-card">
-                                <h3>Innovation & Simplicity</h3>
-                                <p>We combine cutting-edge technology with intuitive design to create tools that are powerful yet easy to use, removing technical barriers for instructors.</p>
-                            </div>
-                            <div class="value-card">
-                                <h3>Community-Centered Learning</h3>
-                                <p>We foster connections between instructors and students, encouraging collaboration, feedback, and shared growth that extends beyond individual courses.</p>
+                    <!-- What Drives Us Tab -->
+                    <div id="drives-us-tab" class="about-tab-content hidden">
+                        <div class="drives-us-section">
+                            <h2>What Drives Us</h2>
+                            <div class="drives-grid">
+                                <div class="drive-card">
+                                    <h3>Empowering Educators</h3>
+                                    <p>Every expert deserves the tools to share their knowledge and build a sustainable teaching business</p>
+                                </div>
+                                <div class="drive-card">
+                                    <h3>Accessible Learning</h3>
+                                    <p>Quality education shouldn't be limited by geography, budget, or traditional institutions</p>
+                                </div>
+                                <div class="drive-card">
+                                    <h3>Fair Partnership</h3>
+                                    <p>Success should be shared—our revenue model reflects our commitment to instructor prosperity</p>
+                                </div>
+                                <div class="drive-card">
+                                    <h3>Simplicity First</h3>
+                                    <p>Powerful doesn't have to mean complicated—we make course creation intuitive and enjoyable</p>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="commitment-section">
-                        <h2>Our Commitment</h2>
-                        <p>We're committed to maintaining a platform where:</p>
-                        <div class="commitment-grid">
-                            <div class="commitment-item">
-                                <h3>Fair & Transparent Partnership</h3>
-                                <p>Our clear 40/60 revenue share model (instructors keep 60%) and transparent $9.99 monthly fee reflect our commitment to honest business relationships. Instructors retain full content ownership.</p>
+                    <!-- Our Values Tab -->
+                    <div id="values-tab" class="about-tab-content hidden">
+                        <div class="values-section">
+                            <h2>Our Values</h2>
+                            <div class="values-grid">
+                                <div class="value-card">
+                                    <h3>Empowerment Through Knowledge</h3>
+                                    <p>We empower instructors to transform their expertise into thriving educational businesses while giving students access to practical, real-world skills.</p>
+                                </div>
+                                <div class="value-card">
+                                    <h3>Global Accessibility</h3>
+                                    <p>Education should know no borders. We support multiple currencies and payment methods to ensure quality learning is accessible to students worldwide.</p>
+                                </div>
+                                <div class="value-card">
+                                    <h3>Trust & Security</h3>
+                                    <p>We protect both instructors and students with secure payment processing, encrypted content delivery, and robust data privacy measures. Your trust is our foundation.</p>
+                                </div>
+                                <div class="value-card">
+                                    <h3>Innovation & Simplicity</h3>
+                                    <p>We combine cutting-edge technology with intuitive design to create tools that are powerful yet easy to use, removing technical barriers for instructors.</p>
+                                </div>
+                                <div class="value-card">
+                                    <h3>Community-Centered Learning</h3>
+                                    <p>We foster connections between instructors and students, encouraging collaboration, feedback, and shared growth that extends beyond individual courses.</p>
+                                </div>
                             </div>
-                            <div class="commitment-item">
-                                <h3>Quality Assurance</h3>
-                                <p>We are dedicated to upholding the quality and authenticity of the educational content on our platform.</p>
-                            </div>
-                            <div class="commitment-item">
-                                <h3>Registered Access</h3>
-                                <p>Students receive reliable access to the instructors and courses they have purchased.</p>
-                            </div>
-                            <div class="commitment-item">
-                                <h3>Education-First Innovation</h3>
-                                <p>Our innovation always serves education, not the other way around.</p>
+                        </div>
+                    </div>
+
+                    <!-- Our Commitment Tab -->
+                    <div id="commitment-tab" class="about-tab-content hidden">
+                        <div class="commitment-section">
+                            <h2>Our Commitment</h2>
+                            <p>We're committed to maintaining a platform where:</p>
+                            <div class="commitment-grid">
+                                <div class="commitment-item">
+                                    <h3>Fair & Transparent Partnership</h3>
+                                    <p>Our clear 40/60 revenue share model (instructors keep 60%) and transparent $9.99 monthly fee reflect our commitment to honest business relationships. Instructors retain full content ownership.</p>
+                                </div>
+                                <div class="commitment-item">
+                                    <h3>Quality Assurance</h3>
+                                    <p>We are dedicated to upholding the quality and authenticity of the educational content on our platform.</p>
+                                </div>
+                                <div class="commitment-item">
+                                    <h3>Registered Access</h3>
+                                    <p>Students receive reliable access to the instructors and courses they have purchased.</p>
+                                </div>
+                                <div class="commitment-item">
+                                    <h3>Education-First Innovation</h3>
+                                    <p>Our innovation always serves education, not the other way around.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -2947,11 +2968,62 @@
             margin: 0 auto;
         }
 
+        .about-learnible .about-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 40px;
+            border-bottom: 2px solid #E2E8F0;
+            flex-wrap: wrap;
+        }
+
+        .about-learnible .about-tab {
+            padding: 1rem 2rem;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: #718096;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            bottom: -2px;
+        }
+
+        .about-learnible .about-tab:hover {
+            color: #5B7FFF;
+        }
+
+        .about-learnible .about-tab.active {
+            color: #5B7FFF;
+            border-bottom-color: #5B7FFF;
+        }
+
+        .about-learnible .about-tab-content {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .about-learnible .about-tab-content.hidden {
+            display: none;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .about-learnible .vision-mission-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 40px;
-            margin-bottom: 60px;
         }
 
         .about-learnible .vision-card, 
@@ -2979,7 +3051,7 @@
         .about-learnible .drives-us-section, 
         .about-learnible .values-section, 
         .about-learnible .commitment-section {
-            margin-bottom: 60px;
+            margin-bottom: 0;
         }
 
         .about-learnible .drives-us-section h2, 
@@ -3052,6 +3124,24 @@
             
             .about-learnible .lead {
                 font-size: 1.1rem;
+            }
+
+            .about-learnible .about-tabs {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .about-learnible .about-tab {
+                width: 100%;
+                text-align: left;
+                padding: 1rem;
+                border-bottom: 1px solid #E2E8F0;
+                border-left: 3px solid transparent;
+            }
+
+            .about-learnible .about-tab.active {
+                border-bottom-color: #E2E8F0;
+                border-left-color: #5B7FFF;
             }
         }
     </style>

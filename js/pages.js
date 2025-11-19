@@ -34,6 +34,50 @@ function showPage(pageName) {
 function showAboutPage() {
     // Show the About page (content is static in HTML now)
     showPage('about');
+    // Show first tab by default
+    showAboutTab('vision-mission');
+}
+
+// About Page Tab Navigation
+function showAboutTab(tabName) {
+    // Hide all tab contents
+    const tabContents = document.querySelectorAll('.about-tab-content');
+    tabContents.forEach(content => {
+        content.classList.add('hidden');
+        content.classList.remove('active');
+    });
+    
+    // Remove active class from all tabs
+    const tabs = document.querySelectorAll('.about-tab');
+    tabs.forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Show selected tab content
+    const selectedTabContent = document.getElementById(tabName + '-tab');
+    if (selectedTabContent) {
+        selectedTabContent.classList.remove('hidden');
+        selectedTabContent.classList.add('active');
+    }
+    
+    // Add active class to clicked tab
+    const selectedTab = event ? event.target : null;
+    if (selectedTab) {
+        selectedTab.classList.add('active');
+    } else {
+        // Find and activate the corresponding tab button
+        const tabButtons = document.querySelectorAll('.about-tab');
+        tabButtons.forEach(button => {
+            if (button.getAttribute('onclick') === `showAboutTab('${tabName}')`) {
+                button.classList.add('active');
+            }
+        });
+    }
+    
+    // Scroll to top of tab content
+    if (selectedTabContent) {
+        selectedTabContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 }
 
 // Logout
