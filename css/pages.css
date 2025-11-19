@@ -732,6 +732,15 @@
     display: none;
 }
 
+/* Student Section Navigation */
+.student-section {
+    width: 100%;
+}
+
+.student-section.hidden {
+    display: none;
+}
+
 /* Content Management Styles */
 .content-list {
     display: flex;

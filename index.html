@@ -444,22 +444,24 @@
         <div class="dashboard-container">
             <aside class="sidebar">
                 <ul class="sidebar-menu">
-                    <li><a class="active">📊 Dashboard</a></li>
-                    <li><a>📚 My Courses</a></li>
-                    <li><a>🎯 Learning Path</a></li>
-                    <li><a>❤️ Wishlist</a></li>
-                    <li><a>🎓 Certificates</a></li>
+                    <li><a class="active" onclick="showStudentSection('dashboard', event)">📊 Dashboard</a></li>
+                    <li><a onclick="showStudentSection('myCourses', event)">📚 My Courses</a></li>
+                    <li><a onclick="showStudentSection('learningPath', event)">🎯 Learning Path</a></li>
+                    <li><a onclick="showStudentSection('wishlist', event)">❤️ Wishlist</a></li>
+                    <li><a onclick="showStudentSection('certificates', event)">🎓 Certificates</a></li>
                     <li><a onclick="showPage('community')">👥 Community</a></li>
-                    <li><a>✉️ Messages</a></li>
-                    <li><a>⚙️ Settings</a></li>
+                    <li><a onclick="showStudentSection('messages', event)">✉️ Messages</a></li>
+                    <li><a onclick="showStudentSection('settings', event)">⚙️ Settings</a></li>
                 </ul>
             </aside>
             
             <main class="main-content">
-                <div class="dashboard-header">
-                    <h1>Welcome back, Student! 👋</h1>
-                    <p>Continue your learning journey</p>
-                </div>
+                <!-- Dashboard Section -->
+                <div id="studentDashboardSection" class="student-section">
+                    <div class="dashboard-header">
+                        <h1>Welcome back, Student! 👋</h1>
+                        <p>Continue your learning journey</p>
+                    </div>
                 
                 <div class="stats-grid">
                     <div class="stat-card">
@@ -490,6 +492,91 @@
                         🔒 All courses are protected with DRM - Stream only, no downloads available
                     </div>
                     <p>Pick up where you left off in your enrolled courses</p>
+                </div>
+                </div>
+                
+                <!-- My Courses Section -->
+                <div id="studentMyCoursesSection" class="student-section hidden">
+                    <div class="dashboard-header">
+                        <h1>📚 My Courses</h1>
+                        <p>Your enrolled courses</p>
+                    </div>
+                    <div class="content-card">
+                        <h2>Enrolled Courses</h2>
+                        <div class="content-list">
+                            <div class="content-item">
+                                <div>
+                                    <h3>Introduction to Web Development</h3>
+                                    <p>Progress: 75% • Last accessed: 2 days ago</p>
+                                </div>
+                                <button class="btn btn-primary" onclick="continueLearning('intro-web-dev')">Continue Learning</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Learning Path Section -->
+                <div id="studentLearningPathSection" class="student-section hidden">
+                    <div class="dashboard-header">
+                        <h1>🎯 Learning Path</h1>
+                        <p>Your personalized learning journey</p>
+                    </div>
+                    <div class="content-card">
+                        <h2>Recommended Learning Path</h2>
+                        <p>Courses recommended based on your progress and interests</p>
+                    </div>
+                </div>
+                
+                <!-- Wishlist Section -->
+                <div id="studentWishlistSection" class="student-section hidden">
+                    <div class="dashboard-header">
+                        <h1>❤️ Wishlist</h1>
+                        <p>Courses you want to purchase</p>
+                    </div>
+                    <div class="content-card">
+                        <h2>Wishlisted Courses</h2>
+                        <p>Courses you've saved for later</p>
+                    </div>
+                </div>
+                
+                <!-- Certificates Section -->
+                <div id="studentCertificatesSection" class="student-section hidden">
+                    <div class="dashboard-header">
+                        <h1>🎓 Certificates</h1>
+                        <p>Your course completion certificates</p>
+                    </div>
+                    <div class="content-card">
+                        <h2>Earned Certificates</h2>
+                        <p>Certificates for completed courses</p>
+                    </div>
+                </div>
+                
+                <!-- Messages Section -->
+                <div id="studentMessagesSection" class="student-section hidden">
+                    <div class="dashboard-header">
+                        <h1>✉️ Messages</h1>
+                        <p>Communicate with instructors</p>
+                    </div>
+                    <div class="content-card">
+                        <h2>Inbox</h2>
+                        <p>Your messages from instructors</p>
+                    </div>
+                </div>
+                
+                <!-- Settings Section -->
+                <div id="studentSettingsSection" class="student-section hidden">
+                    <div class="dashboard-header">
+                        <h1>⚙️ Settings</h1>
+                        <p>Manage your account settings</p>
+                    </div>
+                    <div class="content-card">
+                        <h2>Profile Settings</h2>
+                        <div class="form-group">
+                            <label>Display Name</label>
+                            <input type="text" value="Student Name" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                        </div>
+                        <button class="btn btn-success" onclick="saveStudentSettings()">Save Changes</button>
+                    </div>
                 </div>
             </main>
         </div>
@@ -605,8 +692,8 @@
                                     <p>234 students • $49.99 • Published • 4.8★ rating</p>
                                 </div>
                                 <div>
-                                    <button class="btn btn-outline">Edit</button>
-                                    <button class="btn btn-outline" style="margin-left: 0.5rem;">View</button>
+                                    <button class="btn btn-outline" onclick="editCourse('course-1')">Edit</button>
+                                    <button class="btn btn-outline" style="margin-left: 0.5rem;" onclick="viewCourseDetails('course-1')">View</button>
                                 </div>
                             </div>
                             <div class="content-item">
@@ -615,8 +702,8 @@
                                     <p>189 students • $79.99 • Published • 4.9★ rating</p>
                                 </div>
                                 <div>
-                                    <button class="btn btn-outline">Edit</button>
-                                    <button class="btn btn-outline" style="margin-left: 0.5rem;">View</button>
+                                    <button class="btn btn-outline" onclick="editCourse('course-1')">Edit</button>
+                                    <button class="btn btn-outline" style="margin-left: 0.5rem;" onclick="viewCourseDetails('course-1')">View</button>
                                 </div>
                             </div>
                         </div>
@@ -648,14 +735,14 @@
                                     <h3>Jane Smith</h3>
                                     <p>Enrolled in: Introduction to Web Development • Progress: 75%</p>
                                 </div>
-                                <button class="btn btn-outline">View Profile</button>
+                                <button class="btn btn-outline" onclick="viewStudentProfile('jane-smith')">View Profile</button>
                             </div>
                             <div class="content-item">
                                 <div>
                                     <h3>John Doe</h3>
                                     <p>Enrolled in: Advanced JavaScript • Progress: 90%</p>
                                 </div>
-                                <button class="btn btn-outline">View Profile</button>
+                                <button class="btn btn-outline" onclick="viewStudentProfile('john-doe')">View Profile</button>
                             </div>
                         </div>
                     </div>
@@ -700,7 +787,7 @@
                                     <p>Sold to: jane.smith@example.com • Amount: $49.99 • Your Share: $29.99</p>
                                     <p style="font-size: 0.85rem; color: #718096; margin-top: 0.25rem;">Date: Jan 20, 2024</p>
                                 </div>
-                                <button class="btn btn-outline">View Details</button>
+                                <button class="btn btn-outline" onclick="viewReviewDetails('review-1')">View Details</button>
                             </div>
                         </div>
                     </div>
@@ -745,7 +832,7 @@
                                     <h3>Introduction to Web Development</h3>
                                     <p>234 students • $11,466 revenue • 4.8★ rating • 75% completion rate</p>
                                 </div>
-                                <button class="btn btn-outline">View Details</button>
+                                <button class="btn btn-outline" onclick="viewReviewDetails('review-1')">View Details</button>
                             </div>
                         </div>
                     </div>
@@ -832,7 +919,7 @@
                             <label>Profile Picture</label>
                             <input type="file" accept="image/*" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
                         </div>
-                        <button class="btn btn-success">Save Changes</button>
+                        <button class="btn btn-success" onclick="saveInstructorSettings()">Save Changes</button>
                     </div>
                     
                     <div class="content-card">
@@ -954,14 +1041,14 @@
                                     <h3>John Doe</h3>
                                     <p>Instructor • john.doe@example.com • Joined: Jan 2024</p>
                                 </div>
-                                <button class="btn btn-outline">View Details</button>
+                                <button class="btn btn-outline" onclick="viewReviewDetails('review-1')">View Details</button>
                             </div>
                             <div class="content-item">
                                 <div>
                                     <h3>Jane Smith</h3>
                                     <p>Student • jane.smith@example.com • Joined: Feb 2024</p>
                                 </div>
-                                <button class="btn btn-outline">View Details</button>
+                                <button class="btn btn-outline" onclick="viewReviewDetails('review-1')">View Details</button>
                             </div>
                         </div>
                     </div>
@@ -1030,9 +1117,9 @@
                                     <p style="font-size: 0.85rem; color: #718096; margin-top: 0.25rem;">Category: Technology & IT</p>
                                 </div>
                                 <div>
-                                    <button class="btn btn-success">Approve</button>
-                                    <button class="btn btn-outline" style="margin-left: 0.5rem;">Review</button>
-                                    <button class="btn btn-outline" style="margin-left: 0.5rem;">Reject</button>
+                                    <button class="btn btn-success" onclick="approveCourse('python-beginners', 'admin')">Approve</button>
+                                    <button class="btn btn-outline" style="margin-left: 0.5rem;" onclick="reviewCourse('python-beginners', 'admin')">Review</button>
+                                    <button class="btn btn-outline" style="margin-left: 0.5rem;" onclick="rejectCourse('python-beginners', 'admin')">Reject</button>
                                 </div>
                             </div>
                             <div class="content-item">
@@ -1042,9 +1129,9 @@
                                     <p style="font-size: 0.85rem; color: #718096; margin-top: 0.25rem;">Category: Marketing</p>
                                 </div>
                                 <div>
-                                    <button class="btn btn-success">Approve</button>
-                                    <button class="btn btn-outline" style="margin-left: 0.5rem;">Review</button>
-                                    <button class="btn btn-outline" style="margin-left: 0.5rem;">Reject</button>
+                                    <button class="btn btn-success" onclick="approveCourse('digital-marketing', 'admin')">Approve</button>
+                                    <button class="btn btn-outline" style="margin-left: 0.5rem;" onclick="reviewCourse('digital-marketing', 'admin')">Review</button>
+                                    <button class="btn btn-outline" style="margin-left: 0.5rem;" onclick="rejectCourse('digital-marketing', 'admin')">Reject</button>
                                 </div>
                             </div>
                         </div>
@@ -1170,7 +1257,7 @@
                                     <h3>Course Purchase - Web Development</h3>
                                     <p>Student: jane.smith@example.com • Amount: $49.99 • Date: Jan 20, 2024</p>
                                 </div>
-                                <button class="btn btn-outline">View Details</button>
+                                <button class="btn btn-outline" onclick="viewReviewDetails('review-1')">View Details</button>
                             </div>
                         </div>
                     </div>
@@ -1574,7 +1661,7 @@
                                     <p>Instructor • john.doe@example.com • Joined: Jan 2024</p>
                                 </div>
                                 <div>
-                                    <button class="btn btn-outline">View Details</button>
+                                    <button class="btn btn-outline" onclick="viewReviewDetails('review-1')">View Details</button>
                                     <button class="btn btn-outline" style="margin-left: 0.5rem;">Edit</button>
                                 </div>
                             </div>
@@ -1584,7 +1671,7 @@
                                     <p>Student • jane.smith@example.com • Joined: Feb 2024</p>
                                 </div>
                                 <div>
-                                    <button class="btn btn-outline">View Details</button>
+                                    <button class="btn btn-outline" onclick="viewReviewDetails('review-1')">View Details</button>
                                     <button class="btn btn-outline" style="margin-left: 0.5rem;">Edit</button>
                                 </div>
                             </div>
@@ -1725,8 +1812,9 @@
                                     <p>By Jane Smith • Pending Review • $79.99</p>
                                 </div>
                                 <div>
-                                    <button class="btn btn-outline">Review</button>
-                                    <button class="btn btn-outline" style="margin-left: 0.5rem;">Edit</button>
+                                    <button class="btn btn-outline" onclick="reviewCourse('advanced-javascript', 'superadmin')">Review</button>
+                                    <button class="btn btn-success" onclick="approveCourse('advanced-javascript', 'superadmin')" style="margin-left: 0.5rem;">Approve</button>
+                                    <button class="btn btn-outline" onclick="rejectCourse('advanced-javascript', 'superadmin')" style="margin-left: 0.5rem;">Reject</button>
                                 </div>
                             </div>
                         </div>
@@ -1771,14 +1859,14 @@
                                     <h3>Course Purchase - Web Development</h3>
                                     <p>Student: jane.smith@example.com • Amount: $49.99 • Date: Jan 20, 2024</p>
                                 </div>
-                                <button class="btn btn-outline">View Details</button>
+                                <button class="btn btn-outline" onclick="viewReviewDetails('review-1')">View Details</button>
                             </div>
                             <div class="content-item">
                                 <div>
                                     <h3>Instructor Payout - John Doe</h3>
                                     <p>Amount: $1,200.00 • Status: Completed • Date: Jan 18, 2024</p>
                                 </div>
-                                <button class="btn btn-outline">View Details</button>
+                                <button class="btn btn-outline" onclick="viewReviewDetails('review-1')">View Details</button>
                             </div>
                         </div>
                     </div>
@@ -1913,14 +2001,14 @@
                                     <h3>Introduction to Web Development</h3>
                                     <p>234 students • $11,466 revenue • 4.8★ rating</p>
                                 </div>
-                                <button class="btn btn-outline">View Details</button>
+                                <button class="btn btn-outline" onclick="viewReviewDetails('review-1')">View Details</button>
                             </div>
                             <div class="content-item">
                                 <div>
                                     <h3>Advanced JavaScript</h3>
                                     <p>189 students • $15,021 revenue • 4.9★ rating</p>
                                 </div>
-                                <button class="btn btn-outline">View Details</button>
+                                <button class="btn btn-outline" onclick="viewReviewDetails('review-1')">View Details</button>
                             </div>
                         </div>
                     </div>
@@ -2028,7 +2116,7 @@
                                 <button class="btn btn-outline">Copy</button>
                             </div>
                         </div>
-                        <button class="btn btn-success">Save Webhook Settings</button>
+                        <button class="btn btn-success" onclick="saveStripeWebhookSettings()">Save Webhook Settings</button>
                     </div>
                     
                     <div class="content-card">
@@ -2060,7 +2148,7 @@
                                 <option>CAD - Canadian Dollar</option>
                             </select>
                         </div>
-                        <button class="btn btn-success">Save Payment Settings</button>
+                        <button class="btn btn-success" onclick="saveStripePaymentSettings()">Save Payment Settings</button>
                     </div>
                 </div>
                 
@@ -2122,7 +2210,7 @@
                                     <p>Customer: jane.smith@example.com • Amount: $49.99 • Course: Introduction to Web Development</p>
                                     <p style="font-size: 0.85rem; color: #718096; margin-top: 0.25rem;">Date: Jan 20, 2024 10:30 AM • Status: ✅ Successful</p>
                                 </div>
-                                <button class="btn btn-outline">View Details</button>
+                                <button class="btn btn-outline" onclick="viewReviewDetails('review-1')">View Details</button>
                             </div>
                             <div class="content-item">
                                 <div>
@@ -2130,7 +2218,7 @@
                                     <p>Customer: john.doe@example.com • Amount: $79.99 • Course: Advanced JavaScript</p>
                                     <p style="font-size: 0.85rem; color: #718096; margin-top: 0.25rem;">Date: Jan 20, 2024 9:15 AM • Status: ✅ Successful</p>
                                 </div>
-                                <button class="btn btn-outline">View Details</button>
+                                <button class="btn btn-outline" onclick="viewReviewDetails('review-1')">View Details</button>
                             </div>
                             <div class="content-item">
                                 <div>
@@ -2138,7 +2226,7 @@
                                     <p>Customer: student@example.com • Amount: $29.99 • Course: Python Basics</p>
                                     <p style="font-size: 0.85rem; color: #718096; margin-top: 0.25rem;">Date: Jan 19, 2024 3:45 PM • Status: ⏳ Pending</p>
                                 </div>
-                                <button class="btn btn-outline">View Details</button>
+                                <button class="btn btn-outline" onclick="viewReviewDetails('review-1')">View Details</button>
                             </div>
                             <div class="content-item">
                                 <div>
@@ -2146,7 +2234,7 @@
                                     <p>Customer: user@example.com • Amount: $99.99 • Course: Full Stack Development</p>
                                     <p style="font-size: 0.85rem; color: #718096; margin-top: 0.25rem;">Date: Jan 18, 2024 2:20 PM • Status: ❌ Failed</p>
                                 </div>
-                                <button class="btn btn-outline">View Details</button>
+                                <button class="btn btn-outline" onclick="viewReviewDetails('review-1')">View Details</button>
                             </div>
                         </div>
                         
@@ -2512,6 +2600,51 @@
                 </div>
                 <button type="submit" class="btn btn-success" style="width: 100%;">Create User</button>
             </form>
+        </div>
+    </div>
+
+    <!-- Course Review Modal -->
+    <div id="courseReviewModal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <button class="modal-close" onclick="closeModal('courseReview')">×</button>
+            <h2>Course Review</h2>
+            <div id="courseReviewContent">
+                <div class="form-group">
+                    <h3 id="reviewCourseTitle">Course Title</h3>
+                    <p id="reviewCourseInstructor">By Instructor Name</p>
+                </div>
+                
+                <div class="form-group">
+                    <h4>Course Preview Video</h4>
+                    <video id="reviewPreviewVideo" controls style="width: 100%; max-height: 400px; background: #000; border-radius: 6px;" preload="metadata">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+                
+                <div class="form-group">
+                    <h4>Course Cover Image</h4>
+                    <img id="reviewCourseCover" src="" alt="Course Cover" style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 6px;">
+                </div>
+                
+                <div class="form-group">
+                    <h4>Course Videos</h4>
+                    <div id="reviewCourseVideos">
+                        <!-- Course videos will be displayed here -->
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <h4>Course Details</h4>
+                    <p id="reviewCourseDescription"></p>
+                    <p><strong>Price:</strong> <span id="reviewCoursePrice"></span></p>
+                    <p><strong>Category:</strong> <span id="reviewCourseCategory"></span></p>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button class="btn btn-success" onclick="approveCourseFromReview()" style="flex: 1;">Approve Course</button>
+                    <button class="btn btn-outline" onclick="rejectCourseFromReview()" style="flex: 1;">Reject Course</button>
+                </div>
+            </div>
         </div>
     </div>
 

@@ -433,43 +433,157 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Handle create course
+// Initialize courses storage
+function initializeCourses() {
+    if (!localStorage.getItem('courses')) {
+        localStorage.setItem('courses', JSON.stringify([]));
+    }
+}
+
+// Get all courses
+function getAllCourses() {
+    const courses = localStorage.getItem('courses');
+    return courses ? JSON.parse(courses) : [];
+}
+
+// Save course
+function saveCourse(course) {
+    const courses = getAllCourses();
+    courses.push(course);
+    localStorage.setItem('courses', JSON.stringify(courses));
+    return course;
+}
+
+// Update course status
+function updateCourseStatus(courseId, status, reviewedBy) {
+    const courses = getAllCourses();
+    const courseIndex = courses.findIndex(c => c.id === courseId);
+    if (courseIndex !== -1) {
+        courses[courseIndex].status = status;
+        courses[courseIndex].reviewedBy = reviewedBy;
+        courses[courseIndex].reviewedAt = new Date().toISOString();
+        localStorage.setItem('courses', JSON.stringify(courses));
+        return courses[courseIndex];
+    }
+    return null;
+}
+
+// Get course by ID
+function getCourseById(courseId) {
+    const courses = getAllCourses();
+    return courses.find(c => c.id === courseId);
+}
+
+// Create file URL from File object
+function createFileURL(file) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.readAsDataURL(file);
+    });
+}
+
 function handleCreateCourse(e) {
     e.preventDefault();
     
-    // Get course structure
+    // Get form data
+    const title = document.querySelector('#createCourseModal input[type="text"]').value;
+    const description = document.querySelector('#createCourseModal textarea').value;
+    const price = document.querySelector('#createCourseModal input[type="number"]').value;
+    const category = document.querySelector('#createCourseModal select').value;
     const structure = document.getElementById('courseStructure').value;
-    let videoInfo = '';
     
+    // Get cover image
+    const coverFile = document.getElementById('coverFile').files[0];
+    const coverOption = document.getElementById('coverOption').value;
+    
+    // Get preview video
+    const previewFile = document.getElementById('previewFile').files[0];
+    
+    // Get course videos
+    let courseVideos = [];
     if (structure === 'single') {
         const videoFile = document.getElementById('courseVideoFile').files[0];
         if (!videoFile) {
             alert('Please upload a course video!');
             return;
         }
-        videoInfo = `Single video: ${videoFile.name}`;
+        courseVideos.push({
+            type: 'single',
+            file: videoFile,
+            name: videoFile.name
+        });
     } else {
         const modules = document.querySelectorAll('.module-item');
         if (modules.length === 0) {
             alert('Please add at least one module!');
             return;
         }
-        let moduleVideos = [];
         modules.forEach((module, index) => {
             const videoInput = module.querySelector('.module-video');
             const titleInput = module.querySelector('.module-title');
+            const descInput = module.querySelector('.module-description');
             if (videoInput && videoInput.files[0]) {
-                moduleVideos.push(`Module ${index + 1} (${titleInput.value || 'Untitled'}): ${videoInput.files[0].name}`);
+                courseVideos.push({
+                    type: 'module',
+                    moduleNumber: index + 1,
+                    title: titleInput ? titleInput.value : `Module ${index + 1}`,
+                    description: descInput ? descInput.value : '',
+                    file: videoInput.files[0],
+                    name: videoInput.files[0].name
+                });
             }
         });
-        if (moduleVideos.length === 0) {
+        if (courseVideos.length === 0) {
             alert('Please upload at least one module video!');
             return;
         }
-        videoInfo = `Modules: ${moduleVideos.length} module(s) with videos`;
     }
     
-    alert(`Course created successfully!\n\n${videoInfo}\n\nYour content is protected with DRM - students can stream but not download.`);
-    closeModal('createCourse');
+    // Create course object
+    const courseId = 'course-' + Date.now();
+    const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
+    
+    // Store file references (we'll use FileReader to create object URLs)
+    Promise.all([
+        coverFile && coverOption === 'custom' ? createFileURL(coverFile) : Promise.resolve(null),
+        previewFile ? createFileURL(previewFile) : Promise.resolve(null),
+        ...courseVideos.map(v => createFileURL(v.file))
+    ]).then(([coverURL, previewURL, ...videoURLs]) => {
+        const course = {
+            id: courseId,
+            title: title,
+            description: description,
+            price: parseFloat(price),
+            category: category,
+            structure: structure,
+            coverImage: coverURL || 'default',
+            previewVideo: previewURL || null,
+            videos: courseVideos.map((v, i) => ({
+                ...v,
+                url: videoURLs[i]
+            })),
+            instructor: userSession.email || 'instructor@learnable.com',
+            instructorName: userSession.name || 'Instructor',
+            status: 'pending',
+            createdAt: new Date().toISOString(),
+            submittedAt: new Date().toISOString()
+        };
+        
+        // Save course
+        saveCourse(course);
+        
+        alert(`Course "${title}" created successfully!\n\nYour course is now pending review. It will be available for purchase after approval.`);
+        closeModal('createCourse');
+        
+        // Reset form
+        document.querySelector('#createCourseModal form').reset();
+        
+        // Refresh course lists if on relevant pages
+        if (typeof refreshCourseLists === 'function') {
+            refreshCourseLists();
+        }
+    });
 }
 
 // Open Add User Modal
@@ -581,6 +695,242 @@ function generateAdminCodeFromDashboard() {
         showSuperAdminSection('accessCodes', {target: document.querySelector('[onclick*="accessCodes"]')});
     }
 }
+
+// Course Review Functions
+let currentReviewingCourseId = null;
+let currentReviewingRole = null;
+
+function reviewCourse(courseId, role) {
+    currentReviewingCourseId = courseId;
+    currentReviewingRole = role;
+    
+    const course = getCourseById(courseId);
+    if (!course) {
+        // For demo purposes, create a sample course
+        const sampleCourse = {
+            id: courseId,
+            title: courseId === 'python-beginners' ? 'Python for Beginners' : 
+                   courseId === 'digital-marketing' ? 'Digital Marketing Mastery' : 
+                   'Advanced JavaScript',
+            description: 'A comprehensive course covering all the fundamentals and advanced topics.',
+            price: courseId === 'python-beginners' ? 39.99 : 
+                   courseId === 'digital-marketing' ? 59.99 : 79.99,
+            category: 'Technology & IT',
+            structure: 'modules',
+            coverImage: 'default',
+            previewVideo: null,
+            videos: [
+                { type: 'module', moduleNumber: 1, title: 'Introduction', url: null, name: 'intro.mp4' },
+                { type: 'module', moduleNumber: 2, title: 'Getting Started', url: null, name: 'getting-started.mp4' }
+            ],
+            instructor: 'instructor@learnable.com',
+            instructorName: 'Instructor Name',
+            status: 'pending'
+        };
+        displayCourseReview(sampleCourse);
+    } else {
+        displayCourseReview(course);
+    }
+    
+    openModal('courseReview');
+}
+
+function displayCourseReview(course) {
+    document.getElementById('reviewCourseTitle').textContent = course.title;
+    document.getElementById('reviewCourseInstructor').textContent = `By ${course.instructorName || course.instructor}`;
+    document.getElementById('reviewCourseDescription').textContent = course.description || 'No description provided.';
+    document.getElementById('reviewCoursePrice').textContent = `$${course.price.toFixed(2)}`;
+    document.getElementById('reviewCourseCategory').textContent = course.category || 'Uncategorized';
+    
+    // Display cover image
+    const coverImg = document.getElementById('reviewCourseCover');
+    if (course.coverImage && course.coverImage !== 'default') {
+        coverImg.src = course.coverImage;
+        coverImg.style.display = 'block';
+    } else {
+        coverImg.style.display = 'none';
+    }
+    
+    // Display preview video
+    const previewVideo = document.getElementById('reviewPreviewVideo');
+    const previewContainer = previewVideo ? previewVideo.parentElement : null;
+    if (previewContainer) {
+        if (course.previewVideo) {
+            // Ensure video element exists
+            if (!previewVideo) {
+                const video = document.createElement('video');
+                video.id = 'reviewPreviewVideo';
+                video.controls = true;
+                video.style.width = '100%';
+                video.style.maxHeight = '400px';
+                video.style.background = '#000';
+                video.style.borderRadius = '6px';
+                video.preload = 'metadata';
+                previewContainer.innerHTML = '<h4>Course Preview Video</h4>';
+                previewContainer.appendChild(video);
+                video.src = course.previewVideo;
+            } else {
+                previewVideo.src = course.previewVideo;
+                previewVideo.style.display = 'block';
+            }
+        } else {
+            if (previewVideo) {
+                previewVideo.style.display = 'none';
+            }
+            // Remove any existing message and add new one
+            const existingMsg = previewContainer.querySelector('p');
+            if (!existingMsg) {
+                const msg = document.createElement('p');
+                msg.style.color = '#718096';
+                msg.textContent = 'No preview video uploaded';
+                previewContainer.appendChild(msg);
+            }
+        }
+    }
+    
+    // Display course videos
+    const videosContainer = document.getElementById('reviewCourseVideos');
+    if (course.videos && course.videos.length > 0) {
+        videosContainer.innerHTML = course.videos.map((video, index) => {
+            if (video.url) {
+                return `
+                    <div style="margin-bottom: 1rem;">
+                        <h5>${video.type === 'module' ? `Module ${video.moduleNumber}: ${video.title || 'Untitled'}` : 'Course Video'}</h5>
+                        <video controls style="width: 100%; max-height: 300px; background: #000; border-radius: 6px;" preload="metadata">
+                            <source src="${video.url}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <p style="font-size: 0.9rem; color: #718096; margin-top: 0.25rem;">${video.name}</p>
+                    </div>
+                `;
+            } else {
+                return `
+                    <div style="margin-bottom: 1rem; padding: 1rem; background: #F7FAFC; border-radius: 6px;">
+                        <h5>${video.type === 'module' ? `Module ${video.moduleNumber}: ${video.title || 'Untitled'}` : 'Course Video'}</h5>
+                        <p style="color: #718096;">${video.name} (File uploaded, preview not available)</p>
+                    </div>
+                `;
+            }
+        }).join('');
+    } else {
+        videosContainer.innerHTML = '<p style="color: #718096;">No course videos uploaded</p>';
+    }
+}
+
+function approveCourseFromReview() {
+    if (!currentReviewingCourseId) return;
+    
+    const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
+    const reviewedBy = userSession.email || (currentReviewingRole === 'admin' ? 'admin@learnable.com' : 'superadmin@learnable.com');
+    
+    const updatedCourse = updateCourseStatus(currentReviewingCourseId, 'approved', reviewedBy);
+    if (updatedCourse) {
+        alert(`Course "${updatedCourse.title || currentReviewingCourseId}" has been approved and is now available for purchase!`);
+    } else {
+        // For demo courses, just show success
+        alert('Course has been approved and is now available for purchase!');
+    }
+    
+    closeModal('courseReview');
+    currentReviewingCourseId = null;
+    currentReviewingRole = null;
+    
+    // Refresh course lists
+    if (typeof refreshCourseLists === 'function') {
+        refreshCourseLists();
+    }
+}
+
+function rejectCourseFromReview() {
+    if (!currentReviewingCourseId) return;
+    
+    const reason = prompt('Please provide a reason for rejection:');
+    if (reason === null) return; // User cancelled
+    
+    const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
+    const reviewedBy = userSession.email || (currentReviewingRole === 'admin' ? 'admin@learnable.com' : 'superadmin@learnable.com');
+    
+    const updatedCourse = updateCourseStatus(currentReviewingCourseId, 'rejected', reviewedBy);
+    if (updatedCourse) {
+        updatedCourse.rejectionReason = reason;
+        const courses = getAllCourses();
+        const courseIndex = courses.findIndex(c => c.id === currentReviewingCourseId);
+        if (courseIndex !== -1) {
+            courses[courseIndex] = updatedCourse;
+            localStorage.setItem('courses', JSON.stringify(courses));
+        }
+        alert(`Course "${updatedCourse.title || currentReviewingCourseId}" has been rejected.`);
+    } else {
+        alert('Course has been rejected.');
+    }
+    
+    closeModal('courseReview');
+    currentReviewingCourseId = null;
+    currentReviewingRole = null;
+    
+    // Refresh course lists
+    if (typeof refreshCourseLists === 'function') {
+        refreshCourseLists();
+    }
+}
+
+function approveCourse(courseId, role) {
+    currentReviewingCourseId = courseId;
+    currentReviewingRole = role;
+    
+    const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
+    const reviewedBy = userSession.email || (role === 'admin' ? 'admin@learnable.com' : 'superadmin@learnable.com');
+    
+    const updatedCourse = updateCourseStatus(courseId, 'approved', reviewedBy);
+    if (updatedCourse) {
+        alert(`Course "${updatedCourse.title || courseId}" has been approved and is now available for purchase!`);
+    } else {
+        alert('Course has been approved and is now available for purchase!');
+    }
+    
+    // Refresh course lists
+    if (typeof refreshCourseLists === 'function') {
+        refreshCourseLists();
+    }
+}
+
+function rejectCourse(courseId, role) {
+    const reason = prompt('Please provide a reason for rejection:');
+    if (reason === null) return; // User cancelled
+    
+    const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
+    const reviewedBy = userSession.email || (role === 'admin' ? 'admin@learnable.com' : 'superadmin@learnable.com');
+    
+    const updatedCourse = updateCourseStatus(courseId, 'rejected', reviewedBy);
+    if (updatedCourse) {
+        updatedCourse.rejectionReason = reason;
+        const courses = getAllCourses();
+        const courseIndex = courses.findIndex(c => c.id === courseId);
+        if (courseIndex !== -1) {
+            courses[courseIndex] = updatedCourse;
+            localStorage.setItem('courses', JSON.stringify(courses));
+        }
+        alert(`Course "${updatedCourse.title || courseId}" has been rejected.`);
+    } else {
+        alert('Course has been rejected.');
+    }
+    
+    // Refresh course lists
+    if (typeof refreshCourseLists === 'function') {
+        refreshCourseLists();
+    }
+}
+
+// Get approved courses (available for purchase)
+function getApprovedCourses() {
+    const courses = getAllCourses();
+    return courses.filter(c => c.status === 'approved');
+}
+
+// Initialize courses on page load
+document.addEventListener('DOMContentLoaded', function() {
+    initializeCourses();
+});
 
 // Close modals when clicking outside
 window.onclick = function(event) {

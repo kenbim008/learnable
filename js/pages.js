@@ -102,6 +102,46 @@ function toggleChatbot() {
     }
 }
 
+// Student section navigation
+function showStudentSection(sectionName, event) {
+    // Hide all student sections
+    const sections = document.querySelectorAll('.student-section');
+    sections.forEach(section => {
+        section.classList.add('hidden');
+    });
+    
+    // Show selected section
+    const sectionMap = {
+        'dashboard': 'studentDashboardSection',
+        'myCourses': 'studentMyCoursesSection',
+        'learningPath': 'studentLearningPathSection',
+        'wishlist': 'studentWishlistSection',
+        'certificates': 'studentCertificatesSection',
+        'messages': 'studentMessagesSection',
+        'settings': 'studentSettingsSection'
+    };
+    
+    const targetSectionId = sectionMap[sectionName] || sectionName;
+    const targetSection = document.getElementById(targetSectionId);
+    if (targetSection) {
+        targetSection.classList.remove('hidden');
+    }
+    
+    // Update active state in sidebar
+    const sidebarLinks = document.querySelectorAll('#studentDashboard .sidebar-menu li a');
+    sidebarLinks.forEach(link => {
+        link.classList.remove('active');
+    });
+    
+    // Set active state on clicked link
+    if (event && event.target) {
+        event.target.classList.add('active');
+    }
+    
+    // Scroll to top
+    window.scrollTo(0, 0);
+}
+
 // Admin section navigation
 function showAdminSection(sectionName, event) {
     // Hide all admin sections
