@@ -509,20 +509,90 @@ function loadFeaturedCourses() {
 
 // Category and Subcategory Management
 const categorySubcategories = {
-    'technology': ['Web Development', 'Mobile Development', 'Data Science', 'Machine Learning', 'Cybersecurity', 'Cloud Computing', 'DevOps', 'Programming Languages', 'Software Engineering', 'IT & Networking'],
-    'business': ['Entrepreneurship', 'Management', 'Finance', 'Marketing', 'Sales', 'Business Strategy', 'Operations', 'Human Resources', 'Project Management', 'Leadership'],
-    'design': ['Graphic Design', 'UI/UX Design', 'Web Design', 'Product Design', 'Interior Design', 'Fashion Design', '3D Design', 'Animation', 'Illustration', 'Branding'],
-    'marketing': ['Digital Marketing', 'Social Media Marketing', 'Content Marketing', 'Email Marketing', 'SEO', 'PPC Advertising', 'Marketing Analytics', 'Influencer Marketing', 'Brand Marketing', 'Marketing Strategy'],
-    'photography': ['Portrait Photography', 'Landscape Photography', 'Wedding Photography', 'Product Photography', 'Street Photography', 'Wildlife Photography', 'Photo Editing', 'Video Production', 'Cinematography', 'Drone Photography'],
-    'music': ['Music Production', 'Music Theory', 'Instrument Lessons', 'Singing', 'Music Business', 'Audio Engineering', 'Songwriting', 'DJ Skills', 'Music Marketing', 'Music Technology'],
-    'health': ['Fitness Training', 'Yoga', 'Nutrition', 'Mental Health', 'Meditation', 'Weight Loss', 'Strength Training', 'Cardio Workouts', 'Wellness', 'Alternative Medicine'],
-    'language': ['English', 'Spanish', 'French', 'German', 'Chinese', 'Japanese', 'Korean', 'Italian', 'Portuguese', 'Arabic', 'Other Languages'],
-    'personal': ['Time Management', 'Productivity', 'Goal Setting', 'Self-Improvement', 'Communication Skills', 'Public Speaking', 'Confidence Building', 'Stress Management', 'Life Coaching', 'Mindfulness'],
-    'finance': ['Personal Finance', 'Investing', 'Trading', 'Cryptocurrency', 'Accounting', 'Tax Planning', 'Real Estate Investing', 'Financial Planning', 'Wealth Building', 'Retirement Planning'],
-    'education': ['Teaching Methods', 'Curriculum Development', 'Online Teaching', 'Student Assessment', 'Educational Technology', 'Special Education', 'Early Childhood Education', 'Adult Education', 'Test Preparation', 'Learning Strategies'],
-    'lifestyle': ['Cooking', 'Home Improvement', 'Gardening', 'Travel', 'Fashion & Style', 'Beauty & Makeup', 'Parenting', 'Relationships', 'Pet Care', 'Hobbies'],
-    'science': ['Physics', 'Chemistry', 'Biology', 'Mathematics', 'Astronomy', 'Environmental Science', 'Medical Science', 'Engineering', 'Computer Science', 'Research Methods'],
-    'arts': ['Drawing', 'Painting', 'Sculpture', 'Pottery', 'Calligraphy', 'Crafts', 'Knitting & Crochet', 'Woodworking', 'Jewelry Making', 'Mixed Media']
+    'business-entrepreneurship': [
+        'Business Fundamentals', 'Business Planning', 'Market Research', 'Business Law Basics', 'Entrepreneurship for Beginners',
+        'Entrepreneurship & Startups', 'Startup Launch', 'Lean Startup Methodology', 'Funding & Venture Capital', 'Business Model Development',
+        'Leadership & Management', 'Strategic Management', 'People Management', 'Change Management', 'Decision Making',
+        'Marketing & Sales', 'Digital Marketing', 'SEO & SEM', 'Branding', 'Sales Funnel Creation',
+        'Finance & Accounting', 'Personal Finance', 'Corporate Finance', 'Investment Strategies', 'Bookkeeping & Accounting Tools'
+    ],
+    'business-analysis': [
+        'Introduction to Business Analysis',
+        'Business Analysis Planning',
+        'Requirements Gathering',
+        'Stakeholder Analysis',
+        'Business Process Modeling',
+        'Use Case Development',
+        'Data Analysis for Business',
+        'Agile Business Analysis',
+        'Business Requirements Documentation',
+        'Business Intelligence & Reporting'
+    ],
+    'project-management': [
+        'Project Management Fundamentals',
+        'Agile Project Management',
+        'Scrum Master Training',
+        'Waterfall Methodology',
+        'Project Scheduling',
+        'Risk Management in Projects',
+        'Project Budgeting',
+        'Stakeholder Management',
+        'Project Scope Management',
+        'Project Monitoring & Control',
+        'Project Closure & Review',
+        'PMI Certification Preparation (PMP, CAPM)',
+        'Microsoft Project Training',
+        'Asana/Trello/Jira for Project Managers'
+    ],
+    'technology-software': [
+        'Programming & Development', 'Web Development (HTML, CSS, JS)', 'Python Programming', 'Java, C++, C#', 'Mobile App Development',
+        'Data & AI', 'Data Science', 'Machine Learning', 'AI Applications', 'Big Data Analytics',
+        'Cybersecurity', 'Ethical Hacking', 'Network Security', 'Cloud Security', 'Cyber Risk Management',
+        'IT & Networking', 'Networking Fundamentals', 'Cloud Computing (AWS, Azure, GCP)', 'System Administration',
+        'Software Tools', 'Microsoft Office Suite', 'Google Workspace', 'Project Management Tools (Trello, Asana, Jira)'
+    ],
+    'creative-arts-design': [
+        'Graphic Design', 'Photoshop', 'Illustrator', 'Canva for Beginners',
+        'UI/UX Design', 'User Experience Principles', 'Wireframing & Prototyping', 'Figma / Adobe XD',
+        'Photography & Videography', 'Camera Basics', 'Video Editing (Premiere Pro, Final Cut)', 'Lighting Techniques',
+        'Music & Audio', 'Music Production', 'Audio Editing', 'Songwriting',
+        'Art & Illustration', 'Drawing Basics', 'Painting Techniques', 'Digital Art'
+    ],
+    'science-engineering-math': [
+        'Natural Sciences', 'Biology', 'Chemistry', 'Physics',
+        'Engineering', 'Mechanical Engineering Basics', 'Electrical Engineering', 'Civil Engineering',
+        'Mathematics', 'Algebra', 'Calculus', 'Statistics',
+        'Environmental Science', 'Climate Change', 'Renewable Energy', 'Sustainability Practices'
+    ],
+    'personal-development': [
+        'Self-Improvement', 'Productivity & Time Management', 'Mindfulness & Meditation', 'Goal Setting',
+        'Communication Skills', 'Public Speaking', 'Negotiation Skills', 'Writing Skills',
+        'Career Development', 'Resume Writing', 'Interview Skills', 'Career Change Strategies',
+        'Soft Skills', 'Emotional Intelligence', 'Conflict Resolution', 'Teamwork'
+    ],
+    'health-wellness-lifestyle': [
+        'Fitness & Exercise', 'Weight Training', 'Yoga', 'Pilates',
+        'Nutrition', 'Healthy Eating', 'Diet Planning', 'Sports Nutrition',
+        'Mental Health', 'Stress Management', 'Coping Strategies', 'Mindset Coaching',
+        'Lifestyle Skills', 'Personal Finance for Everyday Life', 'Home Organization', 'Sustainable Living'
+    ],
+    'language-learning': [
+        'English', 'Grammar', 'Business English', 'IELTS/TOEFL Prep',
+        'Other Languages', 'Spanish', 'French', 'German', 'Chinese (Mandarin)', 'Arabic',
+        'Language Skills', 'Writing', 'Speaking', 'Listening'
+    ],
+    'professional-certifications': [
+        'IT & Technology', 'AWS Certification', 'Cisco (CCNA, CCNP)', 'CompTIA A+/Security+',
+        'Business', 'PMP (Project Management)', 'Six Sigma', 'HR Certifications',
+        'Education', 'Teaching Certificates', 'TESOL/TEFL',
+        'Healthcare', 'First Aid & CPR', 'Medical Coding & Billing'
+    ],
+    'hobbies-special-interests': [
+        'Cooking & Baking', 'World Cuisines', 'Pastry & Desserts', 'Healthy Cooking',
+        'DIY & Crafts', 'Woodworking', 'Sewing', 'Jewelry Making',
+        'Travel & Culture', 'Travel Photography', 'Cultural Studies', 'Language for Travelers',
+        'Gaming', 'Game Design', 'eSports Coaching', 'Streaming & Content Creation'
+    ]
 };
 
 function updateSubcategoryOptions() {
