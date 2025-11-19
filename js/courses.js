@@ -27,6 +27,7 @@ function loadCourses() {
                 : '<div style="width: 100%; height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">📚</div>',
             hasPreview: !!approvedCourse.previewVideo,
             category: approvedCourse.category,
+            subcategory: approvedCourse.subcategory,
             isFeatured: isFeatured,
             approvedCourse: approvedCourse // Store reference
         };
@@ -41,7 +42,7 @@ function loadCourses() {
     });
     
     grid.innerHTML = allCourses.map(course => `
-        <div class="course-card" ${course.isFeatured ? 'style="border: 2px solid #5B7FFF;"' : ''}>
+        <div class="course-card" ${course.isFeatured ? 'style="border: 2px solid #5B7FFF;"' : ''} data-course-id="${course.id || ''}" data-category="${course.category || ''}" data-subcategory="${course.subcategory || ''}">
             <div class="course-image" style="position: relative;">
                 ${course.image}
                 ${course.isFeatured ? '<div style="position: absolute; top: 10px; right: 10px; background: #5B7FFF; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">⭐ Featured</div>' : ''}
@@ -54,7 +55,7 @@ function loadCourses() {
                     <div class="course-price">${convertPrice(course.priceUSD)}</div>
                     <div class="course-rating">⭐ ${course.rating}</div>
                 </div>
-                <button class="add-to-cart-btn" onclick="addToCart(${course.id})">Add to Cart</button>
+                <button class="add-to-cart-btn" onclick="addToCart('${course.id}')">Add to Cart</button>
             </div>
         </div>
     `).join('');
@@ -392,6 +393,50 @@ function viewUserDetails(email) {
     alert(`Viewing details for user: ${email}\n\nThis would open a detailed user profile page.`);
 }
 
+// Filter courses by category
+function filterCoursesByCategory() {
+    const categoryFilter = document.getElementById('categoryFilter');
+    if (!categoryFilter) return;
+    
+    const selectedCategory = categoryFilter.value;
+    const allCourses = document.querySelectorAll('.course-card');
+    
+    if (!selectedCategory) {
+        // Show all courses
+        allCourses.forEach(card => {
+            card.style.display = '';
+        });
+        return;
+    }
+    
+    // Filter courses based on selected category
+    allCourses.forEach(card => {
+        // Get course data from the card or from localStorage
+        const courseId = card.getAttribute('data-course-id') || '';
+        const courses = typeof getAllCourses === 'function' ? getAllCourses() : [];
+        const course = courses.find(c => c.id === courseId);
+        
+        // Check if course matches selected category/subcategory
+        if (course) {
+            const courseCategory = course.category || '';
+            const courseSubcategory = course.subcategory || '';
+            const categoryMatch = courseCategory === selectedCategory || 
+                                 courseSubcategory === selectedCategory ||
+                                 courseCategory.includes(selectedCategory) ||
+                                 courseSubcategory.includes(selectedCategory);
+            
+            card.style.display = categoryMatch ? '' : 'none';
+        } else {
+            // For default courses, show all if no specific filter
+            card.style.display = '';
+        }
+    });
+    
+    // Update course count display if exists
+    const visibleCount = Array.from(allCourses).filter(card => card.style.display !== 'none').length;
+    console.log(`Showing ${visibleCount} courses for category: ${selectedCategory}`);
+}
+
 // Admin Management Functions
 function editAdminPermissions(adminEmail) {
     alert(`Editing permissions for: ${adminEmail}\n\nThis would open a permissions editor modal.`);
@@ -487,7 +532,7 @@ function loadFeaturedCourses() {
         };
         
         return `
-            <div class="course-card" style="border: 2px solid #5B7FFF;">
+            <div class="course-card" style="border: 2px solid #5B7FFF;" data-course-id="${courseCard.id}" data-category="${course.category || ''}" data-subcategory="${course.subcategory || ''}">
                 <div class="course-image" style="position: relative;">
                     ${courseCard.image}
                     <div style="position: absolute; top: 10px; right: 10px; background: #5B7FFF; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">⭐ Featured</div>

@@ -86,11 +86,177 @@
             <h2 class="section-title">Featured Courses</h2>
             <div class="filter-bar">
                 <input type="text" placeholder="Search courses...">
-                <select>
-                    <option>All Categories</option>
-                    <option>Technology & IT</option>
-                    <option>Business</option>
-                    <option>Design</option>
+                <select id="categoryFilter" onchange="filterCoursesByCategory()">
+                    <option value="">All Categories</option>
+                    <optgroup label="Business & Entrepreneurship">
+                        <option value="business-fundamentals">Business Fundamentals</option>
+                        <option value="business-planning">Business Planning</option>
+                        <option value="market-research">Market Research</option>
+                        <option value="business-law-basics">Business Law Basics</option>
+                        <option value="entrepreneurship-beginners">Entrepreneurship for Beginners</option>
+                        <option value="startup-launch">Startup Launch</option>
+                        <option value="lean-startup">Lean Startup Methodology</option>
+                        <option value="funding-venture-capital">Funding & Venture Capital</option>
+                        <option value="business-model-development">Business Model Development</option>
+                        <option value="strategic-management">Strategic Management</option>
+                        <option value="people-management">People Management</option>
+                        <option value="change-management">Change Management</option>
+                        <option value="decision-making">Decision Making</option>
+                        <option value="digital-marketing">Digital Marketing</option>
+                        <option value="seo-sem">SEO & SEM</option>
+                        <option value="branding">Branding</option>
+                        <option value="sales-funnel">Sales Funnel Creation</option>
+                        <option value="personal-finance">Personal Finance</option>
+                        <option value="corporate-finance">Corporate Finance</option>
+                        <option value="investment-strategies">Investment Strategies</option>
+                        <option value="bookkeeping-accounting">Bookkeeping & Accounting Tools</option>
+                    </optgroup>
+                    <optgroup label="Business Analysis">
+                        <option value="intro-business-analysis">Introduction to Business Analysis</option>
+                        <option value="business-analysis-planning">Business Analysis Planning</option>
+                        <option value="requirements-gathering">Requirements Gathering</option>
+                        <option value="stakeholder-analysis">Stakeholder Analysis</option>
+                        <option value="business-process-modeling">Business Process Modeling</option>
+                        <option value="use-case-development">Use Case Development</option>
+                        <option value="data-analysis-business">Data Analysis for Business</option>
+                        <option value="agile-business-analysis">Agile Business Analysis</option>
+                        <option value="business-requirements-doc">Business Requirements Documentation</option>
+                        <option value="business-intelligence">Business Intelligence & Reporting</option>
+                    </optgroup>
+                    <optgroup label="Project Management">
+                        <option value="pm-fundamentals">Project Management Fundamentals</option>
+                        <option value="agile-pm">Agile Project Management</option>
+                        <option value="scrum-master">Scrum Master Training</option>
+                        <option value="waterfall-methodology">Waterfall Methodology</option>
+                        <option value="project-scheduling">Project Scheduling</option>
+                        <option value="risk-management-projects">Risk Management in Projects</option>
+                        <option value="project-budgeting">Project Budgeting</option>
+                        <option value="stakeholder-management">Stakeholder Management</option>
+                        <option value="project-scope">Project Scope Management</option>
+                        <option value="project-monitoring">Project Monitoring & Control</option>
+                        <option value="project-closure">Project Closure & Review</option>
+                        <option value="pmi-certification">PMI Certification Preparation (PMP, CAPM)</option>
+                        <option value="microsoft-project">Microsoft Project Training</option>
+                        <option value="asana-trello-jira">Asana/Trello/Jira for Project Managers</option>
+                    </optgroup>
+                    <optgroup label="Technology & Software">
+                        <option value="web-development">Web Development (HTML, CSS, JS)</option>
+                        <option value="python-programming">Python Programming</option>
+                        <option value="java-cpp-csharp">Java, C++, C#</option>
+                        <option value="mobile-app-development">Mobile App Development</option>
+                        <option value="data-science">Data Science</option>
+                        <option value="machine-learning">Machine Learning</option>
+                        <option value="ai-applications">AI Applications</option>
+                        <option value="big-data-analytics">Big Data Analytics</option>
+                        <option value="ethical-hacking">Ethical Hacking</option>
+                        <option value="network-security">Network Security</option>
+                        <option value="cloud-security">Cloud Security</option>
+                        <option value="cyber-risk-management">Cyber Risk Management</option>
+                        <option value="networking-fundamentals">Networking Fundamentals</option>
+                        <option value="cloud-computing">Cloud Computing (AWS, Azure, GCP)</option>
+                        <option value="system-administration">System Administration</option>
+                        <option value="microsoft-office">Microsoft Office Suite</option>
+                        <option value="google-workspace">Google Workspace</option>
+                        <option value="pm-tools">Project Management Tools (Trello, Asana, Jira)</option>
+                    </optgroup>
+                    <optgroup label="Creative Arts & Design">
+                        <option value="photoshop">Photoshop</option>
+                        <option value="illustrator">Illustrator</option>
+                        <option value="canva-beginners">Canva for Beginners</option>
+                        <option value="user-experience-principles">User Experience Principles</option>
+                        <option value="wireframing-prototyping">Wireframing & Prototyping</option>
+                        <option value="figma-adobe-xd">Figma / Adobe XD</option>
+                        <option value="camera-basics">Camera Basics</option>
+                        <option value="video-editing">Video Editing (Premiere Pro, Final Cut)</option>
+                        <option value="lighting-techniques">Lighting Techniques</option>
+                        <option value="music-production">Music Production</option>
+                        <option value="audio-editing">Audio Editing</option>
+                        <option value="songwriting">Songwriting</option>
+                        <option value="drawing-basics">Drawing Basics</option>
+                        <option value="painting-techniques">Painting Techniques</option>
+                        <option value="digital-art">Digital Art</option>
+                    </optgroup>
+                    <optgroup label="Science, Engineering & Mathematics">
+                        <option value="biology">Biology</option>
+                        <option value="chemistry">Chemistry</option>
+                        <option value="physics">Physics</option>
+                        <option value="mechanical-engineering">Mechanical Engineering Basics</option>
+                        <option value="electrical-engineering">Electrical Engineering</option>
+                        <option value="civil-engineering">Civil Engineering</option>
+                        <option value="algebra">Algebra</option>
+                        <option value="calculus">Calculus</option>
+                        <option value="statistics">Statistics</option>
+                        <option value="climate-change">Climate Change</option>
+                        <option value="renewable-energy">Renewable Energy</option>
+                        <option value="sustainability-practices">Sustainability Practices</option>
+                    </optgroup>
+                    <optgroup label="Personal Development">
+                        <option value="productivity-time-management">Productivity & Time Management</option>
+                        <option value="mindfulness-meditation">Mindfulness & Meditation</option>
+                        <option value="goal-setting">Goal Setting</option>
+                        <option value="public-speaking">Public Speaking</option>
+                        <option value="negotiation-skills">Negotiation Skills</option>
+                        <option value="writing-skills">Writing Skills</option>
+                        <option value="resume-writing">Resume Writing</option>
+                        <option value="interview-skills">Interview Skills</option>
+                        <option value="career-change-strategies">Career Change Strategies</option>
+                        <option value="emotional-intelligence">Emotional Intelligence</option>
+                        <option value="conflict-resolution">Conflict Resolution</option>
+                        <option value="teamwork">Teamwork</option>
+                    </optgroup>
+                    <optgroup label="Health, Wellness & Lifestyle">
+                        <option value="weight-training">Weight Training</option>
+                        <option value="yoga">Yoga</option>
+                        <option value="pilates">Pilates</option>
+                        <option value="healthy-eating">Healthy Eating</option>
+                        <option value="diet-planning">Diet Planning</option>
+                        <option value="sports-nutrition">Sports Nutrition</option>
+                        <option value="stress-management">Stress Management</option>
+                        <option value="coping-strategies">Coping Strategies</option>
+                        <option value="mindset-coaching">Mindset Coaching</option>
+                        <option value="personal-finance-everyday">Personal Finance for Everyday Life</option>
+                        <option value="home-organization">Home Organization</option>
+                        <option value="sustainable-living">Sustainable Living</option>
+                    </optgroup>
+                    <optgroup label="Language Learning">
+                        <option value="grammar">Grammar</option>
+                        <option value="business-english">Business English</option>
+                        <option value="ielts-toefl-prep">IELTS/TOEFL Prep</option>
+                        <option value="spanish">Spanish</option>
+                        <option value="french">French</option>
+                        <option value="german">German</option>
+                        <option value="chinese-mandarin">Chinese (Mandarin)</option>
+                        <option value="arabic">Arabic</option>
+                        <option value="writing">Writing</option>
+                        <option value="speaking">Speaking</option>
+                        <option value="listening">Listening</option>
+                    </optgroup>
+                    <optgroup label="Professional Certifications">
+                        <option value="aws-certification">AWS Certification</option>
+                        <option value="cisco-ccna-ccnp">Cisco (CCNA, CCNP)</option>
+                        <option value="comptia">CompTIA A+/Security+</option>
+                        <option value="pmp-project-management">PMP (Project Management)</option>
+                        <option value="six-sigma">Six Sigma</option>
+                        <option value="hr-certifications">HR Certifications</option>
+                        <option value="teaching-certificates">Teaching Certificates</option>
+                        <option value="tesol-tefl">TESOL/TEFL</option>
+                        <option value="first-aid-cpr">First Aid & CPR</option>
+                        <option value="medical-coding-billing">Medical Coding & Billing</option>
+                    </optgroup>
+                    <optgroup label="Hobbies & Special Interests">
+                        <option value="world-cuisines">World Cuisines</option>
+                        <option value="pastry-desserts">Pastry & Desserts</option>
+                        <option value="healthy-cooking">Healthy Cooking</option>
+                        <option value="woodworking">Woodworking</option>
+                        <option value="sewing">Sewing</option>
+                        <option value="jewelry-making">Jewelry Making</option>
+                        <option value="travel-photography">Travel Photography</option>
+                        <option value="cultural-studies">Cultural Studies</option>
+                        <option value="language-for-travelers">Language for Travelers</option>
+                        <option value="game-design">Game Design</option>
+                        <option value="esports-coaching">eSports Coaching</option>
+                        <option value="streaming-content-creation">Streaming & Content Creation</option>
+                    </optgroup>
                 </select>
                 <select>
                     <option>All Levels</option>
