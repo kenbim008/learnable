@@ -450,6 +450,10 @@ function showSuperAdminSection(sectionName, event) {
         if (typeof loadStripeSettings === 'function') {
             loadStripeSettings();
         }
+    } else if (sectionName === 'siteSettings') {
+        if (typeof loadVideoPreviewSettings === 'function') {
+            loadVideoPreviewSettings();
+        }
     }
     
     // Scroll to top

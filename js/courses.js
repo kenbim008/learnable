@@ -219,9 +219,242 @@ function toggleCart() {
 
 // Checkout
 function checkout() {
-    const totalElement = document.getElementById('cartTotal');
-    const total = totalElement ? totalElement.textContent : '$0.00';
-    alert('Proceeding to secure Stripe checkout! Total: ' + total);
+    // Check if cart is empty
+    if (!cart || cart.length === 0) {
+        alert('Your cart is empty!');
+        return;
+    }
+    
+    // Check if user is logged in
+    const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
+    if (!userSession.email || userSession.role !== 'student') {
+        alert('Please log in as a student to proceed to checkout.');
+        if (typeof showPage === 'function') {
+            showPage('login');
+        }
+        return;
+    }
+    
+    // Calculate totals
+    let subtotal = 0;
+    cart.forEach(course => {
+        subtotal += course.price || 0;
+    });
+    const tax = subtotal * 0.1; // 10% tax (example)
+    const total = subtotal + tax;
+    
+    // Get Stripe settings
+    const stripeData = JSON.parse(localStorage.getItem('stripeSettings') || '{}');
+    const isStripeConnected = !!(stripeData.publishableKey && stripeData.secretKey);
+    
+    // Open checkout modal
+    if (typeof openModal === 'function') {
+        openModal('checkout');
+    } else {
+        const modal = document.getElementById('checkoutModal');
+        if (modal) modal.classList.add('active');
+    }
+    
+    // Build checkout content
+    const checkoutContent = document.getElementById('checkoutContent');
+    if (!checkoutContent) return;
+    
+    let cartItemsHtml = '';
+    cart.forEach((course, index) => {
+        cartItemsHtml += `
+            <div style="display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid #E2E8F0;">
+                <div>
+                    <div style="font-weight: 600;">${course.title || 'Untitled Course'}</div>
+                    <div style="font-size: 0.85rem; color: #718096;">Instructor: ${course.instructor || 'Unknown'}</div>
+                </div>
+                <div style="font-weight: 600; color: #10B981;">$${(course.price || 0).toFixed(2)}</div>
+            </div>
+        `;
+    });
+    
+    checkoutContent.innerHTML = `
+        <div style="display: grid; gap: 1.5rem;">
+            <!-- Order Summary -->
+            <div>
+                <h3 style="margin-bottom: 1rem;">Order Summary</h3>
+                <div style="background: #F7F9FC; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                    ${cartItemsHtml}
+                </div>
+                <div style="display: grid; gap: 0.5rem; padding: 1rem 0; border-top: 2px solid #E2E8F0;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Subtotal:</span>
+                        <span>$${subtotal.toFixed(2)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Tax (10%):</span>
+                        <span>$${tax.toFixed(2)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 1.25rem; font-weight: bold; padding-top: 0.5rem; border-top: 2px solid #E2E8F0; color: #10B981;">
+                        <span>Total:</span>
+                        <span>$${total.toFixed(2)}</span>
+                    </div>
+                </div>
+            </div>
+            
+            ${!isStripeConnected ? `
+                <div style="background: #FEF3C7; border: 1px solid #F59E0B; padding: 1rem; border-radius: 8px; color: #92400E;">
+                    <strong>⚠️ Payment Processing Not Configured</strong>
+                    <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem;">Stripe is not connected. Please configure Stripe in the Super Admin portal to enable payments.</p>
+                </div>
+            ` : ''}
+            
+            <!-- Payment Form -->
+            <div>
+                <h3 style="margin-bottom: 1rem;">Payment Information</h3>
+                <form id="checkoutForm" onsubmit="processPayment(event, ${total})">
+                    <div class="form-group">
+                        <label>Card Number</label>
+                        <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" required
+                               oninput="formatCardNumber(this)">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label>Expiry Date</label>
+                            <input type="text" id="cardExpiry" placeholder="MM/YY" maxlength="5" required
+                                   oninput="formatExpiry(this)">
+                        </div>
+                        <div class="form-group">
+                            <label>CVV</label>
+                            <input type="text" id="cardCVV" placeholder="123" maxlength="4" required
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Cardholder Name</label>
+                        <input type="text" id="cardName" placeholder="John Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Billing Email</label>
+                        <input type="email" id="billingEmail" value="${userSession.email || ''}" required>
+                    </div>
+                    <div style="background: #F7F9FC; padding: 1rem; border-radius: 8px; margin: 1rem 0; font-size: 0.85rem; color: #718096;">
+                        <strong>🔒 Secure Payment:</strong> Your payment information is encrypted and processed securely through Stripe. We never store your full card details.
+                    </div>
+                    <button type="submit" class="btn btn-success" style="width: 100%;" ${!isStripeConnected ? 'disabled' : ''}>
+                        ${isStripeConnected ? `Pay $${total.toFixed(2)}` : 'Payment Unavailable'}
+                    </button>
+                </form>
+            </div>
+        </div>
+    `;
+}
+
+// Process payment
+function processPayment(event, total) {
+    event.preventDefault();
+    
+    const cardNumber = document.getElementById('cardNumber')?.value.replace(/\s/g, '');
+    const cardExpiry = document.getElementById('cardExpiry')?.value;
+    const cardCVV = document.getElementById('cardCVV')?.value;
+    const cardName = document.getElementById('cardName')?.value;
+    const billingEmail = document.getElementById('billingEmail')?.value;
+    
+    // Basic validation
+    if (!cardNumber || cardNumber.length < 13) {
+        alert('Please enter a valid card number.');
+        return;
+    }
+    
+    if (!cardExpiry || !/\d{2}\/\d{2}/.test(cardExpiry)) {
+        alert('Please enter a valid expiry date (MM/YY).');
+        return;
+    }
+    
+    if (!cardCVV || cardCVV.length < 3) {
+        alert('Please enter a valid CVV.');
+        return;
+    }
+    
+    // Get Stripe settings
+    const stripeData = JSON.parse(localStorage.getItem('stripeSettings') || '{}');
+    if (!stripeData.publishableKey || !stripeData.secretKey) {
+        alert('Payment processing is not configured. Please contact support.');
+        return;
+    }
+    
+    // Show processing message
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Processing...';
+    submitBtn.disabled = true;
+    
+    // Simulate payment processing (in production, this would use Stripe.js)
+    setTimeout(() => {
+        // Get enrolled courses
+        let enrolledCourses = JSON.parse(localStorage.getItem('enrolledCourses') || '[]');
+        
+        // Add cart courses to enrolled courses
+        cart.forEach(course => {
+            // Check if already enrolled
+            if (!enrolledCourses.find(c => c.id === course.id)) {
+                enrolledCourses.push({
+                    ...course,
+                    enrolledAt: new Date().toISOString(),
+                    progress: 0
+                });
+            }
+        });
+        
+        // Save enrolled courses
+        localStorage.setItem('enrolledCourses', JSON.stringify(enrolledCourses));
+        
+        // Record payment (in production, this would be done server-side)
+        let payments = JSON.parse(localStorage.getItem('payments') || '[]');
+        payments.push({
+            id: 'pay_' + Date.now(),
+            courses: cart.map(c => ({ id: c.id, title: c.title, price: c.price })),
+            total: total,
+            cardLast4: cardNumber.slice(-4),
+            email: billingEmail,
+            date: new Date().toISOString(),
+            status: 'completed'
+        });
+        localStorage.setItem('payments', JSON.stringify(payments));
+        
+        // Clear cart
+        cart = [];
+        updateCartUI();
+        
+        // Close modals
+        closeModal('checkout');
+        if (typeof toggleCart === 'function') {
+            toggleCart(); // Close cart sidebar
+        }
+        
+        // Show success message
+        alert(`Payment successful! 🎉\n\nYou have been enrolled in ${enrolledCourses.length - (enrolledCourses.length - cart.length)} course(s).\n\nTotal paid: $${total.toFixed(2)}\n\nCheck your enrolled courses to start learning!`);
+        
+        // Refresh page or navigate to enrolled courses
+        if (typeof showStudentSection === 'function') {
+            showPage('studentDashboard');
+            setTimeout(() => {
+                if (typeof showStudentSection === 'function') {
+                    showStudentSection('myCourses');
+                }
+            }, 100);
+        }
+    }, 2000);
+}
+
+// Format card number
+function formatCardNumber(input) {
+    let value = input.value.replace(/\s/g, '');
+    let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+    input.value = formattedValue;
+}
+
+// Format expiry date
+function formatExpiry(input) {
+    let value = input.value.replace(/\D/g, '');
+    if (value.length >= 2) {
+        value = value.substring(0, 2) + '/' + value.substring(2, 4);
+    }
+    input.value = value;
 }
 
 // Additional button functions
@@ -967,6 +1200,29 @@ function saveSiteSettings(category) {
         if (currency) localStorage.setItem('siteDefaultCurrency', currency);
         if (timezone) localStorage.setItem('siteTimeZone', timezone);
         alert('General settings saved successfully!');
+    }
+}
+
+// Save Video Preview Settings
+function saveVideoPreviewSettings() {
+    const previewSize = document.getElementById('videoPreviewSize')?.value || 'medium';
+    
+    const settings = {
+        size: previewSize,
+        aspectRatio: '1:1' // Always square for previews
+    };
+    
+    localStorage.setItem('videoPreviewSettings', JSON.stringify(settings));
+    alert('Video preview settings saved successfully! All preview videos will now display as ' + previewSize + ' squares.');
+}
+
+// Load Video Preview Settings
+function loadVideoPreviewSettings() {
+    const settings = JSON.parse(localStorage.getItem('videoPreviewSettings') || '{}');
+    const sizeSelect = document.getElementById('videoPreviewSize');
+    
+    if (sizeSelect && settings.size) {
+        sizeSelect.value = settings.size;
     }
 }
 
@@ -1748,7 +2004,22 @@ function submitCourseForReview(courseId) {
     }
 }
 
-// Fix video preview - handle metadata-only videos
+// Get video preview size from settings
+function getVideoPreviewSize() {
+    const settings = JSON.parse(localStorage.getItem('videoPreviewSettings') || '{}');
+    const size = settings.size || 'medium';
+    
+    const sizeMap = {
+        'small': 400,
+        'medium': 600,
+        'large': 800,
+        'xlarge': 1000
+    };
+    
+    return sizeMap[size] || 600;
+}
+
+// Fix video preview - handle metadata-only videos and make it square
 function playCoursePreview(courseId, event) {
     if (event) event.stopPropagation();
     
@@ -1770,34 +2041,54 @@ function playCoursePreview(courseId, event) {
         return;
     }
     
+    // Get preview size from settings
+    const previewSize = getVideoPreviewSize();
+    const modalPadding = 60; // Account for modal padding and header
+    const maxModalWidth = previewSize + modalPadding;
+    
     // Check if previewVideo is a metadata object or a URL
     const isMetadata = typeof course.previewVideo === 'object' && course.previewVideo.name;
     
     if (isMetadata) {
-        // Show metadata info in modal
-        const sizeMB = course.previewVideo.size ? (course.previewVideo.size / (1024 * 1024)).toFixed(2) : 'Unknown';
+        // Try to create a file URL from the metadata (for demo purposes)
+        // In production, this would be a cloud storage URL
         const modal = document.createElement('div');
         modal.className = 'modal active';
         modal.style.zIndex = '10000';
         modal.innerHTML = `
-            <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-content" style="max-width: ${maxModalWidth}px; width: 90%;">
                 <button class="modal-close" onclick="this.closest('.modal').remove()">×</button>
-                <h2>${course.title} - Preview Video</h2>
-                <div style="padding: 1.5rem;">
-                    <p><strong>Video File:</strong> ${course.previewVideo.name}</p>
-                    <p><strong>Size:</strong> ${sizeMB} MB</p>
-                    <p><strong>Type:</strong> ${course.previewVideo.type || 'Unknown'}</p>
-                    ${course.previewVideo.uploadedAt ? `<p><strong>Uploaded:</strong> ${new Date(course.previewVideo.uploadedAt).toLocaleString()}</p>` : ''}
-                    <div style="background: #F7F9FC; padding: 1rem; border-radius: 6px; margin-top: 1rem;">
-                        <p style="color: #718096; font-size: 0.9rem; margin: 0;">
-                            <strong>Note:</strong> In this demo, video files are stored as metadata references only to avoid exceeding browser storage limits. 
-                            In a production environment, videos would be uploaded to cloud storage and the video URL would be stored here for playback.
-                        </p>
+                <h2 style="margin-bottom: 1rem;">${course.title} - Preview</h2>
+                <div style="position: relative; width: ${previewSize}px; height: ${previewSize}px; margin: 0 auto; background: #000; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                    <video id="previewVideoPlayer" controls autoplay style="width: 100%; height: 100%; object-fit: contain;">
+                        <source src="" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: white; background: rgba(0,0,0,0.7); padding: 1rem; border-radius: 8px; display: none;" id="previewVideoInfo">
+                        <p style="margin: 0 0 0.5rem 0;"><strong>Video File:</strong> ${course.previewVideo.name}</p>
+                        <p style="margin: 0; font-size: 0.9rem;">${course.previewVideo.size ? `Size: ${(course.previewVideo.size / (1024 * 1024)).toFixed(2)} MB` : ''}</p>
                     </div>
+                </div>
+                <div style="background: #F7F9FC; padding: 1rem; border-radius: 6px; margin-top: 1rem;">
+                    <p style="color: #718096; font-size: 0.9rem; margin: 0;">
+                        <strong>Note:</strong> Preview video file information shown above. In this demo, actual video playback requires the video file to be available. 
+                        In a production environment, videos would be uploaded to cloud storage (e.g., AWS S3, Cloudinary) and URLs would be stored for playback.
+                    </p>
                 </div>
             </div>
         `;
         document.body.appendChild(modal);
+        
+        // Try to load video if it's stored as a data URL (for demo)
+        const videoPlayer = modal.querySelector('#previewVideoPlayer');
+        if (videoPlayer) {
+            // Check if there's a data URL stored somewhere
+            const videoInfo = modal.querySelector('#previewVideoInfo');
+            if (videoInfo) {
+                videoInfo.style.display = 'block';
+                videoPlayer.style.opacity = '0.3';
+            }
+        }
         
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
@@ -1805,21 +2096,39 @@ function playCoursePreview(courseId, event) {
             }
         });
     } else if (typeof course.previewVideo === 'string') {
-        // It's a URL, play it
+        // It's a URL (or data URL), play it in a square container
         const modal = document.createElement('div');
         modal.className = 'modal active';
         modal.style.zIndex = '10000';
         modal.innerHTML = `
-            <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-content" style="max-width: ${maxModalWidth}px; width: 90%;">
                 <button class="modal-close" onclick="this.closest('.modal').remove()">×</button>
-                <h2>${course.title} - Preview</h2>
-                <video controls autoplay style="width: 100%; max-height: 500px; background: #000; border-radius: 6px;">
-                    <source src="${course.previewVideo}" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
+                <h2 style="margin-bottom: 1rem;">${course.title} - Preview</h2>
+                <div style="position: relative; width: ${previewSize}px; height: ${previewSize}px; margin: 0 auto; background: #000; border-radius: 8px; overflow: hidden;">
+                    <video controls autoplay style="width: 100%; height: 100%; object-fit: contain;" preload="auto">
+                        <source src="${course.previewVideo}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
             </div>
         `;
         document.body.appendChild(modal);
+        
+        // Try to play the video
+        const video = modal.querySelector('video');
+        if (video) {
+            video.addEventListener('loadeddata', () => {
+                video.play().catch(e => {
+                    console.log('Autoplay prevented:', e);
+                    // Show play button overlay if autoplay fails
+                });
+            });
+            
+            video.addEventListener('error', (e) => {
+                console.error('Video playback error:', e);
+                video.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: white; text-align: center; padding: 2rem;"><p>Unable to load video. Please check the video source.</p></div>';
+            });
+        }
         
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {

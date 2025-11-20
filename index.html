@@ -2893,6 +2893,32 @@
                         </div>
                         <button class="btn btn-success" onclick="saveSiteSettings('general')">Save Changes</button>
                     </div>
+                    
+                    <div class="content-card">
+                        <h2>Video Preview Settings</h2>
+                        <p style="color: #718096; margin-bottom: 1.5rem;">Configure the size and aspect ratio of video preview windows</p>
+                        
+                        <div class="form-group">
+                            <label>Preview Video Size</label>
+                            <select id="videoPreviewSize" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                                <option value="small">Small (400x400px - Square)</option>
+                                <option value="medium" selected>Medium (600x600px - Square)</option>
+                                <option value="large">Large (800x800px - Square)</option>
+                                <option value="xlarge">Extra Large (1000x1000px - Square)</option>
+                            </select>
+                            <p style="font-size: 0.9rem; color: #718096; margin-top: 0.5rem;">All preview videos will be displayed as squares with this size</p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Preview Aspect Ratio</label>
+                            <select id="videoPreviewAspectRatio" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;" disabled>
+                                <option value="1:1" selected>1:1 (Square) - Always enabled for previews</option>
+                            </select>
+                            <p style="font-size: 0.9rem; color: #718096; margin-top: 0.5rem;">Video previews are always displayed as squares for consistent viewing experience</p>
+                        </div>
+                        
+                        <button class="btn btn-success" onclick="saveVideoPreviewSettings()">Save Video Preview Settings</button>
+                    </div>
                 </div>
                 
                 <!-- Social Media Integration Section -->
@@ -3734,6 +3760,17 @@
                     <button type="submit" class="btn btn-primary" style="flex: 1;">Connect Stripe</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkoutModal" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <button class="modal-close" onclick="closeModal('checkout')">×</button>
+            <h2>Checkout</h2>
+            <div id="checkoutContent">
+                <!-- Checkout content will be loaded here -->
+            </div>
         </div>
     </div>
 
