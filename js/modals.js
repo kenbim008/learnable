@@ -568,9 +568,51 @@ function saveCourse(course) {
             console.error('Invalid course data:', course);
             throw new Error('Invalid course data');
         }
+        
+        // Remove video file objects if they exist (they shouldn't be stored)
+        if (course.videos) {
+            course.videos = course.videos.map(v => {
+                const { file, ...videoMetadata } = v;
+                return videoMetadata;
+            });
+        }
+        
+        // Estimate size before saving
+        const courseString = JSON.stringify(course);
+        const estimatedSizeMB = (new Blob([courseString]).size / (1024 * 1024)).toFixed(2);
+        
+        // Warn if course data is very large
+        if (parseFloat(estimatedSizeMB) > 4) {
+            console.warn(`Course data size: ${estimatedSizeMB}MB - close to localStorage quota`);
+        }
+        
         const courses = getAllCourses();
         courses.push(course);
-        localStorage.setItem('courses', JSON.stringify(courses));
+        
+        // Try to save
+        try {
+            localStorage.setItem('courses', JSON.stringify(courses));
+        } catch (quotaError) {
+            // If quota exceeded, try to clear old draft courses
+            if (quotaError.name === 'QuotaExceededError') {
+                console.warn('localStorage quota exceeded. Attempting to clear old draft courses...');
+                const cleanedCourses = courses.filter(c => c.status !== 'draft' || (new Date() - new Date(c.createdAt)) < 7 * 24 * 60 * 60 * 1000); // Keep drafts less than 7 days old
+                
+                if (cleanedCourses.length < courses.length) {
+                    try {
+                        localStorage.setItem('courses', JSON.stringify(cleanedCourses));
+                        alert('Storage quota was exceeded. Old draft courses have been cleared. Please try saving again.');
+                        throw new Error('Quota exceeded - old drafts cleared. Please retry.');
+                    } catch (retryError) {
+                        throw new Error('Storage quota exceeded. Please clear old courses or contact support.');
+                    }
+                } else {
+                    throw new Error('Storage quota exceeded. Please clear old courses or contact support.');
+                }
+            }
+            throw quotaError;
+        }
+        
         return course;
     } catch (error) {
         console.error('Error saving course:', error);
@@ -692,36 +734,23 @@ function handleCreateCourse(e) {
     const courseId = 'course-' + Date.now();
     const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
     
-    // Store file references (we'll use FileReader to create object URLs)
-    const filePromises = [];
+    // Store file references - only convert images to data URLs, not videos (to avoid localStorage quota issues)
+    // For videos, we'll store metadata only (name, size, type, date) instead of the actual file data
+    let coverURLPromise = Promise.resolve(null);
     
-    // Add cover file promise if exists
+    // Only convert cover image to data URL (images are small enough for localStorage)
     if (coverFile && coverOption === 'custom') {
-        filePromises.push(createFileURL(coverFile));
-    } else {
-        filePromises.push(Promise.resolve(null));
-    }
-    
-    // Add preview file promise if exists
-    if (previewFile) {
-        filePromises.push(createFileURL(previewFile));
-    } else {
-        filePromises.push(Promise.resolve(null));
-    }
-    
-    // Add video file promises
-    courseVideos.forEach(v => {
-        if (v && v.file) {
-            filePromises.push(createFileURL(v.file));
+        // Check if it's an image (not too large)
+        if (coverFile.size < 5 * 1024 * 1024) { // 5MB limit for images
+            coverURLPromise = createFileURL(coverFile);
         } else {
-            filePromises.push(Promise.resolve(null));
+            alert('Cover image is too large (max 5MB). Please use a smaller image.');
+            return;
         }
-    });
+    }
     
-    Promise.all(filePromises).then((results) => {
-        const coverURL = results[0] || null;
-        const previewURL = results[1] || null;
-        const videoURLs = results.slice(2);
+    coverURLPromise.then((coverURL) => {
+        // Create course object with video metadata (not actual video data)
         const course = {
             id: courseId,
             title: title,
@@ -731,10 +760,24 @@ function handleCreateCourse(e) {
             subcategory: subcategory,
             structure: structure,
             coverImage: coverURL || 'default',
-            previewVideo: previewURL || null,
-            videos: courseVideos.map((v, i) => ({
-                ...v,
-                url: videoURLs[i]
+            // Store video metadata only, not the actual video files
+            previewVideo: previewFile ? {
+                name: previewFile.name,
+                size: previewFile.size,
+                type: previewFile.type,
+                uploadedAt: new Date().toISOString()
+            } : null,
+            videos: courseVideos.map(v => ({
+                type: v.type,
+                moduleNumber: v.moduleNumber,
+                title: v.title,
+                description: v.description,
+                name: v.name,
+                size: v.file ? v.file.size : null,
+                type: v.file ? v.file.type : null,
+                uploadedAt: new Date().toISOString(),
+                // Note: Actual video file would be uploaded to server in production
+                url: null
             })),
             instructor: userSession.email || 'instructor@learnable.com',
             instructorName: userSession.name || 'Instructor',
@@ -747,7 +790,7 @@ function handleCreateCourse(e) {
         try {
             saveCourse(course);
             
-            alert(`Course "${title}" created successfully!\n\nYour course is now pending review. It will be available for purchase after approval.`);
+            alert(`Course "${title}" created successfully!\n\nYour course is now pending review. It will be available for purchase after approval.\n\nNote: Video files are stored as references. In production, these would be uploaded to cloud storage.`);
             closeModal('createCourse');
             
             // Reset form
@@ -762,11 +805,16 @@ function handleCreateCourse(e) {
             }
         } catch (saveError) {
             console.error('Error saving course:', saveError);
-            alert('Error saving course: ' + (saveError.message || 'Unknown error') + '\n\nPlease try again.');
+            // Check if it's a quota error
+            if (saveError.message && saveError.message.includes('quota')) {
+                alert('Storage quota exceeded. Please clear old courses or contact support.\n\nError: ' + saveError.message);
+            } else {
+                alert('Error saving course: ' + (saveError.message || 'Unknown error') + '\n\nPlease try again.');
+            }
         }
     }).catch(error => {
-        console.error('Error creating course:', error);
-        alert('An error occurred while creating the course: ' + (error.message || 'Unknown error') + '\n\nPlease try again or save as draft first.');
+        console.error('Error processing course:', error);
+        alert('An error occurred while processing the course: ' + (error.message || 'Unknown error') + '\n\nPlease try again or save as draft first.');
     });
 }
 
@@ -821,37 +869,23 @@ function saveCourseAsDraft() {
     const courseId = 'draft-course-' + Date.now();
     const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
     
-    // Store file references (we'll use FileReader to create object URLs)
-    const filePromises = [];
+    // Store file references - only convert images to data URLs, not videos (to avoid localStorage quota issues)
+    // For videos, we'll store metadata only (name, size, type, date) instead of the actual file data
+    let coverURLPromise = Promise.resolve(null);
     
-    // Add cover file promise if exists
+    // Only convert cover image to data URL (images are small enough for localStorage)
     if (coverFile && coverOption === 'custom') {
-        filePromises.push(createFileURL(coverFile));
-    } else {
-        filePromises.push(Promise.resolve(null));
-    }
-    
-    // Add preview file promise if exists
-    if (previewFile) {
-        filePromises.push(createFileURL(previewFile));
-    } else {
-        filePromises.push(Promise.resolve(null));
-    }
-    
-    // Add video file promises
-    courseVideos.forEach(v => {
-        if (v && v.file) {
-            filePromises.push(createFileURL(v.file));
+        // Check if it's an image (not too large)
+        if (coverFile.size < 5 * 1024 * 1024) { // 5MB limit for images
+            coverURLPromise = createFileURL(coverFile);
         } else {
-            filePromises.push(Promise.resolve(null));
+            alert('Cover image is too large (max 5MB). Please use a smaller image.');
+            return;
         }
-    });
+    }
     
-    Promise.all(filePromises).then((results) => {
-        const coverURL = results[0] || null;
-        const previewURL = results[1] || null;
-        const videoURLs = results.slice(2);
-        
+    coverURLPromise.then((coverURL) => {
+        // Create course object with video metadata (not actual video data)
         const course = {
             id: courseId,
             title: title,
@@ -861,10 +895,24 @@ function saveCourseAsDraft() {
             subcategory: subcategory,
             structure: structure,
             coverImage: coverURL || 'default',
-            previewVideo: previewURL || null,
-            videos: courseVideos.map((v, i) => ({
-                ...v,
-                url: videoURLs[i] || null
+            // Store video metadata only, not the actual video files
+            previewVideo: previewFile ? {
+                name: previewFile.name,
+                size: previewFile.size,
+                type: previewFile.type,
+                uploadedAt: new Date().toISOString()
+            } : null,
+            videos: courseVideos.map(v => ({
+                type: v.type,
+                moduleNumber: v.moduleNumber,
+                title: v.title,
+                description: v.description,
+                name: v.name,
+                size: v.file ? v.file.size : null,
+                type: v.file ? v.file.type : null,
+                uploadedAt: new Date().toISOString(),
+                // Note: Actual video file would be uploaded to server in production
+                url: null
             })),
             instructor: userSession.email || 'instructor@learnable.com',
             instructorName: userSession.name || 'Instructor',
@@ -877,13 +925,18 @@ function saveCourseAsDraft() {
         try {
             saveCourse(course);
             
-            alert(`Course draft "${title}" saved successfully!\n\nYou can continue editing and submit for review later.`);
+            alert(`Course draft "${title}" saved successfully!\n\nYou can continue editing and submit for review later.\n\nNote: Video files are stored as references. In production, these would be uploaded to cloud storage.`);
             
             // Note: We don't close the modal or reset the form for drafts
             // The user can continue editing and submit later
         } catch (saveError) {
             console.error('Error saving draft:', saveError);
-            alert('Error saving draft: ' + (saveError.message || 'Unknown error') + '\n\nPlease check that all file inputs are valid and try again.');
+            // Check if it's a quota error
+            if (saveError.message && saveError.message.includes('quota')) {
+                alert('Storage quota exceeded. Please clear old courses or contact support.\n\nError: ' + saveError.message);
+            } else {
+                alert('Error saving draft: ' + (saveError.message || 'Unknown error') + '\n\nPlease check that all file inputs are valid and try again.');
+            }
         }
     }).catch(error => {
         console.error('Error processing draft:', error);
