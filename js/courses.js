@@ -442,6 +442,219 @@ function loadStudentMessages() {
     }
 }
 
+// Load Admin Pending Courses
+function loadAdminPendingCourses() {
+    const courses = typeof getAllCourses === 'function' ? getAllCourses() : [];
+    const pendingCourses = courses.filter(c => c.status === 'pending' || c.status === 'draft');
+    
+    const countEl = document.getElementById('adminPendingCount');
+    const listEl = document.getElementById('adminPendingCoursesList');
+    
+    if (countEl) {
+        countEl.textContent = `${pendingCourses.length} ${pendingCourses.length === 1 ? 'course' : 'courses'} waiting for review`;
+    }
+    
+    if (listEl) {
+        if (pendingCourses.length === 0) {
+            listEl.innerHTML = '<p style="color: #718096; text-align: center; padding: 2rem;">No courses pending review at this time.</p>';
+        } else {
+            listEl.innerHTML = pendingCourses.map(course => {
+                const submittedDate = course.submittedAt ? new Date(course.submittedAt).toLocaleDateString() : 
+                                      course.createdAt ? new Date(course.createdAt).toLocaleDateString() : 
+                                      'Unknown date';
+                const category = course.category ? course.category.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Uncategorized';
+                
+                return `
+                    <div class="content-item" id="admin-course-${course.id}">
+                        <div>
+                            <h3>${course.title || 'Untitled Course'}</h3>
+                            <p>By ${course.instructorName || course.instructor || 'Unknown Instructor'} • Submitted: ${submittedDate} • Price: $${(course.price || 0).toFixed(2)}</p>
+                            <p style="font-size: 0.85rem; color: #718096; margin-top: 0.25rem;">Category: ${category} • Status: ${course.status === 'pending' ? 'Pending Review' : 'Draft'}</p>
+                        </div>
+                        <div>
+                            <button class="btn btn-success" onclick="approveCourse('${course.id}', 'admin')">Approve</button>
+                            <button class="btn btn-outline" style="margin-left: 0.5rem;" onclick="reviewCourse('${course.id}', 'admin')">Review</button>
+                            <button class="btn btn-outline" style="margin-left: 0.5rem;" onclick="rejectCourse('${course.id}', 'admin')">Reject</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+    }
+}
+
+// Load Admin All Courses
+function loadAdminAllCourses() {
+    const courses = typeof getAllCourses === 'function' ? getAllCourses() : [];
+    const coursesListEl = document.getElementById('adminCoursesList');
+    const statsEl = document.getElementById('adminCoursesStats');
+    const searchTerm = document.getElementById('adminCourseSearch')?.value.toLowerCase() || '';
+    
+    // Update stats
+    if (statsEl) {
+        const publishedCourses = courses.filter(c => c.status === 'approved');
+        const pendingCourses = courses.filter(c => c.status === 'pending');
+        statsEl.textContent = `Total: ${publishedCourses.length} published courses, ${pendingCourses.length} pending review`;
+    }
+    
+    if (coursesListEl) {
+        let filteredCourses = courses.filter(c => c.status === 'approved' || c.status === 'pending');
+        
+        // Filter by search term
+        if (searchTerm) {
+            filteredCourses = filteredCourses.filter(c => 
+                (c.title && c.title.toLowerCase().includes(searchTerm)) ||
+                (c.instructorName && c.instructorName.toLowerCase().includes(searchTerm)) ||
+                (c.instructor && c.instructor.toLowerCase().includes(searchTerm)) ||
+                (c.category && c.category.toLowerCase().includes(searchTerm))
+            );
+        }
+        
+        // Sort: pending first, then by date
+        filteredCourses.sort((a, b) => {
+            if (a.status === 'pending' && b.status !== 'pending') return -1;
+            if (a.status !== 'pending' && b.status === 'pending') return 1;
+            const dateA = new Date(a.submittedAt || a.createdAt || 0);
+            const dateB = new Date(b.submittedAt || b.createdAt || 0);
+            return dateB - dateA;
+        });
+        
+        if (filteredCourses.length === 0) {
+            coursesListEl.innerHTML = '<p style="color: #718096; text-align: center; padding: 2rem;">No courses found.</p>';
+        } else {
+            coursesListEl.innerHTML = filteredCourses.map(course => {
+                const statusBadge = course.status === 'approved' ? '<span style="padding: 0.25rem 0.5rem; background: #10B981; color: white; border-radius: 4px; font-size: 0.75rem; margin-left: 0.5rem;">Published</span>' :
+                                 course.status === 'pending' ? '<span style="padding: 0.25rem 0.5rem; background: #FFB800; color: white; border-radius: 4px; font-size: 0.75rem; margin-left: 0.5rem;">Pending</span>' :
+                                 '';
+                
+                return `
+                    <div class="content-item" id="admin-all-course-${course.id}">
+                        <div>
+                            <h3>${course.title || 'Untitled Course'} ${statusBadge}</h3>
+                            <p>By ${course.instructorName || course.instructor || 'Unknown Instructor'} • $${(course.price || 0).toFixed(2)}</p>
+                        </div>
+                        <div>
+                            ${course.status === 'pending' ? `
+                                <button class="btn btn-outline" onclick="reviewCourse('${course.id}', 'admin')">Review</button>
+                                <button class="btn btn-success" onclick="approveCourse('${course.id}', 'admin')" style="margin-left: 0.5rem;">Approve</button>
+                                <button class="btn btn-outline" onclick="rejectCourse('${course.id}', 'admin')" style="margin-left: 0.5rem;">Reject</button>
+                            ` : `
+                                <button class="btn btn-outline" onclick="viewCourseDetails('${course.id}')">View</button>
+                            `}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+    }
+}
+
+// Load Super Admin All Courses
+function loadSuperAdminAllCourses() {
+    const courses = typeof getAllCourses === 'function' ? getAllCourses() : [];
+    const coursesListEl = document.getElementById('superAdminAllCoursesList');
+    const statsEl = document.getElementById('superAdminCoursesStats');
+    const statusFilter = document.getElementById('superAdminCourseStatusFilter')?.value || '';
+    const searchTerm = document.getElementById('superAdminCourseSearch')?.value.toLowerCase() || '';
+    
+    // Update stats
+    if (statsEl) {
+        const publishedCourses = courses.filter(c => c.status === 'approved');
+        const pendingCourses = courses.filter(c => c.status === 'pending' || c.status === 'draft');
+        statsEl.textContent = `Total: ${publishedCourses.length} published courses, ${pendingCourses.length} pending review`;
+    }
+    
+    if (coursesListEl) {
+        let filteredCourses = courses;
+        
+        // Filter by status
+        if (statusFilter) {
+            filteredCourses = filteredCourses.filter(c => c.status === statusFilter);
+        }
+        
+        // Filter by search term
+        if (searchTerm) {
+            filteredCourses = filteredCourses.filter(c => 
+                (c.title && c.title.toLowerCase().includes(searchTerm)) ||
+                (c.instructorName && c.instructorName.toLowerCase().includes(searchTerm)) ||
+                (c.instructor && c.instructor.toLowerCase().includes(searchTerm)) ||
+                (c.category && c.category.toLowerCase().includes(searchTerm))
+            );
+        }
+        
+        // Sort: pending first, then by date
+        filteredCourses.sort((a, b) => {
+            if (a.status === 'pending' && b.status !== 'pending') return -1;
+            if (a.status !== 'pending' && b.status === 'pending') return 1;
+            const dateA = new Date(a.submittedAt || a.createdAt || 0);
+            const dateB = new Date(b.submittedAt || b.createdAt || 0);
+            return dateB - dateA;
+        });
+        
+        if (filteredCourses.length === 0) {
+            coursesListEl.innerHTML = '<p style="color: #718096; text-align: center; padding: 2rem;">No courses found.</p>';
+        } else {
+            coursesListEl.innerHTML = filteredCourses.map(course => {
+                const statusBadge = course.status === 'approved' ? '<span style="padding: 0.25rem 0.5rem; background: #10B981; color: white; border-radius: 4px; font-size: 0.75rem; margin-left: 0.5rem;">Published</span>' :
+                                 course.status === 'pending' ? '<span style="padding: 0.25rem 0.5rem; background: #FFB800; color: white; border-radius: 4px; font-size: 0.75rem; margin-left: 0.5rem;">Pending</span>' :
+                                 course.status === 'rejected' ? '<span style="padding: 0.25rem 0.5rem; background: #EF4444; color: white; border-radius: 4px; font-size: 0.75rem; margin-left: 0.5rem;">Rejected</span>' :
+                                 course.status === 'draft' ? '<span style="padding: 0.25rem 0.5rem; background: #718096; color: white; border-radius: 4px; font-size: 0.75rem; margin-left: 0.5rem;">Draft</span>' :
+                                 '';
+                
+                const submittedDate = course.submittedAt ? new Date(course.submittedAt).toLocaleDateString() : 
+                                      course.createdAt ? new Date(course.createdAt).toLocaleDateString() : 
+                                      'Unknown date';
+                
+                return `
+                    <div class="content-item" id="superadmin-course-${course.id}">
+                        <div>
+                            <h3>${course.title || 'Untitled Course'} ${statusBadge}</h3>
+                            <p>By ${course.instructorName || course.instructor || 'Unknown Instructor'} • $${(course.price || 0).toFixed(2)} • ${submittedDate}</p>
+                        </div>
+                        <div>
+                            ${course.status === 'pending' ? `
+                                <button class="btn btn-outline" onclick="reviewCourse('${course.id}', 'superadmin')">Review</button>
+                                <button class="btn btn-success" onclick="approveCourse('${course.id}', 'superadmin')" style="margin-left: 0.5rem;">Approve</button>
+                                <button class="btn btn-outline" onclick="rejectCourse('${course.id}', 'superadmin')" style="margin-left: 0.5rem;">Reject</button>
+                            ` : course.status === 'approved' ? `
+                                <button class="btn btn-outline" onclick="viewCourseDetails('${course.id}')">View</button>
+                                <button class="btn btn-primary" onclick="toggleFeaturedCourse('${course.id}', 'superadmin')" style="margin-left: 0.5rem;">⭐ Feature</button>
+                            ` : `
+                                <button class="btn btn-outline" onclick="viewCourseDetails('${course.id}')">View</button>
+                            `}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+    }
+}
+
+// Filter Super Admin Courses
+function filterSuperAdminCourses() {
+    if (typeof loadSuperAdminAllCourses === 'function') {
+        loadSuperAdminAllCourses();
+    }
+}
+
+// Refresh course lists (called after approval/rejection)
+function refreshCourseLists() {
+    // Reload pending courses if in admin portal
+    if (typeof loadAdminPendingCourses === 'function') {
+        loadAdminPendingCourses();
+    }
+    
+    // Reload all courses if in super admin portal
+    if (typeof loadSuperAdminAllCourses === 'function') {
+        loadSuperAdminAllCourses();
+    }
+    
+    // Reload marketplace courses
+    if (typeof loadCourses === 'function') {
+        loadCourses();
+    }
+}
+
 function viewReviewDetails(reviewId) {
     alert(`Viewing review details for: ${reviewId}\n\nThis would show:\n- Full review text\n- Student information\n- Course details\n- Response options`);
 }

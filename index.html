@@ -1920,26 +1920,51 @@
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                             <div>
                                 <h2>Course Management</h2>
-                                <p>Total: 156 published courses, 12 pending review</p>
+                                <p id="adminCoursesStats">Total: 0 published courses, 0 pending review</p>
                             </div>
                         </div>
                         
                         <div style="margin-bottom: 1rem;">
-                            <input type="text" placeholder="Search courses..." style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                            <input type="text" id="adminCourseSearch" placeholder="Search courses..." onkeyup="loadAdminAllCourses()" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
                         </div>
                         
+                        <div class="content-list" id="adminCoursesList">
+                            <!-- Courses will be dynamically loaded here -->
+                            <p style="color: #718096; text-align: center; padding: 2rem;">No courses yet.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pending Review Section -->
+                <div id="adminPendingReviewSection" class="admin-section hidden">
+                    <div class="dashboard-header">
+                        <h1>✅ Pending Review</h1>
+                        <p>Review and approve courses awaiting publication</p>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h2>Courses Pending Approval</h2>
+                        <p id="adminPendingCount" style="margin-bottom: 1.5rem;">0 courses waiting for review</p>
+                        
+                        <div class="content-list" id="adminPendingCoursesList">
+                            <!-- Pending courses will be dynamically loaded here -->
+                            <p style="color: #718096; text-align: center; padding: 2rem;">No courses pending review at this time.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Community Section -->
+                <div id="adminCommunitySection" class="admin-section hidden">
+                    <div class="dashboard-header">
+                        <h1>👥 Community</h1>
+                        <p>Moderate community content and interactions</p>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h2>Community Moderation</h2>
+                        <p style="margin-bottom: 1.5rem;">Manage forums, study groups, and community posts</p>
+                        
                         <div class="content-list">
-                            <div class="content-item">
-                                <div>
-                                    <h3>Introduction to Web Development</h3>
-                                    <p>By John Doe • Published • 234 students • $49.99</p>
-                                </div>
-                                <div>
-                                    <button class="btn btn-outline" onclick="viewCourseDetails('course-1')">View</button>
-                                    <button class="btn btn-outline" onclick="editCourse('course-1')" style="margin-left: 0.5rem;">Edit</button>
-                                    <button class="btn btn-primary" onclick="toggleFeaturedCourse('course-1', 'admin')" style="margin-left: 0.5rem;">⭐ Feature</button>
-                                </div>
-                            </div>
                             <div class="content-item">
                                 <div>
                                     <h3>Advanced JavaScript</h3>
@@ -1964,33 +1989,11 @@
                     
                     <div class="content-card">
                         <h2>Courses Pending Approval</h2>
-                        <p style="margin-bottom: 1.5rem;">12 courses waiting for review</p>
+                        <p id="adminPendingCount" style="margin-bottom: 1.5rem;">0 courses waiting for review</p>
                         
-                        <div class="content-list">
-                            <div class="content-item">
-                                <div>
-                                    <h3>Python for Beginners</h3>
-                                    <p>By Instructor Name • Submitted: Jan 20, 2024 • Price: $39.99</p>
-                                    <p style="font-size: 0.85rem; color: #718096; margin-top: 0.25rem;">Category: Technology & IT</p>
-                                </div>
-                                <div>
-                                    <button class="btn btn-success" onclick="approveCourse('python-beginners', 'admin')">Approve</button>
-                                    <button class="btn btn-outline" style="margin-left: 0.5rem;" onclick="reviewCourse('python-beginners', 'admin')">Review</button>
-                                    <button class="btn btn-outline" style="margin-left: 0.5rem;" onclick="rejectCourse('python-beginners', 'admin')">Reject</button>
-                                </div>
-                            </div>
-                            <div class="content-item">
-                                <div>
-                                    <h3>Digital Marketing Mastery</h3>
-                                    <p>By Instructor Name • Submitted: Jan 19, 2024 • Price: $59.99</p>
-                                    <p style="font-size: 0.85rem; color: #718096; margin-top: 0.25rem;">Category: Marketing</p>
-                                </div>
-                                <div>
-                                    <button class="btn btn-success" onclick="approveCourse('digital-marketing', 'admin')">Approve</button>
-                                    <button class="btn btn-outline" style="margin-left: 0.5rem;" onclick="reviewCourse('digital-marketing', 'admin')">Review</button>
-                                    <button class="btn btn-outline" style="margin-left: 0.5rem;" onclick="rejectCourse('digital-marketing', 'admin')">Reject</button>
-                                </div>
-                            </div>
+                        <div class="content-list" id="adminPendingCoursesList">
+                            <!-- Pending courses will be dynamically loaded here -->
+                            <p style="color: #718096; text-align: center; padding: 2rem;">No courses pending review at this time.</p>
                         </div>
                     </div>
                 </div>
@@ -2688,39 +2691,23 @@
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                             <div>
                                 <h2>Course Management</h2>
-                                <p>Total: 156 published courses, 12 pending review</p>
+                                <p id="superAdminCoursesStats">Total: 0 published courses, 0 pending review</p>
                             </div>
-                            <button class="btn btn-primary">+ Create Course</button>
                         </div>
                         
-                        <div style="margin-bottom: 1rem;">
-                            <input type="text" placeholder="Search courses..." style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                        <div style="margin-bottom: 1rem; display: flex; gap: 1rem;">
+                            <input type="text" id="superAdminCourseSearch" placeholder="Search courses..." onkeyup="filterSuperAdminCourses()" style="flex: 1; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                            <select id="superAdminCourseStatusFilter" onchange="filterSuperAdminCourses()" style="padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                                <option value="">All Status</option>
+                                <option value="pending">Pending Review</option>
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                                <option value="draft">Draft</option>
+                            </select>
                         </div>
                         
-                        <div class="content-list">
-                            <div class="content-item">
-                                <div>
-                                    <h3>Introduction to Web Development</h3>
-                                    <p>By John Doe • Published • 234 students • $49.99</p>
-                                </div>
-                                <div>
-                                    <button class="btn btn-outline" onclick="viewCourseDetails('course-1')">View</button>
-                                    <button class="btn btn-outline" onclick="editCourse('course-1')" style="margin-left: 0.5rem;">Edit</button>
-                                    <button class="btn btn-primary" onclick="toggleFeaturedCourse('course-1', 'superadmin')" style="margin-left: 0.5rem;">⭐ Feature</button>
-                                </div>
-                            </div>
-                            <div class="content-item">
-                                <div>
-                                    <h3>Advanced JavaScript</h3>
-                                    <p>By Jane Smith • Pending Review • $79.99</p>
-                                </div>
-                                <div>
-                                    <button class="btn btn-outline" onclick="reviewCourse('advanced-javascript', 'superadmin')">Review</button>
-                                    <button class="btn btn-success" onclick="approveCourse('advanced-javascript', 'superadmin')" style="margin-left: 0.5rem;">Approve</button>
-                                    <button class="btn btn-outline" onclick="rejectCourse('advanced-javascript', 'superadmin')" style="margin-left: 0.5rem;">Reject</button>
-                                    <button class="btn btn-primary" onclick="toggleFeaturedCourse('advanced-javascript', 'superadmin')" style="margin-left: 0.5rem;">⭐ Feature</button>
-                                </div>
-                            </div>
+                        <div class="content-list" id="superAdminAllCoursesList">
+                            <!-- All courses will be dynamically loaded here -->
                         </div>
                     </div>
                 </div>

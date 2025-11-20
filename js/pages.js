@@ -322,6 +322,13 @@ function showAdminSection(sectionName, event) {
         event.target.classList.add('active');
     }
     
+    // Load data when opening specific sections
+    if (sectionName === 'pendingReview' && typeof loadAdminPendingCourses === 'function') {
+        loadAdminPendingCourses();
+    } else if (sectionName === 'courses' && typeof loadAdminAllCourses === 'function') {
+        loadAdminAllCourses();
+    }
+    
     // Scroll to top
     window.scrollTo(0, 0);
 }
@@ -432,9 +439,11 @@ function showSuperAdminSection(sectionName, event) {
         loadSocialMediaSettings();
     }
     
-    // Load data when opening data management section
+    // Load data when opening specific sections
     if (sectionName === 'dataManagement' && typeof loadDataManagementTable === 'function') {
         loadDataManagementTable();
+    } else if (sectionName === 'allCourses' && typeof loadSuperAdminAllCourses === 'function') {
+        loadSuperAdminAllCourses();
     }
     
     // Scroll to top

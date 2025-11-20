@@ -311,8 +311,8 @@ function handleLogin(e) {
     } else if (role === 'admin') {
         const adminCodes = getAdminAccessCodes();
         if (!adminCodes.includes(adminCode)) {
-            alert('Invalid admin access code!');
-            return;
+        alert('Invalid admin access code!');
+        return;
         }
     }
     
@@ -791,7 +791,7 @@ function handleCreateCourse(e) {
             saveCourse(course);
             
             alert(`Course "${title}" created successfully!\n\nYour course is now pending review. It will be available for purchase after approval.\n\nNote: Video files are stored as references. In production, these would be uploaded to cloud storage.`);
-            closeModal('createCourse');
+    closeModal('createCourse');
             
             // Reset form
             const form = document.querySelector('#createCourseModal form');
@@ -1250,6 +1250,19 @@ function approveCourse(courseId, role) {
     if (typeof refreshCourseLists === 'function') {
         refreshCourseLists();
     }
+    
+    // Reload pending courses if in admin/super admin portal
+    if (role === 'admin' && typeof loadAdminPendingCourses === 'function') {
+        loadAdminPendingCourses();
+    }
+    if ((role === 'admin' || role === 'superadmin') && typeof loadSuperAdminAllCourses === 'function') {
+        loadSuperAdminAllCourses();
+    }
+    
+    // Reload marketplace courses
+    if (typeof loadCourses === 'function') {
+        loadCourses();
+    }
 }
 
 function rejectCourse(courseId, role) {
@@ -1276,6 +1289,14 @@ function rejectCourse(courseId, role) {
     // Refresh course lists
     if (typeof refreshCourseLists === 'function') {
         refreshCourseLists();
+    }
+    
+    // Reload pending courses if in admin/super admin portal
+    if (role === 'admin' && typeof loadAdminPendingCourses === 'function') {
+        loadAdminPendingCourses();
+    }
+    if ((role === 'admin' || role === 'superadmin') && typeof loadSuperAdminAllCourses === 'function') {
+        loadSuperAdminAllCourses();
     }
 }
 
