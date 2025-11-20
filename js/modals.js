@@ -543,12 +543,18 @@ function handleCreateCourse(e) {
     e.preventDefault();
     
     // Get form data
-    const title = document.querySelector('#createCourseModal input[type="text"]').value;
-    const description = document.querySelector('#createCourseModal textarea').value;
-    const price = document.querySelector('#createCourseModal input[type="number"]').value;
-    const category = document.getElementById('courseCategory').value;
-    const subcategory = document.getElementById('courseSubcategory').value;
-    const structure = document.getElementById('courseStructure').value;
+    const title = document.getElementById('courseTitle')?.value || document.querySelector('#createCourseModal input[type="text"]')?.value;
+    const description = document.getElementById('courseDescription')?.value || document.querySelector('#createCourseModal textarea')?.value;
+    const price = document.getElementById('coursePrice')?.value || document.querySelector('#createCourseModal input[type="number"]')?.value;
+    const category = document.getElementById('courseCategory')?.value;
+    const subcategory = document.getElementById('courseSubcategory')?.value;
+    const structure = document.getElementById('courseStructure')?.value;
+    
+    // Validate required fields
+    if (!title || !description || !price || !category || !subcategory || !structure) {
+        alert('Please fill in all required fields!');
+        return;
+    }
     
     // Get cover image
     const coverFile = document.getElementById('coverFile').files[0];
@@ -641,6 +647,102 @@ function handleCreateCourse(e) {
         if (typeof refreshCourseLists === 'function') {
             refreshCourseLists();
         }
+    }).catch(error => {
+        console.error('Error creating course:', error);
+        alert('An error occurred while creating the course. Please try again.');
+    });
+}
+
+// Save Course as Draft
+function saveCourseAsDraft() {
+    // Get form data (don't require all fields for draft)
+    const title = document.getElementById('courseTitle')?.value || document.querySelector('#createCourseModal input[type="text"]')?.value || 'Untitled Course';
+    const description = document.getElementById('courseDescription')?.value || document.querySelector('#createCourseModal textarea')?.value || '';
+    const price = document.getElementById('coursePrice')?.value || document.querySelector('#createCourseModal input[type="number"]')?.value || '0';
+    const category = document.getElementById('courseCategory')?.value || '';
+    const subcategory = document.getElementById('courseSubcategory')?.value || '';
+    const structure = document.getElementById('courseStructure')?.value || 'single';
+    
+    // Get cover image
+    const coverFile = document.getElementById('coverFile')?.files[0];
+    const coverOption = document.getElementById('coverOption')?.value || 'default';
+    
+    // Get preview video
+    const previewFile = document.getElementById('previewFile')?.files[0];
+    
+    // Get course videos (optional for draft)
+    let courseVideos = [];
+    if (structure === 'single') {
+        const videoFile = document.getElementById('courseVideoFile')?.files[0];
+        if (videoFile) {
+            courseVideos.push({
+                type: 'single',
+                file: videoFile,
+                name: videoFile.name
+            });
+        }
+    } else {
+        const modules = document.querySelectorAll('.module-item');
+        modules.forEach((module, index) => {
+            const videoInput = module.querySelector('.module-video');
+            const titleInput = module.querySelector('.module-title');
+            const descInput = module.querySelector('.module-description');
+            if (videoInput && videoInput.files[0]) {
+                courseVideos.push({
+                    type: 'module',
+                    moduleNumber: index + 1,
+                    title: titleInput ? titleInput.value : `Module ${index + 1}`,
+                    description: descInput ? descInput.value : '',
+                    file: videoInput.files[0],
+                    name: videoInput.files[0].name
+                });
+            }
+        });
+    }
+    
+    // Create course object for draft
+    const courseId = 'draft-course-' + Date.now();
+    const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
+    
+    // Store file references (we'll use FileReader to create object URLs)
+    const filePromises = [
+        coverFile && coverOption === 'custom' ? createFileURL(coverFile) : Promise.resolve(null),
+        previewFile ? createFileURL(previewFile) : Promise.resolve(null),
+        ...courseVideos.map(v => createFileURL(v.file))
+    ];
+    
+    Promise.all(filePromises).then(([coverURL, previewURL, ...videoURLs]) => {
+        const course = {
+            id: courseId,
+            title: title,
+            description: description,
+            price: parseFloat(price) || 0,
+            category: category,
+            subcategory: subcategory,
+            structure: structure,
+            coverImage: coverURL || 'default',
+            previewVideo: previewURL || null,
+            videos: courseVideos.map((v, i) => ({
+                ...v,
+                url: videoURLs[i] || null
+            })),
+            instructor: userSession.email || 'instructor@learnable.com',
+            instructorName: userSession.name || 'Instructor',
+            status: 'draft',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+        
+        // Save draft course
+        saveCourse(course);
+        
+        alert(`Course draft "${title}" saved successfully!\n\nYou can continue editing and submit for review later.`);
+        
+        // Note: We don't close the modal or reset the form for drafts
+        // The user can continue editing and submit later
+    }).catch(error => {
+        console.error('Error saving draft:', error);
+        alert('An error occurred while saving the draft. Please try again.');
     });
 }
 

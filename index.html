@@ -536,6 +536,49 @@
                 </div>
             </section>
         </main>
+        <footer>
+            <div class="footer-container">
+                <div class="footer-brand">
+                    <h3><span style="color: #5B7FFF; font-weight: 700;">LEARN</span><span style="color: #10B981; font-weight: 700;">ible</span></h3>
+                    <p>Transform your knowledge into income. Join thousands of instructors earning from their expertise on the world's most instructor-friendly platform.</p>
+                    <div class="social-icons">
+                        <div class="social-icon twitter" onclick="openSocialLink('twitter')" style="cursor: pointer;" title="Follow us on X">𝕏</div>
+                        <div class="social-icon youtube" onclick="openSocialLink('youtube')" style="cursor: pointer;" title="Subscribe on YouTube">▶</div>
+                        <div class="social-icon instagram" onclick="openSocialLink('instagram')" style="cursor: pointer;" title="Follow us on Instagram">📷</div>
+                        <div class="social-icon linkedin" onclick="openSocialLink('linkedin')" style="cursor: pointer;" title="Connect on LinkedIn">in</div>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h4>Platform</h4>
+                    <a onclick="scrollToSection('courses')">Browse Courses</a>
+                    <a onclick="openSignupAsInstructor()">Become Instructor</a>
+                    <a onclick="openSignupAsStudent()">Join as Student</a>
+                    <a onclick="showPage('community')">Community</a>
+                    <a onclick="scrollToSection('pricing')">Pricing</a>
+                </div>
+                <div class="footer-column">
+                    <h4>Popular Categories</h4>
+                    <a onclick="filterByCategory('business-entrepreneurship')">Business & Entrepreneurship</a>
+                    <a onclick="filterByCategory('technology-software')">Technology & IT</a>
+                    <a onclick="filterByCategory('data-science')">Data & Analytics</a>
+                    <a onclick="filterByCategory('creative-arts-design')">Design & Creativity</a>
+                    <a onclick="filterByCategory('project-management')">Project Management</a>
+                    <a onclick="filterByCategory('digital-marketing')">Marketing & Communication</a>
+                </div>
+                <div class="footer-column">
+                    <h4>Support</h4>
+                    <a onclick="showHelpCenter()">Help Center</a>
+                    <a onclick="showContactUs()">Contact Us</a>
+                    <a onclick="showTermsOfService()">Terms of Service</a>
+                    <a onclick="showPrivacyPolicy()">Privacy Policy</a>
+                    <a onclick="showAboutPage()">About Us</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2024 <span style="color: #5B7FFF; font-weight: 600;">LEARN</span><span style="color: #10B981; font-weight: 600;">ible</span>. All rights reserved. | Made with ❤️ for educators worldwide</p>
+                <p>🌍 Available in 10+ countries | 🔒 SSL Secured | ⚡ Powered by Stripe</p>
+            </div>
+        </footer>
     </div>
 
     <!-- Help Center Page -->
@@ -3459,11 +3502,11 @@
             <form onsubmit="handleCreateCourse(event)">
                 <div class="form-group">
                     <label>Course Title</label>
-                    <input type="text" placeholder="Enter course title" required>
+                    <input type="text" id="courseTitle" placeholder="Enter course title" required>
                 </div>
                 <div class="form-group">
                     <label>Course Description</label>
-                    <textarea rows="4" placeholder="Describe your course..." required></textarea>
+                    <textarea id="courseDescription" rows="4" placeholder="Describe your course..." required></textarea>
                 </div>
                 <div class="form-group">
                     <label>Course Cover Image</label>
@@ -3563,12 +3606,15 @@
                 </div>
                 <div class="form-group">
                     <label>Price (<span id="courseCurrency">USD</span>)</label>
-                    <input type="number" step="0.01" placeholder="0.00" required>
+                    <input type="number" id="coursePrice" step="0.01" placeholder="0.00" required>
                 </div>
                 <div class="drm-notice">
                     🔒 All course content will be DRM protected - students can stream but not download
                 </div>
-                <button type="submit" class="btn btn-success" style="width: 100%; margin-top: 1rem;">Create Course</button>
+                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                    <button type="button" class="btn btn-outline" onclick="saveCourseAsDraft()" style="flex: 1;">Save as Draft</button>
+                    <button type="submit" class="btn btn-success" style="flex: 1;">Create Course</button>
+                </div>
             </form>
         </div>
     </div>
