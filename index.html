@@ -3563,7 +3563,7 @@
                     <label>Course Preview Video (Optional)</label>
                     <label onclick="document.getElementById('previewFile').click()" class="file-upload-area">
                         <span id="previewFileStatus">🎬 Click to upload preview video</span><br>
-                        <small style="color: #718096;">Max: 5 minutes</small>
+                        <small style="color: #718096;">Preview video (Max: 15 minutes recommended, larger files supported)</small>
                         <input type="file" id="previewFile" accept="video/*" onchange="handlePreviewFileSelect(this)" style="display: none;">
                     </label>
                     <div id="previewFileInfo" style="margin-top: 0.5rem; font-size: 0.9rem; color: #718096; display: none;"></div>
@@ -3581,7 +3581,7 @@
                     <label>Course Video</label>
                     <label onclick="document.getElementById('courseVideoFile').click()" class="file-upload-area">
                         <span id="courseVideoFileStatus">🎥 Click to upload course video</span><br>
-                        <small style="color: #718096;">Upload your complete course video (Max: 2GB)</small>
+                        <small style="color: #718096;">Upload your complete course video (Max: 10GB recommended, larger files supported)</small>
                         <input type="file" id="courseVideoFile" accept="video/*" onchange="handleCourseVideoSelect(this)" style="display: none;">
                     </label>
                     <div id="singleVideoStatus" style="margin-top: 0.5rem; font-size: 0.9rem; color: #718096;"></div>
@@ -3605,7 +3605,7 @@
                                 <label>Module 1 Video</label>
                                 <label onclick="this.querySelector('input[type=file]').click()" class="file-upload-area">
                                     🎥 Click to upload module video<br>
-                                    <small style="color: #718096;">Upload video for this module (Max: 1GB per module)</small>
+                                    <small style="color: #718096;">Upload video for this module (Max: 5GB per module recommended, larger files supported)</small>
                                     <input type="file" class="module-video" accept="video/*" onchange="updateModuleVideoStatus(this)">
                                 </label>
                                 <div class="module-video-status" style="margin-top: 0.5rem; font-size: 0.9rem; color: #718096;"></div>

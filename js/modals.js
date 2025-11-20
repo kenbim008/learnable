@@ -219,8 +219,11 @@ function toggleCoverUpload() {
 function handleCoverFileSelect(input) {
     if (input.files && input.files[0]) {
         const file = input.files[0];
-        const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
-        document.getElementById('coverFileStatus').textContent = `✅ ${file.name} (${fileSizeMB} MB)`;
+        const fileSizeMB = file.size / (1024 * 1024);
+        const sizeDisplay = fileSizeMB >= 1 
+            ? `${(fileSizeMB / 1024).toFixed(2)} GB` 
+            : `${fileSizeMB.toFixed(2)} MB`;
+        document.getElementById('coverFileStatus').textContent = `✅ ${file.name} (${sizeDisplay})`;
         
         // Show preview
         const reader = new FileReader();
@@ -240,9 +243,17 @@ function handleCoverFileSelect(input) {
 function handlePreviewFileSelect(input) {
     if (input.files && input.files[0]) {
         const file = input.files[0];
-        const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
-        document.getElementById('previewFileStatus').textContent = `✅ ${file.name} (${fileSizeMB} MB)`;
-        document.getElementById('previewFileInfo').textContent = `File selected: ${file.name} | Size: ${fileSizeMB} MB`;
+        const fileSizeMB = file.size / (1024 * 1024);
+        const fileSizeGB = fileSizeMB / 1024;
+        const sizeDisplay = fileSizeGB >= 1 
+            ? `${fileSizeGB.toFixed(2)} GB` 
+            : `${fileSizeMB.toFixed(2)} MB`;
+        document.getElementById('previewFileStatus').textContent = `✅ ${file.name} (${sizeDisplay})`;
+        let message = `File selected: ${file.name} | Size: ${sizeDisplay}`;
+        if (fileSizeGB > 2) {
+            message += ` - Large preview file`;
+        }
+        document.getElementById('previewFileInfo').textContent = message;
         document.getElementById('previewFileInfo').style.display = 'block';
     }
 }
@@ -251,15 +262,28 @@ function handlePreviewFileSelect(input) {
 function handleCourseVideoSelect(input) {
     if (input.files && input.files[0]) {
         const file = input.files[0];
-        const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+        const fileSizeMB = file.size / (1024 * 1024);
+        const fileSizeGB = fileSizeMB / 1024;
+        
+        // Display size in GB if >= 1GB, otherwise MB
+        const sizeDisplay = fileSizeGB >= 1 
+            ? `${fileSizeGB.toFixed(2)} GB` 
+            : `${fileSizeMB.toFixed(2)} MB`;
+        
         const statusEl = document.getElementById('courseVideoFileStatus');
         if (statusEl) {
-            statusEl.textContent = `✅ ${file.name} (${fileSizeMB} MB)`;
+            statusEl.textContent = `✅ ${file.name} (${sizeDisplay})`;
         }
         const infoEl = document.getElementById('singleVideoStatus');
         if (infoEl) {
-            infoEl.textContent = `File selected: ${file.name} | Size: ${fileSizeMB} MB`;
+            let message = `File selected: ${file.name} | Size: ${sizeDisplay}`;
+            // Add helpful note for large files
+            if (fileSizeGB > 5) {
+                message += `\n⚠️ Large file detected. Upload may take longer. Please be patient.`;
+            }
+            infoEl.textContent = message;
             infoEl.style.display = 'block';
+            infoEl.style.color = fileSizeGB > 5 ? '#FFB800' : '#10B981';
         }
     }
 }
@@ -430,7 +454,7 @@ function addModule() {
             <label>Module ${moduleCount} Video</label>
             <label onclick="this.querySelector('input[type=file]').click()" class="file-upload-area">
                 🎥 Click to upload module video<br>
-                <small style="color: #718096;">Upload video for this module (Max: 1GB per module)</small>
+                <small style="color: #718096;">Upload video for this module (Max: 5GB per module recommended, larger files supported)</small>
                 <input type="file" class="module-video" accept="video/*" onchange="updateModuleVideoStatus(this)">
             </label>
             <div class="module-video-status" style="margin-top: 0.5rem; font-size: 0.9rem; color: #718096;"></div>
@@ -462,9 +486,22 @@ function updateModuleVideoStatus(input) {
     const file = input.files[0];
     const statusDiv = input.closest('.form-group').querySelector('.module-video-status');
     if (file) {
-        const fileSize = (file.size / (1024 * 1024)).toFixed(2);
-        statusDiv.textContent = `✓ Selected: ${file.name} (${fileSize} MB)`;
-        statusDiv.style.color = '#10B981';
+        const fileSizeMB = file.size / (1024 * 1024);
+        const fileSizeGB = fileSizeMB / 1024;
+        
+        // Display size in GB if >= 1GB, otherwise MB
+        const sizeDisplay = fileSizeGB >= 1 
+            ? `${fileSizeGB.toFixed(2)} GB` 
+            : `${fileSizeMB.toFixed(2)} MB`;
+        
+        let message = `✓ Selected: ${file.name} (${sizeDisplay})`;
+        if (fileSizeGB > 3) {
+            message += ` - Large file, upload may take time`;
+            statusDiv.style.color = '#FFB800';
+        } else {
+            statusDiv.style.color = '#10B981';
+        }
+        statusDiv.textContent = message;
     } else {
         statusDiv.textContent = '';
     }
@@ -478,9 +515,22 @@ document.addEventListener('DOMContentLoaded', function() {
             const file = this.files[0];
             const statusDiv = document.getElementById('singleVideoStatus');
             if (file) {
-                const fileSize = (file.size / (1024 * 1024)).toFixed(2);
-                statusDiv.textContent = `✓ Selected: ${file.name} (${fileSize} MB)`;
-                statusDiv.style.color = '#10B981';
+                const fileSizeMB = file.size / (1024 * 1024);
+                const fileSizeGB = fileSizeMB / 1024;
+                
+                // Display size in GB if >= 1GB, otherwise MB
+                const sizeDisplay = fileSizeGB >= 1 
+                    ? `${fileSizeGB.toFixed(2)} GB` 
+                    : `${fileSizeMB.toFixed(2)} MB`;
+                
+                let message = `✓ Selected: ${file.name} (${sizeDisplay})`;
+                if (fileSizeGB > 5) {
+                    message += ` - Large file, upload may take time`;
+                    statusDiv.style.color = '#FFB800';
+                } else {
+                    statusDiv.style.color = '#10B981';
+                }
+                statusDiv.textContent = message;
             } else {
                 statusDiv.textContent = '';
             }
