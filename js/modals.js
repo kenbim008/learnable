@@ -498,16 +498,34 @@ function initializeCourses() {
 
 // Get all courses
 function getAllCourses() {
-    const courses = localStorage.getItem('courses');
-    return courses ? JSON.parse(courses) : [];
+    try {
+        const courses = localStorage.getItem('courses');
+        if (courses) {
+            const parsed = JSON.parse(courses);
+            return Array.isArray(parsed) ? parsed : [];
+        }
+        return [];
+    } catch (error) {
+        console.error('Error getting courses:', error);
+        return [];
+    }
 }
 
 // Save course
 function saveCourse(course) {
-    const courses = getAllCourses();
-    courses.push(course);
-    localStorage.setItem('courses', JSON.stringify(courses));
-    return course;
+    try {
+        if (!course || !course.id) {
+            console.error('Invalid course data:', course);
+            throw new Error('Invalid course data');
+        }
+        const courses = getAllCourses();
+        courses.push(course);
+        localStorage.setItem('courses', JSON.stringify(courses));
+        return course;
+    } catch (error) {
+        console.error('Error saving course:', error);
+        throw error;
+    }
 }
 
 // Update course status
@@ -532,10 +550,23 @@ function getCourseById(courseId) {
 
 // Create file URL from File object
 function createFileURL(file) {
-    return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload = (e) => resolve(e.target.result);
-        reader.readAsDataURL(file);
+    return new Promise((resolve, reject) => {
+        if (!file) {
+            resolve(null);
+            return;
+        }
+        try {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target.result);
+            reader.onerror = (error) => {
+                console.error('Error reading file:', error);
+                reject(error);
+            };
+            reader.readAsDataURL(file);
+        } catch (error) {
+            console.error('Error creating file URL:', error);
+            reject(error);
+        }
     });
 }
 
@@ -557,16 +588,20 @@ function handleCreateCourse(e) {
     }
     
     // Get cover image
-    const coverFile = document.getElementById('coverFile').files[0];
-    const coverOption = document.getElementById('coverOption').value;
+    const coverFileInput = document.getElementById('coverFile');
+    const coverFile = coverFileInput ? coverFileInput.files[0] : null;
+    const coverOptionInput = document.getElementById('coverOption');
+    const coverOption = coverOptionInput ? coverOptionInput.value : 'default';
     
     // Get preview video
-    const previewFile = document.getElementById('previewFile').files[0];
+    const previewFileInput = document.getElementById('previewFile');
+    const previewFile = previewFileInput ? previewFileInput.files[0] : null;
     
     // Get course videos
     let courseVideos = [];
     if (structure === 'single') {
-        const videoFile = document.getElementById('courseVideoFile').files[0];
+        const videoFileInput = document.getElementById('courseVideoFile');
+        const videoFile = videoFileInput ? videoFileInput.files[0] : null;
         if (!videoFile) {
             alert('Please upload a course video!');
             return;
@@ -659,21 +694,29 @@ function handleCreateCourse(e) {
         };
         
         // Save course
-        saveCourse(course);
-        
-        alert(`Course "${title}" created successfully!\n\nYour course is now pending review. It will be available for purchase after approval.`);
-        closeModal('createCourse');
-        
-        // Reset form
-        document.querySelector('#createCourseModal form').reset();
-        
-        // Refresh course lists if on relevant pages
-        if (typeof refreshCourseLists === 'function') {
-            refreshCourseLists();
+        try {
+            saveCourse(course);
+            
+            alert(`Course "${title}" created successfully!\n\nYour course is now pending review. It will be available for purchase after approval.`);
+            closeModal('createCourse');
+            
+            // Reset form
+            const form = document.querySelector('#createCourseModal form');
+            if (form) {
+                form.reset();
+            }
+            
+            // Refresh course lists if on relevant pages
+            if (typeof refreshCourseLists === 'function') {
+                refreshCourseLists();
+            }
+        } catch (saveError) {
+            console.error('Error saving course:', saveError);
+            alert('Error saving course: ' + (saveError.message || 'Unknown error') + '\n\nPlease try again.');
         }
     }).catch(error => {
         console.error('Error creating course:', error);
-        alert('An error occurred while creating the course. Please try again.');
+        alert('An error occurred while creating the course: ' + (error.message || 'Unknown error') + '\n\nPlease try again or save as draft first.');
     });
 }
 
@@ -781,15 +824,20 @@ function saveCourseAsDraft() {
         };
         
         // Save draft course
-        saveCourse(course);
-        
-        alert(`Course draft "${title}" saved successfully!\n\nYou can continue editing and submit for review later.`);
-        
-        // Note: We don't close the modal or reset the form for drafts
-        // The user can continue editing and submit later
+        try {
+            saveCourse(course);
+            
+            alert(`Course draft "${title}" saved successfully!\n\nYou can continue editing and submit for review later.`);
+            
+            // Note: We don't close the modal or reset the form for drafts
+            // The user can continue editing and submit later
+        } catch (saveError) {
+            console.error('Error saving draft:', saveError);
+            alert('Error saving draft: ' + (saveError.message || 'Unknown error') + '\n\nPlease check that all file inputs are valid and try again.');
+        }
     }).catch(error => {
-        console.error('Error saving draft:', error);
-        alert('An error occurred while saving the draft. Please try again.');
+        console.error('Error processing draft:', error);
+        alert('An error occurred while processing the draft: ' + (error.message || 'Unknown error') + '\n\nPlease check that all file inputs are valid and try again.');
     });
 }
 
