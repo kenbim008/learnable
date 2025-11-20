@@ -608,11 +608,35 @@ function handleCreateCourse(e) {
     const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
     
     // Store file references (we'll use FileReader to create object URLs)
-    Promise.all([
-        coverFile && coverOption === 'custom' ? createFileURL(coverFile) : Promise.resolve(null),
-        previewFile ? createFileURL(previewFile) : Promise.resolve(null),
-        ...courseVideos.map(v => createFileURL(v.file))
-    ]).then(([coverURL, previewURL, ...videoURLs]) => {
+    const filePromises = [];
+    
+    // Add cover file promise if exists
+    if (coverFile && coverOption === 'custom') {
+        filePromises.push(createFileURL(coverFile));
+    } else {
+        filePromises.push(Promise.resolve(null));
+    }
+    
+    // Add preview file promise if exists
+    if (previewFile) {
+        filePromises.push(createFileURL(previewFile));
+    } else {
+        filePromises.push(Promise.resolve(null));
+    }
+    
+    // Add video file promises
+    courseVideos.forEach(v => {
+        if (v && v.file) {
+            filePromises.push(createFileURL(v.file));
+        } else {
+            filePromises.push(Promise.resolve(null));
+        }
+    });
+    
+    Promise.all(filePromises).then((results) => {
+        const coverURL = results[0] || null;
+        const previewURL = results[1] || null;
+        const videoURLs = results.slice(2);
         const course = {
             id: courseId,
             title: title,
@@ -705,13 +729,36 @@ function saveCourseAsDraft() {
     const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
     
     // Store file references (we'll use FileReader to create object URLs)
-    const filePromises = [
-        coverFile && coverOption === 'custom' ? createFileURL(coverFile) : Promise.resolve(null),
-        previewFile ? createFileURL(previewFile) : Promise.resolve(null),
-        ...courseVideos.map(v => createFileURL(v.file))
-    ];
+    const filePromises = [];
     
-    Promise.all(filePromises).then(([coverURL, previewURL, ...videoURLs]) => {
+    // Add cover file promise if exists
+    if (coverFile && coverOption === 'custom') {
+        filePromises.push(createFileURL(coverFile));
+    } else {
+        filePromises.push(Promise.resolve(null));
+    }
+    
+    // Add preview file promise if exists
+    if (previewFile) {
+        filePromises.push(createFileURL(previewFile));
+    } else {
+        filePromises.push(Promise.resolve(null));
+    }
+    
+    // Add video file promises
+    courseVideos.forEach(v => {
+        if (v && v.file) {
+            filePromises.push(createFileURL(v.file));
+        } else {
+            filePromises.push(Promise.resolve(null));
+        }
+    });
+    
+    Promise.all(filePromises).then((results) => {
+        const coverURL = results[0] || null;
+        const previewURL = results[1] || null;
+        const videoURLs = results.slice(2);
+        
         const course = {
             id: courseId,
             title: title,

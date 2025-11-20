@@ -1317,9 +1317,26 @@
                         <h2>Profile Settings</h2>
                         <div class="form-group">
                             <label>Display Name</label>
-                            <input type="text" value="Student Name" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                            <input type="text" id="studentDisplayName" value="Student Name" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
                         </div>
                         <button class="btn btn-success" onclick="saveStudentSettings()">Save Changes</button>
+                    </div>
+                    
+                    <div class="content-card" style="margin-top: 2rem;">
+                        <h2>Password & Security</h2>
+                        <div class="form-group">
+                            <label>Current Password</label>
+                            <input type="password" id="studentCurrentPassword" placeholder="Enter current password" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                        </div>
+                        <div class="form-group">
+                            <label>New Password</label>
+                            <input type="password" id="studentNewPassword" placeholder="Enter new password" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                        </div>
+                        <div class="form-group">
+                            <label>Confirm New Password</label>
+                            <input type="password" id="studentConfirmPassword" placeholder="Confirm new password" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                        </div>
+                        <button class="btn btn-primary" onclick="resetStudentPassword()">Reset Password</button>
                     </div>
                 </div>
             </main>
@@ -1687,33 +1704,50 @@
                         <h2>Profile Settings</h2>
                         <div class="form-group">
                             <label>Display Name</label>
-                            <input type="text" value="Your Name" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                            <input type="text" id="instructorDisplayName" value="Your Name" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
                         </div>
                         <div class="form-group">
                             <label>Bio</label>
-                            <textarea rows="4" placeholder="Tell students about yourself..." style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;"></textarea>
+                            <textarea id="instructorBio" rows="4" placeholder="Tell students about yourself..." style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;"></textarea>
                         </div>
                         <div class="form-group">
                             <label>Profile Picture</label>
-                            <input type="file" accept="image/*" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                            <input type="file" id="instructorProfilePic" accept="image/*" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
                         </div>
                         <button class="btn btn-success" onclick="saveInstructorSettings()">Save Changes</button>
                     </div>
                     
-                    <div class="content-card">
+                    <div class="content-card" style="margin-top: 2rem;">
+                        <h2>Password & Security</h2>
+                        <div class="form-group">
+                            <label>Current Password</label>
+                            <input type="password" id="instructorCurrentPassword" placeholder="Enter current password" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                        </div>
+                        <div class="form-group">
+                            <label>New Password</label>
+                            <input type="password" id="instructorNewPassword" placeholder="Enter new password" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                        </div>
+                        <div class="form-group">
+                            <label>Confirm New Password</label>
+                            <input type="password" id="instructorConfirmPassword" placeholder="Confirm new password" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                        </div>
+                        <button class="btn btn-primary" onclick="resetInstructorPassword()">Reset Password</button>
+                    </div>
+                    
+                    <div class="content-card" style="margin-top: 2rem;">
                         <h2>Notification Settings</h2>
                         <div style="margin-top: 0.5rem;">
                             <label style="display: flex; align-items: center; margin-bottom: 0.5rem;">
-                                <input type="checkbox" checked style="margin-right: 0.5rem;"> Email notifications for new enrollments
+                                <input type="checkbox" id="instructorNotifEnrollments" checked style="margin-right: 0.5rem;"> Email notifications for new enrollments
                             </label>
                             <label style="display: flex; align-items: center; margin-bottom: 0.5rem;">
-                                <input type="checkbox" checked style="margin-right: 0.5rem;"> Email notifications for reviews
+                                <input type="checkbox" id="instructorNotifReviews" checked style="margin-right: 0.5rem;"> Email notifications for reviews
                             </label>
                             <label style="display: flex; align-items: center; margin-bottom: 0.5rem;">
-                                <input type="checkbox" style="margin-right: 0.5rem;"> Email notifications for messages
+                                <input type="checkbox" id="instructorNotifMessages" style="margin-right: 0.5rem;"> Email notifications for messages
                             </label>
                         </div>
-                        <button class="btn btn-success" style="margin-top: 1rem;">Save Preferences</button>
+                        <button class="btn btn-success" onclick="saveInstructorNotifications()" style="margin-top: 1rem;">Save Preferences</button>
                     </div>
                 </div>
             </main>

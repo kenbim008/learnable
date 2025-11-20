@@ -230,16 +230,216 @@ function viewStudentProfile(studentId) {
 }
 
 function saveStudentSettings() {
-    const input = document.querySelector('#studentSettingsSection input[type="text"]');
-    if (input) {
-        const displayName = input.value;
+    const displayName = document.getElementById('studentDisplayName')?.value || document.querySelector('#studentSettingsSection input[type="text"]')?.value;
+    if (displayName) {
         localStorage.setItem('studentDisplayName', displayName);
         alert('Settings saved successfully!');
     }
 }
 
 function saveInstructorSettings() {
+    const displayName = document.getElementById('instructorDisplayName')?.value;
+    const bio = document.getElementById('instructorBio')?.value;
+    
+    if (displayName) {
+        localStorage.setItem('instructorDisplayName', displayName);
+    }
+    if (bio !== undefined) {
+        localStorage.setItem('instructorBio', bio);
+    }
+    
     alert('Instructor settings saved successfully!');
+}
+
+function saveInstructorNotifications() {
+    const enrollments = document.getElementById('instructorNotifEnrollments')?.checked || false;
+    const reviews = document.getElementById('instructorNotifReviews')?.checked || false;
+    const messages = document.getElementById('instructorNotifMessages')?.checked || false;
+    
+    localStorage.setItem('instructorNotifications', JSON.stringify({
+        enrollments,
+        reviews,
+        messages
+    }));
+    
+    alert('Notification preferences saved successfully!');
+}
+
+// Reset Password Functions
+function resetStudentPassword() {
+    const currentPassword = document.getElementById('studentCurrentPassword')?.value;
+    const newPassword = document.getElementById('studentNewPassword')?.value;
+    const confirmPassword = document.getElementById('studentConfirmPassword')?.value;
+    
+    if (!currentPassword || !newPassword || !confirmPassword) {
+        alert('Please fill in all password fields!');
+        return;
+    }
+    
+    if (newPassword !== confirmPassword) {
+        alert('New passwords do not match!');
+        return;
+    }
+    
+    if (newPassword.length < 6) {
+        alert('Password must be at least 6 characters long!');
+        return;
+    }
+    
+    // In a real app, you would verify the current password with the server
+    // For now, we'll just save the new password to localStorage
+    const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
+    userSession.password = newPassword; // In production, this should be hashed
+    localStorage.setItem('userSession', JSON.stringify(userSession));
+    
+    alert('Password reset successfully!');
+    
+    // Clear password fields
+    document.getElementById('studentCurrentPassword').value = '';
+    document.getElementById('studentNewPassword').value = '';
+    document.getElementById('studentConfirmPassword').value = '';
+}
+
+function resetInstructorPassword() {
+    const currentPassword = document.getElementById('instructorCurrentPassword')?.value;
+    const newPassword = document.getElementById('instructorNewPassword')?.value;
+    const confirmPassword = document.getElementById('instructorConfirmPassword')?.value;
+    
+    if (!currentPassword || !newPassword || !confirmPassword) {
+        alert('Please fill in all password fields!');
+        return;
+    }
+    
+    if (newPassword !== confirmPassword) {
+        alert('New passwords do not match!');
+        return;
+    }
+    
+    if (newPassword.length < 6) {
+        alert('Password must be at least 6 characters long!');
+        return;
+    }
+    
+    // In a real app, you would verify the current password with the server
+    // For now, we'll just save the new password to localStorage
+    const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
+    userSession.password = newPassword; // In production, this should be hashed
+    localStorage.setItem('userSession', JSON.stringify(userSession));
+    
+    alert('Password reset successfully!');
+    
+    // Clear password fields
+    document.getElementById('instructorCurrentPassword').value = '';
+    document.getElementById('instructorNewPassword').value = '';
+    document.getElementById('instructorConfirmPassword').value = '';
+}
+
+// Load Revenue Data for Instructor
+function loadInstructorRevenue() {
+    const courses = typeof getAllCourses === 'function' ? getAllCourses() : [];
+    const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
+    const instructorEmail = userSession.email || '';
+    
+    // Get approved courses by this instructor
+    const instructorCourses = courses.filter(c => 
+        c.instructor === instructorEmail && c.status === 'approved'
+    );
+    
+    // Calculate revenue (simplified - in production this would come from actual sales data)
+    let totalRevenue = 0;
+    let instructorShare = 0;
+    let platformShare = 0;
+    let pendingPayout = 0;
+    
+    instructorCourses.forEach(course => {
+        // Simulate revenue based on course price
+        const courseRevenue = (course.price || 0) * (course.enrollments || 0);
+        totalRevenue += courseRevenue;
+        instructorShare += courseRevenue * 0.6;
+        platformShare += courseRevenue * 0.4;
+        pendingPayout += courseRevenue * 0.6 * 0.2; // 20% pending
+    });
+    
+    // Update revenue display
+    const revenueSection = document.getElementById('instructorRevenueSection');
+    if (revenueSection) {
+        const statValues = revenueSection.querySelectorAll('.stat-value');
+        if (statValues.length >= 4) {
+            statValues[0].textContent = `$${totalRevenue.toFixed(2)}`;
+            statValues[1].textContent = `$${instructorShare.toFixed(2)}`;
+            statValues[2].textContent = `$${platformShare.toFixed(2)}`;
+            statValues[3].textContent = `$${pendingPayout.toFixed(2)}`;
+        }
+    }
+}
+
+// Load Analytics Data for Instructor
+function loadInstructorAnalytics() {
+    const courses = typeof getAllCourses === 'function' ? getAllCourses() : [];
+    const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
+    const instructorEmail = userSession.email || '';
+    
+    // Get approved courses by this instructor
+    const instructorCourses = courses.filter(c => 
+        c.instructor === instructorEmail && c.status === 'approved'
+    );
+    
+    // Calculate analytics
+    let totalStudents = 0;
+    let activeCourses = instructorCourses.length;
+    let averageRating = 0;
+    let completionRate = 0;
+    
+    instructorCourses.forEach(course => {
+        totalStudents += course.enrollments || 0;
+        averageRating += course.rating || 0;
+        completionRate += course.completionRate || 0;
+    });
+    
+    if (instructorCourses.length > 0) {
+        averageRating = averageRating / instructorCourses.length;
+        completionRate = completionRate / instructorCourses.length;
+    }
+    
+    // Update analytics display
+    const analyticsSection = document.getElementById('instructorAnalyticsSection');
+    if (analyticsSection) {
+        const statValues = analyticsSection.querySelectorAll('.stat-value');
+        if (statValues.length >= 4) {
+            statValues[0].textContent = totalStudents;
+            statValues[1].textContent = activeCourses;
+            statValues[2].textContent = averageRating.toFixed(1);
+            statValues[3].textContent = `${completionRate.toFixed(0)}%`;
+        }
+    }
+}
+
+// Load Reviews Data for Instructor
+function loadInstructorReviews() {
+    // In production, this would load from actual reviews data
+    // For now, we'll just ensure the section loads
+    const reviewsSection = document.getElementById('instructorReviewsSection');
+    if (reviewsSection) {
+        // Reviews would be loaded here
+    }
+}
+
+// Load Messages Data for Instructor
+function loadInstructorMessages() {
+    // In production, this would load from actual messages data
+    // For now, we'll just ensure the section loads
+    const messagesSection = document.getElementById('instructorMessagesSection');
+    if (messagesSection) {
+        // Messages would be loaded here
+    }
+}
+
+// Load Student Messages
+function loadStudentMessages() {
+    const messagesSection = document.getElementById('studentMessagesSection');
+    if (messagesSection) {
+        // Messages would be loaded here
+    }
 }
 
 function viewReviewDetails(reviewId) {

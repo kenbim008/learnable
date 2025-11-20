@@ -274,6 +274,11 @@ function showStudentSection(sectionName, event) {
         event.target.classList.add('active');
     }
     
+    // Load data when opening messages section
+    if (sectionName === 'messages' && typeof loadStudentMessages === 'function') {
+        loadStudentMessages();
+    }
+    
     // Scroll to top
     window.scrollTo(0, 0);
 }
@@ -356,6 +361,17 @@ function showInstructorSection(sectionName, event) {
     // Set active state on clicked link
     if (event && event.target) {
         event.target.classList.add('active');
+    }
+    
+    // Load data when opening specific sections
+    if (sectionName === 'revenue' && typeof loadInstructorRevenue === 'function') {
+        loadInstructorRevenue();
+    } else if (sectionName === 'analytics' && typeof loadInstructorAnalytics === 'function') {
+        loadInstructorAnalytics();
+    } else if (sectionName === 'reviews' && typeof loadInstructorReviews === 'function') {
+        loadInstructorReviews();
+    } else if (sectionName === 'messages' && typeof loadInstructorMessages === 'function') {
+        loadInstructorMessages();
     }
     
     // Scroll to top
