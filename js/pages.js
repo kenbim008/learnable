@@ -1,7 +1,7 @@
 // Page navigation
 function showPage(pageName) {
     // Hide all pages
-    const pages = ['landingPage', 'communityPage', 'aboutPage', 'studentDashboard', 'instructorDashboard', 'adminDashboard', 'superAdminDashboard'];
+    const pages = ['landingPage', 'communityPage', 'aboutPage', 'helpCenterPage', 'contactUsPage', 'termsOfServicePage', 'privacyPolicyPage', 'studentDashboard', 'instructorDashboard', 'adminDashboard', 'superAdminDashboard'];
     pages.forEach(pageId => {
         const page = document.getElementById(pageId);
         if (page) {
@@ -14,6 +14,10 @@ function showPage(pageName) {
         'landing': 'landingPage',
         'community': 'communityPage',
         'about': 'aboutPage',
+        'helpCenter': 'helpCenterPage',
+        'contactUs': 'contactUsPage',
+        'termsOfService': 'termsOfServicePage',
+        'privacyPolicy': 'privacyPolicyPage',
         'studentDashboard': 'studentDashboard',
         'instructorDashboard': 'instructorDashboard',
         'adminDashboard': 'adminDashboard',
@@ -35,7 +39,88 @@ function showAboutPage() {
     // Show the About page (content is static in HTML now)
     showPage('about');
     // Show first tab by default
-    showAboutTab('vision-mission');
+    if (typeof showAboutTab === 'function') {
+        showAboutTab('vision-mission');
+    }
+}
+
+// Show Help Center Page
+function showHelpCenter() {
+    showPage('helpCenter');
+    // Load content from localStorage if available
+    const contentPages = JSON.parse(localStorage.getItem('contentPages') || '{}');
+    const helpContent = contentPages['help'];
+    const contentDiv = document.getElementById('helpCenterContent');
+    
+    if (helpContent && contentDiv) {
+        contentDiv.innerHTML = `
+            <div style="background: #F7FAFC; padding: 2rem; border-radius: 12px; margin-bottom: 2rem;">
+                <h2>${helpContent.title}</h2>
+                <div style="white-space: pre-line; line-height: 1.8;">${helpContent.content}</div>
+            </div>
+        `;
+    }
+}
+
+// Show Contact Us Page
+function showContactUs() {
+    showPage('contactUs');
+}
+
+// Show Terms of Service Page
+function showTermsOfService() {
+    showPage('termsOfService');
+    // Load content from localStorage if available
+    const contentPages = JSON.parse(localStorage.getItem('contentPages') || '{}');
+    const termsContent = contentPages['terms'];
+    const contentDiv = document.getElementById('termsContent');
+    
+    if (termsContent && contentDiv) {
+        contentDiv.innerHTML = `
+            <h2>${termsContent.title}</h2>
+            <div style="white-space: pre-line; line-height: 1.8;">${termsContent.content}</div>
+        `;
+    } else if (contentDiv) {
+        contentDiv.innerHTML = `
+            <p>Please read these terms carefully before using our platform.</p>
+            <h2 style="margin-top: 2rem;">1. Acceptance of Terms</h2>
+            <p>By accessing and using LEARNIBLE, you accept and agree to be bound by the terms and provision of this agreement.</p>
+            <h2 style="margin-top: 2rem;">2. Use License</h2>
+            <p>Permission is granted to temporarily access the materials on LEARNIBLE for personal, non-commercial transitory viewing only.</p>
+            <h2 style="margin-top: 2rem;">3. User Accounts</h2>
+            <p>You are responsible for maintaining the confidentiality of your account and password.</p>
+            <h2 style="margin-top: 2rem;">4. Course Content</h2>
+            <p>All course content is protected by copyright and other intellectual property laws.</p>
+        `;
+    }
+}
+
+// Show Privacy Policy Page
+function showPrivacyPolicy() {
+    showPage('privacyPolicy');
+    // Load content from localStorage if available
+    const contentPages = JSON.parse(localStorage.getItem('contentPages') || '{}');
+    const privacyContent = contentPages['privacy'];
+    const contentDiv = document.getElementById('privacyContent');
+    
+    if (privacyContent && contentDiv) {
+        contentDiv.innerHTML = `
+            <h2>${privacyContent.title}</h2>
+            <div style="white-space: pre-line; line-height: 1.8;">${privacyContent.content}</div>
+        `;
+    } else if (contentDiv) {
+        contentDiv.innerHTML = `
+            <p>We respect your privacy and are committed to protecting your personal data.</p>
+            <h2 style="margin-top: 2rem;">1. Information We Collect</h2>
+            <p>We collect information that you provide directly to us, including name, email address, and payment information.</p>
+            <h2 style="margin-top: 2rem;">2. How We Use Your Information</h2>
+            <p>We use the information we collect to provide, maintain, and improve our services.</p>
+            <h2 style="margin-top: 2rem;">3. Data Security</h2>
+            <p>We implement appropriate security measures to protect your personal information.</p>
+            <h2 style="margin-top: 2rem;">4. Your Rights</h2>
+            <p>You have the right to access, update, or delete your personal information at any time.</p>
+        `;
+    }
 }
 
 // About Page Tab Navigation

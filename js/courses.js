@@ -437,6 +437,80 @@ function filterCoursesByCategory() {
     console.log(`Showing ${visibleCount} courses for category: ${selectedCategory}`);
 }
 
+// Filter by category from footer links
+function filterByCategory(categoryValue) {
+    // Navigate to courses section
+    showPage('landing');
+    setTimeout(() => {
+        // Scroll to courses section
+        const coursesSection = document.getElementById('courses');
+        if (coursesSection) {
+            coursesSection.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Filter courses by main category
+        const allCourses = document.querySelectorAll('.course-card');
+        const categoryMap = {
+            'business-entrepreneurship': ['business-entrepreneurship', 'business-fundamentals', 'business-planning', 'entrepreneurship'],
+            'technology-software': ['technology-software', 'web-development', 'python-programming', 'mobile-app-development'],
+            'data-science': ['data-science', 'machine-learning', 'big-data-analytics', 'ai-applications'],
+            'creative-arts-design': ['creative-arts-design', 'photoshop', 'illustrator', 'user-experience-principles'],
+            'project-management': ['project-management', 'pm-fundamentals', 'agile-pm', 'scrum-master'],
+            'digital-marketing': ['digital-marketing', 'seo-sem', 'branding', 'sales-funnel']
+        };
+        
+        const matchingCategories = categoryMap[categoryValue] || [categoryValue];
+        
+        allCourses.forEach(card => {
+            const courseCategory = card.getAttribute('data-category') || '';
+            const courseSubcategory = card.getAttribute('data-subcategory') || '';
+            
+            const matches = matchingCategories.some(cat => 
+                courseCategory.includes(cat) || 
+                courseSubcategory.includes(cat) ||
+                courseCategory === cat ||
+                courseSubcategory === cat
+            );
+            
+            card.style.display = matches ? '' : 'none';
+        });
+        
+        // Also update the dropdown to show the first matching subcategory
+        const categoryFilter = document.getElementById('categoryFilter');
+        if (categoryFilter && matchingCategories.length > 0) {
+            categoryFilter.value = matchingCategories[0];
+        }
+    }, 300);
+}
+
+// Handle contact form submission
+function handleContactSubmit(e) {
+    e.preventDefault();
+    const name = document.getElementById('contactName').value;
+    const email = document.getElementById('contactEmail').value;
+    const subject = document.getElementById('contactSubject').value;
+    const message = document.getElementById('contactMessage').value;
+    
+    // Save contact submission to localStorage
+    const contacts = JSON.parse(localStorage.getItem('contactSubmissions') || '[]');
+    contacts.push({
+        name: name,
+        email: email,
+        subject: subject,
+        message: message,
+        submittedAt: new Date().toISOString()
+    });
+    localStorage.setItem('contactSubmissions', JSON.stringify(contacts));
+    
+    alert('Thank you for contacting us! We will get back to you within 24 hours.');
+    
+    // Reset form
+    document.getElementById('contactName').value = '';
+    document.getElementById('contactEmail').value = '';
+    document.getElementById('contactSubject').value = '';
+    document.getElementById('contactMessage').value = '';
+}
+
 // Admin Management Functions
 function editAdminPermissions(adminEmail) {
     alert(`Editing permissions for: ${adminEmail}\n\nThis would open a permissions editor modal.`);

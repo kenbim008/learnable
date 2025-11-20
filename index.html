@@ -371,20 +371,20 @@
                 </div>
                 <div class="footer-column">
                     <h4>Popular Categories</h4>
-                    <a>Business & Entrepreneurship</a>
-                    <a>Technology & IT</a>
-                    <a>Data & Analytics</a>
-                    <a>Design & Creativity</a>
-                    <a>Project Management</a>
-                    <a>Marketing & Communication</a>
+                    <a onclick="filterByCategory('business-entrepreneurship')">Business & Entrepreneurship</a>
+                    <a onclick="filterByCategory('technology-software')">Technology & IT</a>
+                    <a onclick="filterByCategory('data-science')">Data & Analytics</a>
+                    <a onclick="filterByCategory('creative-arts-design')">Design & Creativity</a>
+                    <a onclick="filterByCategory('project-management')">Project Management</a>
+                    <a onclick="filterByCategory('digital-marketing')">Marketing & Communication</a>
                 </div>
                 <div class="footer-column">
                     <h4>Support</h4>
-                    <a>Help Center</a>
-                    <a>Contact Us</a>
-                    <a>Terms of Service</a>
-                    <a>Privacy Policy</a>
-                    <a>About Us</a>
+                    <a onclick="showHelpCenter()">Help Center</a>
+                    <a onclick="showContactUs()">Contact Us</a>
+                    <a onclick="showTermsOfService()">Terms of Service</a>
+                    <a onclick="showPrivacyPolicy()">Privacy Policy</a>
+                    <a onclick="showAboutPage()">About Us</a>
                     <a onclick="showAdminLogin()" style="color: #FFB800;">👑 Admin Access</a>
                 </div>
             </div>
@@ -533,6 +533,193 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Help Center Page -->
+    <div id="helpCenterPage" class="hidden">
+        <header>
+            <div class="header-container">
+                <div class="logo" onclick="showPage('landing')">
+                    <span class="logo-icon">📖</span>
+                    <span><span class="logo-learn">LEARN</span><span class="logo-ible">ible</span></span>
+                </div>
+                <nav>
+                    <a onclick="showPage('landing')">Home</a>
+                    <a onclick="scrollToSection('courses')">Courses</a>
+                    <a onclick="showPage('community')">Community</a>
+                    <a onclick="scrollToSection('pricing')">Pricing</a>
+                    <a onclick="showAboutPage()">About</a>
+                </nav>
+                <div class="header-right">
+                    <button class="btn btn-outline" onclick="openModal('login')">Login</button>
+                    <button class="btn btn-primary" onclick="openModal('signup')">Sign Up</button>
+                </div>
+            </div>
+        </header>
+        
+        <main>
+            <section class="help-center-page" style="padding: 4rem 2rem; max-width: 1200px; margin: 0 auto;">
+                <h1 style="font-size: 2.5rem; margin-bottom: 1rem; text-align: center;">Help Center</h1>
+                <p style="text-align: center; color: #718096; margin-bottom: 3rem; font-size: 1.1rem;">Find answers to common questions and get support</p>
+                
+                <div id="helpCenterContent">
+                    <!-- Content will be loaded from localStorage if available -->
+                </div>
+                
+                <div class="faq-section" style="margin-top: 3rem;">
+                    <h2 style="margin-bottom: 2rem;">Frequently Asked Questions</h2>
+                    <div class="faq-item" style="margin-bottom: 1.5rem; padding: 1.5rem; background: #F7FAFC; border-radius: 8px;">
+                        <h3 style="margin-bottom: 0.5rem; color: #2D3748;">💰 How does pricing work?</h3>
+                        <p style="color: #4A5568; line-height: 1.6;">Course pricing is set by instructors. Students pay the listed price to enroll. LEARNIBLE uses Stripe for secure payment processing. Instructors keep 60% of course sales.</p>
+                    </div>
+                    <div class="faq-item" style="margin-bottom: 1.5rem; padding: 1.5rem; background: #F7FAFC; border-radius: 8px;">
+                        <h3 style="margin-bottom: 0.5rem; color: #2D3748;">👨‍🏫 How do I become an instructor?</h3>
+                        <p style="color: #4A5568; line-height: 1.6;">Sign up as an instructor, create your first course with videos and descriptions, submit for review, and once approved, your course goes live!</p>
+                    </div>
+                    <div class="faq-item" style="margin-bottom: 1.5rem; padding: 1.5rem; background: #F7FAFC; border-radius: 8px;">
+                        <h3 style="margin-bottom: 0.5rem; color: #2D3748;">💵 How much can I earn?</h3>
+                        <p style="color: #4A5568; line-height: 1.6;">You keep 60% of every course sale. No monthly fees - we only take a percentage when you make a sale. Set your own course prices and track earnings in real-time.</p>
+                    </div>
+                    <div class="faq-item" style="margin-bottom: 1.5rem; padding: 1.5rem; background: #F7FAFC; border-radius: 8px;">
+                        <h3 style="margin-bottom: 0.5rem; color: #2D3748;">💳 What payment methods do you accept?</h3>
+                        <p style="color: #4A5568; line-height: 1.6;">We accept all major payment methods through Stripe: Credit cards, debit cards, digital wallets (Apple Pay, Google Pay), and bank transfers in supported regions.</p>
+                    </div>
+                    <div class="faq-item" style="margin-bottom: 1.5rem; padding: 1.5rem; background: #F7FAFC; border-radius: 8px;">
+                        <h3 style="margin-bottom: 0.5rem; color: #2D3748;">🌍 Which currencies are supported?</h3>
+                        <p style="color: #4A5568; line-height: 1.6;">We support USD, NGN, GBP, EUR, and CAD. Prices are automatically converted to your local currency based on current exchange rates.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Contact Us Page -->
+    <div id="contactUsPage" class="hidden">
+        <header>
+            <div class="header-container">
+                <div class="logo" onclick="showPage('landing')">
+                    <span class="logo-icon">📖</span>
+                    <span><span class="logo-learn">LEARN</span><span class="logo-ible">ible</span></span>
+                </div>
+                <nav>
+                    <a onclick="showPage('landing')">Home</a>
+                    <a onclick="scrollToSection('courses')">Courses</a>
+                    <a onclick="showPage('community')">Community</a>
+                    <a onclick="scrollToSection('pricing')">Pricing</a>
+                    <a onclick="showAboutPage()">About</a>
+                </nav>
+                <div class="header-right">
+                    <button class="btn btn-outline" onclick="openModal('login')">Login</button>
+                    <button class="btn btn-primary" onclick="openModal('signup')">Sign Up</button>
+                </div>
+            </div>
+        </header>
+        
+        <main>
+            <section class="contact-page" style="padding: 4rem 2rem; max-width: 800px; margin: 0 auto;">
+                <h1 style="font-size: 2.5rem; margin-bottom: 1rem; text-align: center;">Contact Us</h1>
+                <p style="text-align: center; color: #718096; margin-bottom: 3rem; font-size: 1.1rem;">Get in touch with our support team</p>
+                
+                <div class="contact-form" style="background: #F7FAFC; padding: 2rem; border-radius: 12px;">
+                    <form onsubmit="handleContactSubmit(event)">
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #2D3748;">Name</label>
+                            <input type="text" id="contactName" required style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #2D3748;">Email</label>
+                            <input type="email" id="contactEmail" required style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #2D3748;">Subject</label>
+                            <select id="contactSubject" required style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                                <option value="">Select a subject</option>
+                                <option value="general">General Inquiry</option>
+                                <option value="support">Technical Support</option>
+                                <option value="billing">Billing Question</option>
+                                <option value="instructor">Instructor Support</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #2D3748;">Message</label>
+                            <textarea id="contactMessage" rows="6" required style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px; font-family: inherit;"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Send Message</button>
+                    </form>
+                </div>
+                
+                <div style="margin-top: 3rem; text-align: center;">
+                    <h3 style="margin-bottom: 1rem;">Other Ways to Reach Us</h3>
+                    <p style="color: #4A5568; margin-bottom: 0.5rem;">📧 Email: support@learnible.com</p>
+                    <p style="color: #4A5568; margin-bottom: 0.5rem;">⏰ Response Time: Within 24 hours</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Terms of Service Page -->
+    <div id="termsOfServicePage" class="hidden">
+        <header>
+            <div class="header-container">
+                <div class="logo" onclick="showPage('landing')">
+                    <span class="logo-icon">📖</span>
+                    <span><span class="logo-learn">LEARN</span><span class="logo-ible">ible</span></span>
+                </div>
+                <nav>
+                    <a onclick="showPage('landing')">Home</a>
+                    <a onclick="scrollToSection('courses')">Courses</a>
+                    <a onclick="showPage('community')">Community</a>
+                    <a onclick="scrollToSection('pricing')">Pricing</a>
+                    <a onclick="showAboutPage()">About</a>
+                </nav>
+                <div class="header-right">
+                    <button class="btn btn-outline" onclick="openModal('login')">Login</button>
+                    <button class="btn btn-primary" onclick="openModal('signup')">Sign Up</button>
+                </div>
+            </div>
+        </header>
+        
+        <main>
+            <section class="terms-page" style="padding: 4rem 2rem; max-width: 900px; margin: 0 auto;">
+                <h1 style="font-size: 2.5rem; margin-bottom: 2rem;">Terms of Service</h1>
+                <div id="termsContent" style="line-height: 1.8; color: #4A5568;">
+                    <!-- Content will be loaded from localStorage if available -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Privacy Policy Page -->
+    <div id="privacyPolicyPage" class="hidden">
+        <header>
+            <div class="header-container">
+                <div class="logo" onclick="showPage('landing')">
+                    <span class="logo-icon">📖</span>
+                    <span><span class="logo-learn">LEARN</span><span class="logo-ible">ible</span></span>
+                </div>
+                <nav>
+                    <a onclick="showPage('landing')">Home</a>
+                    <a onclick="scrollToSection('courses')">Courses</a>
+                    <a onclick="showPage('community')">Community</a>
+                    <a onclick="scrollToSection('pricing')">Pricing</a>
+                    <a onclick="showAboutPage()">About</a>
+                </nav>
+                <div class="header-right">
+                    <button class="btn btn-outline" onclick="openModal('login')">Login</button>
+                    <button class="btn btn-primary" onclick="openModal('signup')">Sign Up</button>
+                </div>
+            </div>
+        </header>
+        
+        <main>
+            <section class="privacy-page" style="padding: 4rem 2rem; max-width: 900px; margin: 0 auto;">
+                <h1 style="font-size: 2.5rem; margin-bottom: 2rem;">Privacy Policy</h1>
+                <div id="privacyContent" style="line-height: 1.8; color: #4A5568;">
+                    <!-- Content will be loaded from localStorage if available -->
                 </div>
             </section>
         </main>
