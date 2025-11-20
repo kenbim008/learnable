@@ -371,7 +371,9 @@ function showInstructorSection(sectionName, event) {
     }
     
     // Load data when opening specific sections
-    if (sectionName === 'revenue' && typeof loadInstructorRevenue === 'function') {
+    if (sectionName === 'myCourses' && typeof loadInstructorCourses === 'function') {
+        loadInstructorCourses();
+    } else if (sectionName === 'revenue' && typeof loadInstructorRevenue === 'function') {
         loadInstructorRevenue();
     } else if (sectionName === 'analytics' && typeof loadInstructorAnalytics === 'function') {
         loadInstructorAnalytics();
@@ -444,6 +446,10 @@ function showSuperAdminSection(sectionName, event) {
         loadDataManagementTable();
     } else if (sectionName === 'allCourses' && typeof loadSuperAdminAllCourses === 'function') {
         loadSuperAdminAllCourses();
+    } else if (sectionName === 'stripeSettings') {
+        if (typeof loadStripeSettings === 'function') {
+            loadStripeSettings();
+        }
     }
     
     // Scroll to top

@@ -1492,3 +1492,342 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// Load instructor courses
+function loadInstructorCourses() {
+    const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
+    const instructorEmail = userSession.email || '';
+    
+    if (!instructorEmail) {
+        const coursesList = document.getElementById('instructorCoursesList');
+        if (coursesList) {
+            coursesList.innerHTML = '<p style="color: #718096; text-align: center; padding: 2rem;">Please log in to view your courses.</p>';
+        }
+        return;
+    }
+    
+    const allCourses = typeof getAllCourses === 'function' ? getAllCourses() : [];
+    const instructorCourses = allCourses.filter(c => c.instructor === instructorEmail);
+    
+    // Sort by date (newest first)
+    instructorCourses.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+    
+    // Count courses by status
+    const approved = instructorCourses.filter(c => c.status === 'approved').length;
+    const pending = instructorCourses.filter(c => c.status === 'pending').length;
+    const draft = instructorCourses.filter(c => c.status === 'draft').length;
+    const rejected = instructorCourses.filter(c => c.status === 'rejected').length;
+    
+    // Update stats
+    const statsElement = document.getElementById('instructorCoursesStats');
+    if (statsElement) {
+        const total = instructorCourses.length;
+        const active = approved;
+        statsElement.textContent = `${total} total courses (${active} active, ${pending} pending, ${draft} drafts, ${rejected} rejected)`;
+    }
+    
+    // Display courses
+    const coursesList = document.getElementById('instructorCoursesList');
+    if (!coursesList) return;
+    
+    if (instructorCourses.length === 0) {
+        coursesList.innerHTML = '<p style="color: #718096; text-align: center; padding: 2rem;">You haven\'t created any courses yet. <button class="btn btn-primary" onclick="openModal(\'createCourse\')" style="margin-left: 1rem;">Create Your First Course</button></p>';
+        return;
+    }
+    
+    coursesList.innerHTML = instructorCourses.map(course => {
+        const statusBadge = course.status === 'approved' 
+            ? '<span style="color: #10B981; font-weight: 600;">✓ Published</span>'
+            : course.status === 'pending'
+            ? '<span style="color: #F59E0B; font-weight: 600;">⏳ Pending Review</span>'
+            : course.status === 'rejected'
+            ? '<span style="color: #EF4444; font-weight: 600;">✗ Rejected</span>'
+            : '<span style="color: #718096; font-weight: 600;">📝 Draft</span>';
+        
+        const createdDate = course.createdAt ? new Date(course.createdAt).toLocaleDateString() : 'N/A';
+        const price = course.price ? `$${course.price.toFixed(2)}` : 'Free';
+        
+        return `
+            <div class="content-item">
+                <div>
+                    <h3>${course.title || 'Untitled Course'}</h3>
+                    <p>${price} • ${statusBadge} • Created: ${createdDate}</p>
+                    ${course.description ? `<p style="color: #718096; margin-top: 0.5rem; font-size: 0.9rem;">${course.description.substring(0, 100)}${course.description.length > 100 ? '...' : ''}</p>` : ''}
+                </div>
+                <div>
+                    <button class="btn btn-outline" onclick="editInstructorCourse('${course.id}')">Edit</button>
+                    <button class="btn btn-outline" style="margin-left: 0.5rem;" onclick="viewInstructorCourseDetails('${course.id}')">View</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Edit instructor course
+function editInstructorCourse(courseId) {
+    const course = typeof getCourseById === 'function' ? getCourseById(courseId) : null;
+    
+    if (!course) {
+        alert('Course not found!');
+        return;
+    }
+    
+    // Check if course belongs to current instructor
+    const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
+    if (course.instructor !== userSession.email) {
+        alert('You can only edit your own courses!');
+        return;
+    }
+    
+    // Open create course modal and populate with course data
+    openModal('createCourse');
+    
+    // Wait for modal to open, then populate fields
+    setTimeout(() => {
+        const titleInput = document.getElementById('courseTitle');
+        const descInput = document.getElementById('courseDescription');
+        const priceInput = document.getElementById('coursePrice');
+        const categoryInput = document.getElementById('courseCategory');
+        const subcategoryInput = document.getElementById('courseSubcategory');
+        const structureInput = document.getElementById('courseStructure');
+        
+        if (titleInput) titleInput.value = course.title || '';
+        if (descInput) descInput.value = course.description || '';
+        if (priceInput) priceInput.value = course.price || '';
+        if (categoryInput) categoryInput.value = course.category || '';
+        if (structureInput) structureInput.value = course.structure || 'single';
+        
+        // Trigger subcategory update
+        if (categoryInput && typeof updateSubcategoryOptions === 'function') {
+            updateSubcategoryOptions();
+            if (subcategoryInput && course.subcategory) {
+                setTimeout(() => {
+                    subcategoryInput.value = course.subcategory;
+                }, 100);
+            }
+        }
+        
+        // Store course ID for update
+        const form = document.querySelector('#createCourseModal form');
+        if (form) {
+            form.setAttribute('data-edit-course-id', courseId);
+        }
+        
+        // Show cover image if exists
+        if (course.coverImage && course.coverImage !== 'default') {
+            const coverOption = document.getElementById('coverOption');
+            if (coverOption) coverOption.value = 'custom';
+            // Display existing cover image
+            const coverPreview = document.getElementById('coverPreview');
+            if (coverPreview) {
+                coverPreview.innerHTML = `<img src="${course.coverImage}" style="max-width: 100%; max-height: 200px; border-radius: 6px; margin-top: 1rem;" alt="Course cover">`;
+            }
+        }
+        
+        alert('Course loaded for editing. Note: Video files need to be re-uploaded since they are stored as metadata only.');
+    }, 100);
+}
+
+// View instructor course details
+function viewInstructorCourseDetails(courseId) {
+    const course = typeof getCourseById === 'function' ? getCourseById(courseId) : null;
+    
+    if (!course) {
+        alert('Course not found!');
+        return;
+    }
+    
+    // Check if course belongs to current instructor
+    const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
+    if (course.instructor !== userSession.email) {
+        alert('You can only view your own courses!');
+        return;
+    }
+    
+    // Open view modal
+    openModal('courseView');
+    
+    const modalTitle = document.getElementById('courseViewTitle');
+    const modalContent = document.getElementById('courseViewContent');
+    
+    if (modalTitle) modalTitle.textContent = course.title || 'Course Details';
+    
+    if (modalContent) {
+        const statusBadge = course.status === 'approved' 
+            ? '<span style="background: #10B981; color: white; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.85rem;">✓ Published</span>'
+            : course.status === 'pending'
+            ? '<span style="background: #F59E0B; color: white; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.85rem;">⏳ Pending Review</span>'
+            : course.status === 'rejected'
+            ? '<span style="background: #EF4444; color: white; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.85rem;">✗ Rejected</span>'
+            : '<span style="background: #718096; color: white; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.85rem;">📝 Draft</span>';
+        
+        const createdDate = course.createdAt ? new Date(course.createdAt).toLocaleDateString() : 'N/A';
+        const submittedDate = course.submittedAt ? new Date(course.submittedAt).toLocaleDateString() : 'N/A';
+        const price = course.price ? `$${course.price.toFixed(2)}` : 'Free';
+        
+        let videosHtml = '';
+        if (course.videos && course.videos.length > 0) {
+            videosHtml = '<h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Course Videos:</h4><ul>';
+            course.videos.forEach((video, index) => {
+                const sizeMB = video.size ? (video.size / (1024 * 1024)).toFixed(2) : 'Unknown';
+                videosHtml += `<li style="margin-bottom: 0.5rem;">
+                    ${video.type === 'module' ? `Module ${video.moduleNumber}: ` : ''}${video.title || video.name || `Video ${index + 1}`}
+                    ${video.size ? ` (${sizeMB} MB)` : ''}
+                </li>`;
+            });
+            videosHtml += '</ul>';
+        }
+        
+        modalContent.innerHTML = `
+            <div style="display: grid; gap: 1.5rem;">
+                <div>
+                    ${course.coverImage && course.coverImage !== 'default' 
+                        ? `<img src="${course.coverImage}" style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 8px; margin-bottom: 1rem;" alt="Course cover">`
+                        : ''}
+                    <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem;">
+                        <h3 style="margin: 0; flex: 1;">${course.title || 'Untitled Course'}</h3>
+                        ${statusBadge}
+                    </div>
+                    <p style="color: #718096; line-height: 1.6; margin-bottom: 1rem;">${course.description || 'No description provided.'}</p>
+                </div>
+                
+                <div style="background: #F7F9FC; padding: 1rem; border-radius: 8px;">
+                    <h4 style="margin-top: 0; margin-bottom: 1rem;">Course Information</h4>
+                    <div style="display: grid; gap: 0.5rem;">
+                        <div><strong>Price:</strong> ${price}</div>
+                        <div><strong>Category:</strong> ${course.category || 'Not specified'}</div>
+                        ${course.subcategory ? `<div><strong>Subcategory:</strong> ${course.subcategory}</div>` : ''}
+                        <div><strong>Structure:</strong> ${course.structure === 'single' ? 'Single Video Course' : 'Module-Based Course'}</div>
+                        <div><strong>Created:</strong> ${createdDate}</div>
+                        ${course.submittedAt ? `<div><strong>Submitted:</strong> ${submittedDate}</div>` : ''}
+                        ${course.reviewedAt ? `<div><strong>Reviewed:</strong> ${new Date(course.reviewedAt).toLocaleDateString()}</div>` : ''}
+                    </div>
+                </div>
+                
+                ${course.previewVideo ? `
+                    <div>
+                        <h4 style="margin-bottom: 0.5rem;">Preview Video</h4>
+                        <p style="color: #718096;">${course.previewVideo.name || 'Preview video'} 
+                        ${course.previewVideo.size ? `(${(course.previewVideo.size / (1024 * 1024)).toFixed(2)} MB)` : ''}</p>
+                        <p style="font-size: 0.9rem; color: #718096; font-style: italic;">Note: Preview video file is stored as metadata. Actual playback requires the original file.</p>
+                    </div>
+                ` : ''}
+                
+                ${videosHtml}
+                
+                <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                    <button class="btn btn-primary" onclick="editInstructorCourse('${course.id}'); closeModal('courseView');">Edit Course</button>
+                    ${course.status === 'draft' ? `<button class="btn btn-success" onclick="submitCourseForReview('${course.id}'); closeModal('courseView');">Submit for Review</button>` : ''}
+                </div>
+            </div>
+        `;
+    }
+}
+
+// Submit draft course for review
+function submitCourseForReview(courseId) {
+    const course = typeof getCourseById === 'function' ? getCourseById(courseId) : null;
+    
+    if (!course) {
+        alert('Course not found!');
+        return;
+    }
+    
+    if (course.status !== 'draft') {
+        alert('Only draft courses can be submitted for review!');
+        return;
+    }
+    
+    if (confirm('Submit this course for review? It will be reviewed by an admin before being published.')) {
+        if (typeof updateCourseStatus === 'function') {
+            updateCourseStatus(courseId, 'pending', null);
+            alert('Course submitted for review successfully!');
+            if (typeof loadInstructorCourses === 'function') {
+                loadInstructorCourses();
+            }
+        }
+    }
+}
+
+// Fix video preview - handle metadata-only videos
+function playCoursePreview(courseId, event) {
+    if (event) event.stopPropagation();
+    
+    const approvedCourses = typeof getApprovedCourses === 'function' ? getApprovedCourses() : [];
+    let course = approvedCourses.find(c => c.id === courseId);
+    
+    if (!course) {
+        // Try getting from all courses
+        const allCourses = typeof getAllCourses === 'function' ? getAllCourses() : [];
+        course = allCourses.find(c => c.id === courseId);
+        if (!course) {
+            alert('Course not found!');
+            return;
+        }
+    }
+    
+    if (!course.previewVideo) {
+        alert('Preview video not available for this course.');
+        return;
+    }
+    
+    // Check if previewVideo is a metadata object or a URL
+    const isMetadata = typeof course.previewVideo === 'object' && course.previewVideo.name;
+    
+    if (isMetadata) {
+        // Show metadata info in modal
+        const sizeMB = course.previewVideo.size ? (course.previewVideo.size / (1024 * 1024)).toFixed(2) : 'Unknown';
+        const modal = document.createElement('div');
+        modal.className = 'modal active';
+        modal.style.zIndex = '10000';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 600px;">
+                <button class="modal-close" onclick="this.closest('.modal').remove()">×</button>
+                <h2>${course.title} - Preview Video</h2>
+                <div style="padding: 1.5rem;">
+                    <p><strong>Video File:</strong> ${course.previewVideo.name}</p>
+                    <p><strong>Size:</strong> ${sizeMB} MB</p>
+                    <p><strong>Type:</strong> ${course.previewVideo.type || 'Unknown'}</p>
+                    ${course.previewVideo.uploadedAt ? `<p><strong>Uploaded:</strong> ${new Date(course.previewVideo.uploadedAt).toLocaleString()}</p>` : ''}
+                    <div style="background: #F7F9FC; padding: 1rem; border-radius: 6px; margin-top: 1rem;">
+                        <p style="color: #718096; font-size: 0.9rem; margin: 0;">
+                            <strong>Note:</strong> In this demo, video files are stored as metadata references only to avoid exceeding browser storage limits. 
+                            In a production environment, videos would be uploaded to cloud storage and the video URL would be stored here for playback.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
+    } else if (typeof course.previewVideo === 'string') {
+        // It's a URL, play it
+        const modal = document.createElement('div');
+        modal.className = 'modal active';
+        modal.style.zIndex = '10000';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 800px;">
+                <button class="modal-close" onclick="this.closest('.modal').remove()">×</button>
+                <h2>${course.title} - Preview</h2>
+                <video controls autoplay style="width: 100%; max-height: 500px; background: #000; border-radius: 6px;">
+                    <source src="${course.previewVideo}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
+    } else {
+        alert('Preview video format not recognized.');
+    }
+}
+

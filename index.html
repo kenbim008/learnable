@@ -1484,32 +1484,13 @@
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                             <div>
                                 <h2>Your Courses</h2>
-                                <p>8 active courses, 2 drafts</p>
+                                <p id="instructorCoursesStats">Loading...</p>
                             </div>
                             <button class="btn btn-primary" onclick="openModal('createCourse')">+ Create New Course</button>
                         </div>
                         
-                        <div class="content-list">
-                            <div class="content-item">
-                                <div>
-                                    <h3>Introduction to Web Development</h3>
-                                    <p>234 students • $49.99 • Published • 4.8★ rating</p>
-                                </div>
-                                <div>
-                                    <button class="btn btn-outline" onclick="editCourse('course-1')">Edit</button>
-                                    <button class="btn btn-outline" style="margin-left: 0.5rem;" onclick="viewCourseDetails('course-1')">View</button>
-                                </div>
-                            </div>
-                            <div class="content-item">
-                                <div>
-                                    <h3>Advanced JavaScript</h3>
-                                    <p>189 students • $79.99 • Published • 4.9★ rating</p>
-                                </div>
-                                <div>
-                                    <button class="btn btn-outline" onclick="editCourse('course-1')">Edit</button>
-                                    <button class="btn btn-outline" style="margin-left: 0.5rem;" onclick="viewCourseDetails('course-1')">View</button>
-                                </div>
-                            </div>
+                        <div class="content-list" id="instructorCoursesList">
+                            <p style="color: #718096; text-align: center; padding: 2rem;">Loading your courses...</p>
                         </div>
                     </div>
                 </div>
@@ -3082,12 +3063,16 @@
                     
                     <div class="content-card">
                         <h2>Stripe Connection Status</h2>
-                        <div style="background: #10B981; color: white; padding: 1rem; border-radius: 6px; margin-bottom: 1.5rem;">
+                        <div id="stripeConnectionStatus" style="background: #10B981; color: white; padding: 1rem; border-radius: 6px; margin-bottom: 1.5rem; display: none;">
                             <strong>✅ Connected</strong> - Your Stripe account is successfully connected
                         </div>
-                        <p style="margin-bottom: 1.5rem;">Connected Account: acct_1234567890</p>
-                        <button class="btn btn-outline">Disconnect Stripe</button>
-                        <button class="btn btn-primary" style="margin-left: 0.5rem;">Reconnect</button>
+                        <div id="stripeDisconnectedStatus" style="background: #EF4444; color: white; padding: 1rem; border-radius: 6px; margin-bottom: 1.5rem; display: none;">
+                            <strong>❌ Disconnected</strong> - Your Stripe account is not connected
+                        </div>
+                        <p id="stripeAccountInfo" style="margin-bottom: 1.5rem; display: none;">Connected Account: <span id="stripeAccountId"></span></p>
+                        <button class="btn btn-outline" onclick="disconnectStripe()">Disconnect Stripe</button>
+                        <button class="btn btn-primary" style="margin-left: 0.5rem;" onclick="openStripeConnectModal()">Reconnect</button>
+                        <button class="btn btn-success" style="margin-left: 0.5rem;" onclick="openStripeConnectModal()" id="connectStripeBtn" style="display: none;">Connect Stripe</button>
                     </div>
                     
                     <div class="content-card">
@@ -3095,20 +3080,20 @@
                         <div class="form-group">
                             <label>Publishable Key</label>
                             <div style="display: flex; gap: 0.5rem;">
-                                <input type="text" value="pk_live_51..." readonly style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px; background: #F7F9FC;">
-                                <button class="btn btn-outline">Copy</button>
+                                <input type="text" id="stripePublishableKey" value="" placeholder="pk_live_..." readonly style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px; background: #F7F9FC;">
+                                <button class="btn btn-outline" type="button" onclick="copyStripeKey('publishable')">Copy</button>
                             </div>
                         </div>
                         <div class="form-group">
                             <label>Secret Key</label>
                             <div style="display: flex; gap: 0.5rem;">
-                                <input type="password" value="sk_live_51..." readonly style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px; background: #F7F9FC;">
-                                <button class="btn btn-outline">Show</button>
-                                <button class="btn btn-outline">Copy</button>
+                                <input type="password" id="stripeSecretKey" value="" placeholder="sk_live_..." readonly style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px; background: #F7F9FC;">
+                                <button class="btn btn-outline" type="button" onclick="toggleStripeSecretKey(event)">Show</button>
+                                <button class="btn btn-outline" type="button" onclick="copyStripeKey('secret')">Copy</button>
                             </div>
                             <p style="font-size: 0.9rem; color: #718096; margin-top: 0.5rem;">⚠️ Keep your secret key secure and never share it publicly</p>
                         </div>
-                        <button class="btn btn-primary">Regenerate Keys</button>
+                        <button class="btn btn-primary" onclick="regenerateStripeKeys()">Regenerate Keys</button>
                     </div>
                     
                     <div class="content-card">
@@ -3121,9 +3106,9 @@
                         <div class="form-group">
                             <label>Webhook Secret</label>
                             <div style="display: flex; gap: 0.5rem;">
-                                <input type="password" value="whsec_..." readonly style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px; background: #F7F9FC;">
-                                <button class="btn btn-outline">Show</button>
-                                <button class="btn btn-outline">Copy</button>
+                                <input type="password" id="stripeWebhookSecret" value="" placeholder="whsec_..." readonly style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px; background: #F7F9FC;">
+                                <button class="btn btn-outline" type="button" onclick="toggleStripeWebhookSecret(event)">Show</button>
+                                <button class="btn btn-outline" type="button" onclick="copyStripeKey('webhook')">Copy</button>
                             </div>
                         </div>
                         <button class="btn btn-success" onclick="saveStripeWebhookSettings()">Save Webhook Settings</button>
@@ -3722,6 +3707,47 @@
     </div>
 
     <!-- Content Page Editor Modal -->
+    <!-- Stripe Connect Modal -->
+    <div id="stripeConnectModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <button class="modal-close" onclick="closeModal('stripeConnect')">×</button>
+            <h2>💳 Connect Stripe Account</h2>
+            <p>Enter your Stripe API keys to connect your account</p>
+            <form onsubmit="handleStripeConnect(event)">
+                <div class="form-group">
+                    <label>Publishable Key <span style="color: #EF4444;">*</span></label>
+                    <input type="text" id="connectPublishableKey" placeholder="pk_live_..." required style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                    <p style="font-size: 0.9rem; color: #718096; margin-top: 0.5rem;">Your Stripe publishable key (starts with pk_)</p>
+                </div>
+                <div class="form-group">
+                    <label>Secret Key <span style="color: #EF4444;">*</span></label>
+                    <input type="password" id="connectSecretKey" placeholder="sk_live_..." required style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                    <p style="font-size: 0.9rem; color: #718096; margin-top: 0.5rem;">Your Stripe secret key (starts with sk_) - Keep this secure!</p>
+                </div>
+                <div class="form-group">
+                    <label>Account ID (Optional)</label>
+                    <input type="text" id="connectAccountId" placeholder="acct_..." style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                    <p style="font-size: 0.9rem; color: #718096; margin-top: 0.5rem;">Your Stripe account ID (optional, for reference)</p>
+                </div>
+                <div style="display: flex; gap: 0.5rem; margin-top: 1.5rem;">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('stripeConnect')" style="flex: 1;">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Connect Stripe</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Course View Modal -->
+    <div id="courseViewModal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <button class="modal-close" onclick="closeModal('courseView')">×</button>
+            <h2 id="courseViewTitle">Course Details</h2>
+            <div id="courseViewContent" style="margin-top: 1.5rem;">
+                <!-- Course details will be populated here -->
+            </div>
+        </div>
+    </div>
+
     <div id="contentPageEditorModal" class="modal">
         <div class="modal-content" style="max-width: 900px;">
             <button class="modal-close" onclick="closeModal('contentPageEditor')">×</button>

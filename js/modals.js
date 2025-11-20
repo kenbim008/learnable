@@ -1319,3 +1319,207 @@ window.onclick = function(event) {
     }
 }
 
+// ==================== Stripe Integration Functions ====================
+
+// Load Stripe settings
+function loadStripeSettings() {
+    const stripeData = JSON.parse(localStorage.getItem('stripeSettings') || '{}');
+    
+    const publishableKey = stripeData.publishableKey || '';
+    const secretKey = stripeData.secretKey || '';
+    const accountId = stripeData.accountId || '';
+    const webhookSecret = stripeData.webhookSecret || '';
+    const webhookUrl = stripeData.webhookUrl || 'https://learnable.com/api/stripe/webhook';
+    const isConnected = !!(publishableKey && secretKey);
+    
+    // Update connection status
+    const connectedStatus = document.getElementById('stripeConnectionStatus');
+    const disconnectedStatus = document.getElementById('stripeDisconnectedStatus');
+    const accountInfo = document.getElementById('stripeAccountInfo');
+    const accountIdSpan = document.getElementById('stripeAccountId');
+    const connectBtn = document.getElementById('connectStripeBtn');
+    
+    if (isConnected) {
+        if (connectedStatus) connectedStatus.style.display = 'block';
+        if (disconnectedStatus) disconnectedStatus.style.display = 'none';
+        if (accountInfo) accountInfo.style.display = 'block';
+        if (accountIdSpan) accountIdSpan.textContent = accountId || 'Connected';
+        if (connectBtn) connectBtn.style.display = 'none';
+    } else {
+        if (connectedStatus) connectedStatus.style.display = 'none';
+        if (disconnectedStatus) disconnectedStatus.style.display = 'block';
+        if (accountInfo) accountInfo.style.display = 'none';
+        if (connectBtn) connectBtn.style.display = 'inline-block';
+    }
+    
+    // Update API keys display
+    const publishableKeyInput = document.getElementById('stripePublishableKey');
+    const secretKeyInput = document.getElementById('stripeSecretKey');
+    const webhookSecretInput = document.getElementById('stripeWebhookSecret');
+    const webhookUrlInput = document.querySelector('input[placeholder*="webhook"]');
+    
+    if (publishableKeyInput) {
+        publishableKeyInput.value = publishableKey || '';
+        publishableKeyInput.placeholder = 'pk_live_...';
+    }
+    if (secretKeyInput) {
+        secretKeyInput.value = secretKey || '';
+        secretKeyInput.type = 'password';
+        secretKeyInput.placeholder = 'sk_live_...';
+    }
+    if (webhookSecretInput) {
+        webhookSecretInput.value = webhookSecret || '';
+        webhookSecretInput.type = 'password';
+        webhookSecretInput.placeholder = 'whsec_...';
+    }
+    if (webhookUrlInput && webhookUrl) {
+        webhookUrlInput.value = webhookUrl;
+    }
+}
+
+// Open Stripe connect modal
+function openStripeConnectModal() {
+    openModal('stripeConnect');
+    
+    // Pre-fill with existing data if available
+    const stripeData = JSON.parse(localStorage.getItem('stripeSettings') || '{}');
+    const publishableInput = document.getElementById('connectPublishableKey');
+    const secretInput = document.getElementById('connectSecretKey');
+    const accountInput = document.getElementById('connectAccountId');
+    
+    if (publishableInput && stripeData.publishableKey) {
+        publishableInput.value = stripeData.publishableKey;
+    }
+    if (secretInput && stripeData.secretKey) {
+        secretInput.value = stripeData.secretKey;
+    }
+    if (accountInput && stripeData.accountId) {
+        accountInput.value = stripeData.accountId;
+    }
+}
+
+// Handle Stripe connection
+function handleStripeConnect(event) {
+    event.preventDefault();
+    
+    const publishableKey = document.getElementById('connectPublishableKey')?.value.trim();
+    const secretKey = document.getElementById('connectSecretKey')?.value.trim();
+    const accountId = document.getElementById('connectAccountId')?.value.trim();
+    
+    if (!publishableKey || !secretKey) {
+        alert('Please enter both Publishable Key and Secret Key!');
+        return;
+    }
+    
+    // Validate key formats
+    if (!publishableKey.startsWith('pk_')) {
+        alert('Invalid Publishable Key format. Should start with "pk_"');
+        return;
+    }
+    
+    if (!secretKey.startsWith('sk_')) {
+        alert('Invalid Secret Key format. Should start with "sk_"');
+        return;
+    }
+    
+    // Save Stripe settings
+    const stripeData = {
+        publishableKey: publishableKey,
+        secretKey: secretKey,
+        accountId: accountId || '',
+        connectedAt: new Date().toISOString(),
+        webhookUrl: document.querySelector('input[placeholder*="webhook"]')?.value || 'https://learnable.com/api/stripe/webhook',
+        webhookSecret: document.getElementById('stripeWebhookSecret')?.value || ''
+    };
+    
+    localStorage.setItem('stripeSettings', JSON.stringify(stripeData));
+    
+    alert('Stripe account connected successfully!');
+    closeModal('stripeConnect');
+    
+    // Reload settings display
+    loadStripeSettings();
+}
+
+// Disconnect Stripe
+function disconnectStripe() {
+    if (!confirm('Are you sure you want to disconnect your Stripe account? Payment processing will not work until you reconnect.')) {
+        return;
+    }
+    
+    localStorage.removeItem('stripeSettings');
+    alert('Stripe account disconnected successfully.');
+    loadStripeSettings();
+}
+
+// Copy Stripe key
+function copyStripeKey(keyType) {
+    let keyValue = '';
+    
+    if (keyType === 'publishable') {
+        keyValue = document.getElementById('stripePublishableKey')?.value || '';
+    } else if (keyType === 'secret') {
+        keyValue = document.getElementById('stripeSecretKey')?.value || '';
+    } else if (keyType === 'webhook') {
+        keyValue = document.getElementById('stripeWebhookSecret')?.value || '';
+    }
+    
+    if (!keyValue) {
+        alert('No key to copy!');
+        return;
+    }
+    
+    navigator.clipboard.writeText(keyValue).then(() => {
+        alert(`${keyType.charAt(0).toUpperCase() + keyType.slice(1)} key copied to clipboard!`);
+    }).catch(() => {
+        const textArea = document.createElement('textarea');
+        textArea.value = keyValue;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        alert(`${keyType.charAt(0).toUpperCase() + keyType.slice(1)} key copied to clipboard!`);
+    });
+}
+
+// Toggle Stripe secret key visibility
+function toggleStripeSecretKey(event) {
+    const secretKeyInput = document.getElementById('stripeSecretKey');
+    if (!secretKeyInput) return;
+    
+    const button = event?.target || document.querySelector('[onclick="toggleStripeSecretKey()"]');
+    
+    if (secretKeyInput.type === 'password') {
+        secretKeyInput.type = 'text';
+        if (button) button.textContent = 'Hide';
+    } else {
+        secretKeyInput.type = 'password';
+        if (button) button.textContent = 'Show';
+    }
+}
+
+// Toggle Stripe webhook secret visibility
+function toggleStripeWebhookSecret(event) {
+    const webhookSecretInput = document.getElementById('stripeWebhookSecret');
+    if (!webhookSecretInput) return;
+    
+    const button = event?.target || document.querySelector('[onclick="toggleStripeWebhookSecret()"]');
+    
+    if (webhookSecretInput.type === 'password') {
+        webhookSecretInput.type = 'text';
+        if (button) button.textContent = 'Hide';
+    } else {
+        webhookSecretInput.type = 'password';
+        if (button) button.textContent = 'Show';
+    }
+}
+
+// Regenerate Stripe keys
+function regenerateStripeKeys() {
+    if (!confirm('Are you sure you want to regenerate your Stripe keys? This action will invalidate your current keys and you will need to generate new ones from your Stripe dashboard.')) {
+        return;
+    }
+    
+    alert('To regenerate Stripe keys:\n\n1. Go to your Stripe Dashboard\n2. Navigate to Developers > API keys\n3. Create new keys\n4. Update them in this section using the "Reconnect" button\n\nNote: This demo does not communicate with Stripe\'s API directly.');
+}
+
