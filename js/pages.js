@@ -382,6 +382,7 @@ function showSuperAdminSection(sectionName, event) {
         'contentManagement': 'superAdminContentManagementSection',
         'dataManagement': 'superAdminDataManagementSection',
         'siteSettings': 'superAdminSiteSettingsSection',
+        'socialMedia': 'superAdminSocialMediaSection',
         'analytics': 'superAdminAnalyticsSection',
         'systemLogs': 'superAdminSystemLogsSection',
         'stripeSettings': 'superAdminStripeSettingsSection',
@@ -408,6 +409,11 @@ function showSuperAdminSection(sectionName, event) {
     // Refresh access code display if Access Codes section is opened
     if (sectionName === 'accessCodes' && typeof updateAccessCodeDisplay === 'function') {
         updateAccessCodeDisplay();
+    }
+    
+    // Load social media settings if Social Media section is opened
+    if (sectionName === 'socialMedia' && typeof loadSocialMediaSettings === 'function') {
+        loadSocialMediaSettings();
     }
     
     // Load data when opening data management section

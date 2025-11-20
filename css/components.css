@@ -97,6 +97,30 @@ footer {
     background: #1F1F3D;
     color: #CBD5E0;
     padding: 3rem 2rem 1rem;
+    margin-top: auto; /* Push footer to bottom */
+}
+
+/* Ensure pages with footer have proper layout */
+.dashboard,
+#aboutPage,
+#helpCenterPage,
+#contactUsPage,
+#termsOfServicePage,
+#privacyPolicyPage,
+#communityPage {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.dashboard main,
+#aboutPage main,
+#helpCenterPage main,
+#contactUsPage main,
+#termsOfServicePage main,
+#privacyPolicyPage main,
+#communityPage main {
+    flex: 1; /* Take up available space */
 }
 
 .footer-container {
@@ -132,6 +156,12 @@ footer {
     justify-content: center;
     cursor: pointer;
     color: white;
+    transition: transform 0.2s, opacity 0.2s;
+}
+
+.social-icon:hover {
+    transform: scale(1.1);
+    opacity: 0.9;
 }
 
 .social-icon.twitter { background: #1DA1F2; }

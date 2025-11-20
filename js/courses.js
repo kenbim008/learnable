@@ -984,3 +984,98 @@ function updateSiteContent(pageId, title, content, meta) {
     // The content is stored in localStorage and will be loaded when pages are viewed
 }
 
+// Social Media Integration Functions
+function saveSocialMediaSettings() {
+    const twitter = document.getElementById('socialMediaTwitter')?.value.trim();
+    const youtube = document.getElementById('socialMediaYoutube')?.value.trim();
+    const instagram = document.getElementById('socialMediaInstagram')?.value.trim();
+    const linkedin = document.getElementById('socialMediaLinkedin')?.value.trim();
+    
+    const socialMedia = {
+        twitter: twitter || '',
+        youtube: youtube || '',
+        instagram: instagram || '',
+        linkedin: linkedin || ''
+    };
+    
+    localStorage.setItem('socialMediaLinks', JSON.stringify(socialMedia));
+    
+    // Show success message
+    alert('Social media links saved successfully! The footer icons will now link to these URLs.');
+    
+    // Update preview
+    updateSocialMediaPreview();
+}
+
+function getSocialMediaLinks() {
+    const stored = localStorage.getItem('socialMediaLinks');
+    if (stored) {
+        return JSON.parse(stored);
+    }
+    return {
+        twitter: '',
+        youtube: '',
+        instagram: '',
+        linkedin: ''
+    };
+}
+
+function openSocialLink(platform) {
+    const links = getSocialMediaLinks();
+    const url = links[platform];
+    
+    if (url) {
+        window.open(url, '_blank', 'noopener,noreferrer');
+    } else {
+        // If no URL is set, show a message
+        alert(`${platform.charAt(0).toUpperCase() + platform.slice(1)} link has not been configured yet. Please set it up in the Super Admin portal under Social Media Integration.`);
+    }
+}
+
+function previewSocialLink(platform) {
+    openSocialLink(platform);
+}
+
+function loadSocialMediaSettings() {
+    const links = getSocialMediaLinks();
+    
+    if (document.getElementById('socialMediaTwitter')) {
+        document.getElementById('socialMediaTwitter').value = links.twitter || '';
+    }
+    if (document.getElementById('socialMediaYoutube')) {
+        document.getElementById('socialMediaYoutube').value = links.youtube || '';
+    }
+    if (document.getElementById('socialMediaInstagram')) {
+        document.getElementById('socialMediaInstagram').value = links.instagram || '';
+    }
+    if (document.getElementById('socialMediaLinkedin')) {
+        document.getElementById('socialMediaLinkedin').value = links.linkedin || '';
+    }
+}
+
+function updateSocialMediaPreview() {
+    // This function can be used to update the preview in the Super Admin portal
+    // The actual footer icons will use openSocialLink() which reads from localStorage
+}
+
+// Load social media settings when Super Admin Social Media section is opened
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if we're on the Super Admin Social Media section
+    const observer = new MutationObserver(function(mutations) {
+        const socialMediaSection = document.getElementById('superAdminSocialMediaSection');
+        if (socialMediaSection && !socialMediaSection.classList.contains('hidden')) {
+            loadSocialMediaSettings();
+        }
+    });
+    
+    const targetNode = document.body;
+    if (targetNode) {
+        observer.observe(targetNode, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+            attributeFilter: ['class']
+        });
+    }
+});
+
