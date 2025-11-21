@@ -109,7 +109,8 @@ function addToCart(courseId) {
                 id: approvedCourse.id,
                 title: approvedCourse.title,
                 instructor: approvedCourse.instructorName || approvedCourse.instructor,
-                priceUSD: approvedCourse.price,
+                price: approvedCourse.price || 0, // Use 'price' instead of 'priceUSD' for consistency
+                priceUSD: approvedCourse.price || 0, // Keep both for backward compatibility
                 rating: 4.5,
                 image: approvedCourse.coverImage && approvedCourse.coverImage !== 'default' 
                     ? `<img src="${approvedCourse.coverImage}" alt="${approvedCourse.title}">`
@@ -238,7 +239,9 @@ function checkout() {
     // Calculate totals
     let subtotal = 0;
     cart.forEach(course => {
-        subtotal += course.price || 0;
+        // Handle both price and priceUSD properties
+        const coursePrice = course.price || course.priceUSD || 0;
+        subtotal += parseFloat(coursePrice) || 0;
     });
     const tax = subtotal * 0.1; // 10% tax (example)
     const total = subtotal + tax;
@@ -261,13 +264,16 @@ function checkout() {
     
     let cartItemsHtml = '';
     cart.forEach((course, index) => {
+        // Handle both price and priceUSD properties
+        const coursePrice = course.price || course.priceUSD || 0;
+        const priceDisplay = parseFloat(coursePrice) || 0;
         cartItemsHtml += `
             <div style="display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid #E2E8F0;">
                 <div>
                     <div style="font-weight: 600;">${course.title || 'Untitled Course'}</div>
                     <div style="font-size: 0.85rem; color: #718096;">Instructor: ${course.instructor || 'Unknown'}</div>
                 </div>
-                <div style="font-weight: 600; color: #10B981;">$${(course.price || 0).toFixed(2)}</div>
+                <div style="font-weight: 600; color: #10B981;">$${priceDisplay.toFixed(2)}</div>
             </div>
         `;
     });

@@ -38,8 +38,14 @@
                         🛒
                         <span class="cart-badge" id="cartBadge">0</span>
                     </div>
-                    <button class="btn btn-outline" onclick="openModal('login')">Login</button>
-                    <button class="btn btn-primary" onclick="openModal('signup')">Sign Up</button>
+                    <span id="landingUserName" style="margin-right: 1rem; color: #4A5568; font-weight: 500; display: none;"></span>
+                    <span id="landingDashboardButton" style="display: none;">
+                        <button class="btn btn-outline" onclick="navigateToDashboard()" style="margin-right: 0.5rem;">📊 Dashboard</button>
+                    </span>
+                    <span id="landingAuthButtons">
+                        <button class="btn btn-outline" onclick="openModal('login')">Login</button>
+                        <button class="btn btn-primary" onclick="openModal('signup')">Sign Up</button>
+                    </span>
                 </div>
             </div>
         </header>
@@ -1184,6 +1190,8 @@
                     <span style="font-weight: 600;">Student Portal</span>
                 </nav>
                 <div class="header-right">
+                    <span id="studentUserName" style="margin-right: 1rem; color: #4A5568; font-weight: 500;"></span>
+                    <button class="btn btn-outline" onclick="navigateToWebsite()" style="margin-right: 0.5rem;">🏠 Home</button>
                     <button class="btn btn-outline" onclick="logout()">Logout</button>
                 </div>
             </div>
@@ -1398,6 +1406,8 @@
                     <span style="font-weight: 600;">Instructor Portal</span>
                 </nav>
                 <div class="header-right">
+                    <span id="instructorUserName" style="margin-right: 1rem; color: #4A5568; font-weight: 500;"></span>
+                    <button class="btn btn-outline" onclick="navigateToWebsite()" style="margin-right: 0.5rem;">🏠 Home</button>
                     <button class="btn btn-outline" onclick="logout()">Logout</button>
                 </div>
             </div>
@@ -1790,6 +1800,8 @@
                     <span style="font-weight: 600;">Admin Portal</span>
                 </nav>
                 <div class="header-right">
+                    <span id="adminUserName" style="margin-right: 1rem; color: #4A5568; font-weight: 500;"></span>
+                    <button class="btn btn-outline" onclick="navigateToWebsite()" style="margin-right: 0.5rem;">🏠 Home</button>
                     <button class="btn btn-outline" onclick="logout()">Logout</button>
                 </div>
             </div>
@@ -2270,6 +2282,8 @@
                     <span style="font-weight: 600;">Super Admin Portal</span>
                 </nav>
                 <div class="header-right">
+                    <span id="superAdminUserName" style="margin-right: 1rem; color: #4A5568; font-weight: 500;"></span>
+                    <button class="btn btn-outline" onclick="navigateToWebsite()" style="margin-right: 0.5rem;">🏠 Home</button>
                     <button class="btn btn-outline" onclick="logout()">Logout</button>
                 </div>
             </div>

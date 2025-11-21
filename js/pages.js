@@ -1,3 +1,89 @@
+// Update user name display on all pages
+function updateUserNameDisplay() {
+    const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
+    if (!userSession.email) return;
+    
+    const userName = userSession.name || userSession.email.split('@')[0];
+    const userRole = userSession.role || '';
+    
+    // Update dashboard headers
+    const studentUserName = document.getElementById('studentUserName');
+    const instructorUserName = document.getElementById('instructorUserName');
+    const adminUserName = document.getElementById('adminUserName');
+    const superAdminUserName = document.getElementById('superAdminUserName');
+    const landingUserName = document.getElementById('landingUserName');
+    
+    if (studentUserName && userRole === 'student') {
+        studentUserName.textContent = `👤 ${userName}`;
+    }
+    if (instructorUserName && userRole === 'instructor') {
+        instructorUserName.textContent = `👤 ${userName}`;
+    }
+    if (adminUserName && userRole === 'admin') {
+        adminUserName.textContent = `👤 ${userName}`;
+    }
+    if (superAdminUserName && userRole === 'superadmin') {
+        superAdminUserName.textContent = `👤 ${userName}`;
+    }
+    if (landingUserName) {
+        landingUserName.textContent = `👤 ${userName}`;
+        landingUserName.style.display = 'inline-block';
+    }
+    
+    // Show/hide dashboard button and auth buttons on landing page
+    const landingDashboardButton = document.getElementById('landingDashboardButton');
+    const landingAuthButtons = document.getElementById('landingAuthButtons');
+    
+    if (landingDashboardButton && landingAuthButtons) {
+        if (userSession.email) {
+            landingDashboardButton.style.display = 'inline-block';
+            landingAuthButtons.style.display = 'none';
+        } else {
+            landingDashboardButton.style.display = 'none';
+            landingAuthButtons.style.display = 'inline-block';
+        }
+    }
+}
+
+// Navigate to website (from dashboard)
+function navigateToWebsite() {
+    showPage('landing');
+    updateUserNameDisplay();
+}
+
+// Navigate to dashboard (from website)
+function navigateToDashboard() {
+    const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
+    const userRole = userSession.role || '';
+    
+    if (!userSession.email) {
+        alert('Please log in to access your dashboard.');
+        if (typeof openModal === 'function') {
+            openModal('login');
+        }
+        return;
+    }
+    
+    switch(userRole) {
+        case 'student':
+            showPage('studentDashboard');
+            break;
+        case 'instructor':
+            showPage('instructorDashboard');
+            break;
+        case 'admin':
+            showPage('adminDashboard');
+            break;
+        case 'superadmin':
+            showPage('superAdminDashboard');
+            break;
+        default:
+            showPage('landing');
+    }
+    
+    updateUserNameDisplay();
+}
+
 // Page navigation
 function showPage(pageName) {
     // Hide all pages
@@ -30,9 +116,17 @@ function showPage(pageName) {
         targetPage.classList.remove('hidden');
     }
     
+    // Update user name display whenever page changes
+    updateUserNameDisplay();
+    
     // Scroll to top
     window.scrollTo(0, 0);
 }
+
+// Initialize user display on page load
+document.addEventListener('DOMContentLoaded', function() {
+    updateUserNameDisplay();
+});
 
 // Show About Page
 function showAboutPage() {
@@ -224,6 +318,11 @@ setInterval(function() {
         }
     }
 }, 60000); // Check every minute
+
+// Initialize user display on page load
+document.addEventListener('DOMContentLoaded', function() {
+    updateUserNameDisplay();
+});
 
 // Check session when page loads
 document.addEventListener('DOMContentLoaded', function() {

@@ -318,14 +318,28 @@ function handleLogin(e) {
     
     closeModal('login');
     
+    // Get user name from users data if available
+    let userName = email.split('@')[0];
+    const allUsers = JSON.parse(localStorage.getItem('users') || '[]');
+    const existingUser = allUsers.find(u => u.email === email);
+    if (existingUser && existingUser.name) {
+        userName = existingUser.name;
+    }
+    
     // Save session data
     const sessionData = {
         role: role,
         email: email,
+        name: userName,
         timestamp: Date.now(),
         expiresAt: Date.now() + (15 * 60 * 1000) // 15 minutes
     };
     localStorage.setItem('userSession', JSON.stringify(sessionData));
+    
+    // Update user display
+    if (typeof updateUserNameDisplay === 'function') {
+        updateUserNameDisplay();
+    }
     
     // Show appropriate dashboard based on role
     if (role === 'student') {
@@ -352,9 +366,35 @@ function handleSignup(e) {
     
     const role = document.getElementById('signupRole').value;
     const name = document.getElementById('signupName').value;
+    const email = document.getElementById('signupEmail').value;
+    
+    // Save user data
+    let users = JSON.parse(localStorage.getItem('users') || '[]');
+    users.push({
+        name: name,
+        email: email,
+        role: role,
+        createdAt: new Date().toISOString()
+    });
+    localStorage.setItem('users', JSON.stringify(users));
+    
+    // Create session
+    const sessionData = {
+        role: role,
+        email: email,
+        name: name,
+        timestamp: Date.now(),
+        expiresAt: Date.now() + (15 * 60 * 1000) // 15 minutes
+    };
+    localStorage.setItem('userSession', JSON.stringify(sessionData));
     
     alert(`Account created successfully for ${name} as ${role}!`);
     closeModal('signup');
+    
+    // Update user display
+    if (typeof updateUserNameDisplay === 'function') {
+        updateUserNameDisplay();
+    }
     
     // Auto-login after signup
     if (role === 'student') {
