@@ -601,6 +601,73 @@ function getAllCourses() {
     }
 }
 
+// Update existing course
+function updateCourse(course) {
+    try {
+        if (!course || !course.id) {
+            console.error('Invalid course data:', course);
+            throw new Error('Invalid course data');
+        }
+        
+        // Remove video file objects if they exist (they shouldn't be stored)
+        if (course.videos) {
+            course.videos = course.videos.map(v => {
+                const { file, ...videoMetadata } = v;
+                return videoMetadata;
+            });
+        }
+        
+        // Estimate size before saving
+        const courseString = JSON.stringify(course);
+        const estimatedSizeMB = (new Blob([courseString]).size / (1024 * 1024)).toFixed(2);
+        
+        // Warn if course data is very large
+        if (parseFloat(estimatedSizeMB) > 4) {
+            console.warn(`Course data size: ${estimatedSizeMB}MB - close to localStorage quota`);
+        }
+        
+        const courses = getAllCourses();
+        const courseIndex = courses.findIndex(c => c.id === course.id);
+        
+        if (courseIndex === -1) {
+            // Course not found, save as new
+            courses.push(course);
+        } else {
+            // Update existing course
+            courses[courseIndex] = course;
+        }
+        
+        // Try to save
+        try {
+            localStorage.setItem('courses', JSON.stringify(courses));
+        } catch (quotaError) {
+            // If quota exceeded, try to clear old draft courses
+            if (quotaError.name === 'QuotaExceededError') {
+                console.warn('localStorage quota exceeded. Attempting to clear old draft courses...');
+                const cleanedCourses = courses.filter(c => c.status !== 'draft' || (new Date() - new Date(c.createdAt)) < 7 * 24 * 60 * 60 * 1000); // Keep drafts less than 7 days old
+                
+                if (cleanedCourses.length < courses.length) {
+                    try {
+                        localStorage.setItem('courses', JSON.stringify(cleanedCourses));
+                        alert('Storage quota was exceeded. Old draft courses have been cleared. Please try saving again.');
+                        throw new Error('Quota exceeded - old drafts cleared. Please retry.');
+                    } catch (retryError) {
+                        throw new Error('Storage quota exceeded. Please clear old courses or contact support.');
+                    }
+                } else {
+                    throw new Error('Storage quota exceeded. Please clear old courses or contact support.');
+                }
+            }
+            throw quotaError;
+        }
+        
+        return course;
+    } catch (error) {
+        console.error('Error updating course:', error);
+        throw error;
+    }
+}
+
 // Save course
 function saveCourse(course) {
     try {
@@ -705,6 +772,11 @@ function createFileURL(file) {
 function handleCreateCourse(e) {
     e.preventDefault();
     
+    // Check if this is an update (edit) or a new course
+    const form = e.target;
+    const editCourseId = form.getAttribute('data-edit-course-id');
+    const isEdit = !!editCourseId;
+    
     // Get form data
     const title = document.getElementById('courseTitle')?.value || document.querySelector('#createCourseModal input[type="text"]')?.value;
     const description = document.getElementById('courseDescription')?.value || document.querySelector('#createCourseModal textarea')?.value;
@@ -719,6 +791,23 @@ function handleCreateCourse(e) {
         return;
     }
     
+    // If editing, get the existing course to preserve some fields
+    let existingCourse = null;
+    if (isEdit) {
+        existingCourse = typeof getCourseById === 'function' ? getCourseById(editCourseId) : null;
+        if (!existingCourse) {
+            alert('Course not found! Cannot update.');
+            return;
+        }
+        
+        // Check if course belongs to current instructor
+        const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
+        if (existingCourse.instructor !== userSession.email) {
+            alert('You can only edit your own courses!');
+            return;
+        }
+    }
+    
     // Get cover image
     const coverFileInput = document.getElementById('coverFile');
     const coverFile = coverFileInput ? coverFileInput.files[0] : null;
@@ -729,23 +818,28 @@ function handleCreateCourse(e) {
     const previewFileInput = document.getElementById('previewFile');
     const previewFile = previewFileInput ? previewFileInput.files[0] : null;
     
-    // Get course videos
+        // Get course videos
     let courseVideos = [];
+    // When editing, videos are optional (can keep existing ones)
+    const videoRequired = !isEdit;
+    
     if (structure === 'single') {
         const videoFileInput = document.getElementById('courseVideoFile');
         const videoFile = videoFileInput ? videoFileInput.files[0] : null;
-        if (!videoFile) {
+        if (!videoFile && videoRequired) {
             alert('Please upload a course video!');
             return;
         }
-        courseVideos.push({
-            type: 'single',
-            file: videoFile,
-            name: videoFile.name
-        });
+        if (videoFile) {
+            courseVideos.push({
+                type: 'single',
+                file: videoFile,
+                name: videoFile.name
+            });
+        }
     } else {
         const modules = document.querySelectorAll('.module-item');
-        if (modules.length === 0) {
+        if (modules.length === 0 && videoRequired) {
             alert('Please add at least one module!');
             return;
         }
@@ -764,32 +858,71 @@ function handleCreateCourse(e) {
                 });
             }
         });
-        if (courseVideos.length === 0) {
+        if (courseVideos.length === 0 && videoRequired) {
             alert('Please upload at least one module video!');
             return;
         }
     }
     
     // Create course object
-    const courseId = 'course-' + Date.now();
+    const courseId = isEdit ? editCourseId : 'course-' + Date.now();
     const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
     
     // Store file references - only convert images to data URLs, not videos (to avoid localStorage quota issues)
     // For videos, we'll store metadata only (name, size, type, date) instead of the actual file data
     let coverURLPromise = Promise.resolve(null);
     
-    // Only convert cover image to data URL (images are small enough for localStorage)
-    if (coverFile && coverOption === 'custom') {
-        // Check if it's an image (not too large)
+    // Determine cover image URL - use existing if editing and no new file uploaded
+    if (isEdit && existingCourse && !coverFile && existingCourse.coverImage) {
+        coverURLPromise = Promise.resolve(existingCourse.coverImage);
+    } else if (coverFile && coverOption === 'custom') {
+        // Only convert cover image to data URL (images are small enough for localStorage)
         if (coverFile.size < 5 * 1024 * 1024) { // 5MB limit for images
             coverURLPromise = createFileURL(coverFile);
         } else {
             alert('Cover image is too large (max 5MB). Please use a smaller image.');
             return;
         }
+    } else {
+        // Use default or existing cover
+        coverURLPromise = Promise.resolve(isEdit && existingCourse ? (existingCourse.coverImage || 'default') : 'default');
     }
     
     coverURLPromise.then((coverURL) => {
+        // Determine preview video - use existing if editing and no new file uploaded
+        let previewVideoData = null;
+        if (previewFile) {
+            // New preview video uploaded
+            previewVideoData = {
+                name: previewFile.name,
+                size: previewFile.size,
+                type: previewFile.type,
+                uploadedAt: new Date().toISOString()
+            };
+        } else if (isEdit && existingCourse && existingCourse.previewVideo) {
+            // Keep existing preview video
+            previewVideoData = existingCourse.previewVideo;
+        }
+        
+        // Determine videos - merge new videos with existing if editing
+        let videosData = courseVideos.map(v => ({
+            type: v.type,
+            moduleNumber: v.moduleNumber,
+            title: v.title,
+            description: v.description,
+            name: v.name,
+            size: v.file ? v.file.size : null,
+            type: v.file ? v.file.type : null,
+            uploadedAt: new Date().toISOString(),
+            // Note: Actual video file would be uploaded to server in production
+            url: null
+        }));
+        
+        // If editing and no new videos uploaded, keep existing videos
+        if (isEdit && existingCourse && courseVideos.length === 0 && existingCourse.videos && existingCourse.videos.length > 0) {
+            videosData = existingCourse.videos;
+        }
+        
         // Create course object with video metadata (not actual video data)
         const course = {
             id: courseId,
@@ -800,46 +933,52 @@ function handleCreateCourse(e) {
             subcategory: subcategory,
             structure: structure,
             coverImage: coverURL || 'default',
-            // Store video metadata only, not the actual video files
-            previewVideo: previewFile ? {
-                name: previewFile.name,
-                size: previewFile.size,
-                type: previewFile.type,
-                uploadedAt: new Date().toISOString()
-            } : null,
-            videos: courseVideos.map(v => ({
-                type: v.type,
-                moduleNumber: v.moduleNumber,
-                title: v.title,
-                description: v.description,
-                name: v.name,
-                size: v.file ? v.file.size : null,
-                type: v.file ? v.file.type : null,
-                uploadedAt: new Date().toISOString(),
-                // Note: Actual video file would be uploaded to server in production
-                url: null
-            })),
-            instructor: userSession.email || 'instructor@learnable.com',
-            instructorName: userSession.name || 'Instructor',
-            status: 'pending',
-            createdAt: new Date().toISOString(),
-            submittedAt: new Date().toISOString()
+            previewVideo: previewVideoData,
+            videos: videosData,
+            instructor: userSession.email || (existingCourse ? existingCourse.instructor : 'instructor@learnable.com'),
+            instructorName: userSession.name || (existingCourse ? existingCourse.instructorName : 'Instructor'),
+            // Preserve status if editing published courses, otherwise set to pending
+            status: isEdit && existingCourse && existingCourse.status === 'approved' ? 'approved' : 
+                    isEdit && existingCourse && existingCourse.status === 'pending' ? 'pending' :
+                    isEdit && existingCourse && existingCourse.status === 'rejected' ? 'draft' : // If rejected, make it draft after edit
+                    'pending',
+            // Preserve creation date if editing
+            createdAt: isEdit && existingCourse ? existingCourse.createdAt : new Date().toISOString(),
+            // Preserve submitted date if editing, otherwise set to now
+            submittedAt: isEdit && existingCourse ? existingCourse.submittedAt : new Date().toISOString(),
+            // Add updated timestamp
+            updatedAt: new Date().toISOString()
         };
         
         // Save course
         try {
-            saveCourse(course);
+            // Update or save course
+            if (isEdit) {
+                updateCourse(course);
+            } else {
+                saveCourse(course);
+            }
             
-            alert(`Course "${title}" created successfully!\n\nYour course is now pending review. It will be available for purchase after approval.\n\nNote: Video files are stored as references. In production, these would be uploaded to cloud storage.`);
+            if (isEdit) {
+                alert(`Course "${title}" updated successfully!\n\nYour changes have been saved.${existingCourse && existingCourse.status === 'approved' ? ' The course remains published with your updates.' : ''}`);
+            } else {
+                alert(`Course "${title}" created successfully!\n\nYour course is now pending review. It will be available for purchase after approval.\n\nNote: Video files are stored as references. In production, these would be uploaded to cloud storage.`);
+            }
     closeModal('createCourse');
             
-            // Reset form
+            // Reset form and remove edit attribute
             const form = document.querySelector('#createCourseModal form');
+            if (form) {
+                form.removeAttribute('data-edit-course-id');
+            }
             if (form) {
                 form.reset();
             }
             
             // Refresh course lists if on relevant pages
+            if (typeof loadInstructorCourses === 'function') {
+                loadInstructorCourses();
+            }
             if (typeof refreshCourseLists === 'function') {
                 refreshCourseLists();
             }
@@ -963,7 +1102,12 @@ function saveCourseAsDraft() {
         
         // Save draft course
         try {
-            saveCourse(course);
+            // Update or save course
+            if (isEdit) {
+                updateCourse(course);
+            } else {
+                saveCourse(course);
+            }
             
             alert(`Course draft "${title}" saved successfully!\n\nYou can continue editing and submit for review later.\n\nNote: Video files are stored as references. In production, these would be uploaded to cloud storage.`);
             

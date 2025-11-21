@@ -243,7 +243,7 @@ function checkout() {
         const coursePrice = course.price || course.priceUSD || 0;
         subtotal += parseFloat(coursePrice) || 0;
     });
-    const tax = subtotal * 0.1; // 10% tax (example)
+    const tax = subtotal * 0.05; // 5% Alberta GST
     const total = subtotal + tax;
     
     // Get Stripe settings
@@ -292,7 +292,7 @@ function checkout() {
                         <span>$${subtotal.toFixed(2)}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between;">
-                        <span>Tax (10%):</span>
+                        <span>Tax (5% GST):</span>
                         <span>$${tax.toFixed(2)}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; font-size: 1.25rem; font-weight: bold; padding-top: 0.5rem; border-top: 2px solid #E2E8F0; color: #10B981;">
