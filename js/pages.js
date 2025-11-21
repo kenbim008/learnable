@@ -511,6 +511,7 @@ function showSuperAdminSection(sectionName, event) {
         'dataManagement': 'superAdminDataManagementSection',
         'siteSettings': 'superAdminSiteSettingsSection',
         'promoCodes': 'superAdminPromoCodesSection',
+        'settings': 'superAdminSettingsSection',
         'socialMedia': 'superAdminSocialMediaSection',
         'analytics': 'superAdminAnalyticsSection',
         'systemLogs': 'superAdminSystemLogsSection',
@@ -543,6 +544,11 @@ function showSuperAdminSection(sectionName, event) {
     // Load social media settings if Social Media section is opened
     if (sectionName === 'socialMedia' && typeof loadSocialMediaSettings === 'function') {
         loadSocialMediaSettings();
+    }
+    
+    // Load promo codes if Promo Codes section is opened
+    if (sectionName === 'promoCodes' && typeof loadPromoCodes === 'function') {
+        loadPromoCodes('superadmin');
     }
     
     // Load data when opening specific sections

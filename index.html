@@ -1346,6 +1346,53 @@
                         </div>
                         <button class="btn btn-primary" onclick="resetStudentPassword()">Reset Password</button>
                     </div>
+                    
+                    <div class="content-card" style="margin-top: 2rem;">
+                        <h2>Notification Settings</h2>
+                        <div style="margin-top: 0.5rem;">
+                            <label style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                                <input type="checkbox" id="studentNotifCourseUpdates" checked style="margin-right: 0.5rem;"> Email notifications for course updates
+                            </label>
+                            <label style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                                <input type="checkbox" id="studentNotifNewCourses" checked style="margin-right: 0.5rem;"> Email notifications for new courses from enrolled instructors
+                            </label>
+                            <label style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                                <input type="checkbox" id="studentNotifMessages" checked style="margin-right: 0.5rem;"> Email notifications for messages
+                            </label>
+                            <label style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                                <input type="checkbox" id="studentNotifPromotions" style="margin-right: 0.5rem;"> Email notifications for promotions and discounts
+                            </label>
+                        </div>
+                        <button class="btn btn-success" onclick="saveStudentNotifications()" style="margin-top: 1rem;">Save Preferences</button>
+                    </div>
+                    
+                    <div class="content-card" style="margin-top: 2rem;">
+                        <h2>Account Preferences</h2>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="studentEmail" placeholder="your.email@example.com" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                        </div>
+                        <div class="form-group">
+                            <label>Language Preference</label>
+                            <select id="studentLanguage" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                                <option value="en">English</option>
+                                <option value="es">Spanish</option>
+                                <option value="fr">French</option>
+                                <option value="de">German</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Timezone</label>
+                            <select id="studentTimezone" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                                <option value="UTC">UTC</option>
+                                <option value="America/New_York">Eastern Time (ET)</option>
+                                <option value="America/Chicago">Central Time (CT)</option>
+                                <option value="America/Denver">Mountain Time (MT)</option>
+                                <option value="America/Los_Angeles">Pacific Time (PT)</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-success" onclick="saveStudentPreferences()" style="margin-top: 1rem;">Save Preferences</button>
+                    </div>
                 </div>
             </main>
         </div>
@@ -2145,20 +2192,50 @@
                     </div>
                     
                     <div class="content-card">
-                        <h2>Admin Settings</h2>
+                        <h2>Profile Settings</h2>
                         <div class="form-group">
-                            <label>Notification Preferences</label>
-                            <div style="margin-top: 0.5rem;">
-                                <label style="display: flex; align-items: center; margin-bottom: 0.5rem;">
-                                    <input type="checkbox" id="adminNotifPendingReviews" checked style="margin-right: 0.5rem;"> Email notifications for pending reviews
-                                </label>
-                                <label style="display: flex; align-items: center; margin-bottom: 0.5rem;">
-                                    <input type="checkbox" id="adminNotifNewUsers" checked style="margin-right: 0.5rem;"> Email notifications for new users
-                                </label>
-                                <label style="display: flex; align-items: center; margin-bottom: 0.5rem;">
-                                    <input type="checkbox" id="adminNotifCommunityReports" style="margin-right: 0.5rem;"> Email notifications for community reports
-                                </label>
-                            </div>
+                            <label>Display Name</label>
+                            <input type="text" id="adminDisplayName" value="Admin Name" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="adminEmail" placeholder="admin@learnable.com" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                        </div>
+                        <button class="btn btn-success" onclick="saveAdminProfile()">Save Changes</button>
+                    </div>
+                    
+                    <div class="content-card" style="margin-top: 2rem;">
+                        <h2>Password & Security</h2>
+                        <div class="form-group">
+                            <label>Current Password</label>
+                            <input type="password" id="adminCurrentPassword" placeholder="Enter current password" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                        </div>
+                        <div class="form-group">
+                            <label>New Password</label>
+                            <input type="password" id="adminNewPassword" placeholder="Enter new password" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                        </div>
+                        <div class="form-group">
+                            <label>Confirm New Password</label>
+                            <input type="password" id="adminConfirmPassword" placeholder="Confirm new password" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                        </div>
+                        <button class="btn btn-primary" onclick="resetAdminPassword()">Reset Password</button>
+                    </div>
+                    
+                    <div class="content-card" style="margin-top: 2rem;">
+                        <h2>Notification Preferences</h2>
+                        <div style="margin-top: 0.5rem;">
+                            <label style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                                <input type="checkbox" id="adminNotifPendingReviews" checked style="margin-right: 0.5rem;"> Email notifications for pending reviews
+                            </label>
+                            <label style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                                <input type="checkbox" id="adminNotifNewUsers" checked style="margin-right: 0.5rem;"> Email notifications for new users
+                            </label>
+                            <label style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                                <input type="checkbox" id="adminNotifCommunityReports" style="margin-right: 0.5rem;"> Email notifications for community reports
+                            </label>
+                            <label style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                                <input type="checkbox" id="adminNotifSystemAlerts" checked style="margin-right: 0.5rem;"> Email notifications for system alerts
+                            </label>
                         </div>
                         <button class="btn btn-success" onclick="saveAdminPreferences()">Save Preferences</button>
                     </div>
@@ -2344,6 +2421,7 @@
                     <li><a onclick="showSuperAdminSection('siteSettings', event)">🎨 Site Settings</a></li>
                     <li><a onclick="showSuperAdminSection('socialMedia', event)">📱 Social Media Integration</a></li>
                     <li><a onclick="showSuperAdminSection('promoCodes', event)">🎟️ Promo Codes</a></li>
+                    <li><a onclick="showSuperAdminSection('settings', event)">⚙️ Settings</a></li>
                     <li><a onclick="showSuperAdminSection('analytics', event)">📈 Analytics</a></li>
                     <li><a onclick="showSuperAdminSection('systemLogs', event)">📋 System Logs</a></li>
                 </ul>
@@ -3026,6 +3104,25 @@
                     </div>
                 </div>
                 
+                <!-- Super Admin Promo Codes Section -->
+                <div id="superAdminPromoCodesSection" class="super-admin-section hidden">
+                    <div class="dashboard-header">
+                        <h1>🎟️ Promo Codes</h1>
+                        <p>Create and manage promo codes for the platform</p>
+                    </div>
+                    
+                    <div class="content-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <h2>Create New Promo Code</h2>
+                            <button class="btn btn-success" onclick="openCreatePromoCodeModal('superadmin')">+ Create Promo Code</button>
+                        </div>
+                        
+                        <div class="content-list" id="superAdminPromoCodesList">
+                            <!-- Promo codes will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+                
                 <!-- Analytics Section -->
                 <div id="superAdminAnalyticsSection" class="super-admin-section hidden">
                     <div class="dashboard-header">
@@ -3083,6 +3180,87 @@
                                 <button class="btn btn-outline" onclick="viewReviewDetails('review-1')">View Details</button>
                             </div>
                         </div>
+                    </div>
+                </div>
+                
+                <!-- Super Admin Settings Section -->
+                <div id="superAdminSettingsSection" class="super-admin-section hidden">
+                    <div class="dashboard-header">
+                        <h1>⚙️ Settings</h1>
+                        <p>Configure Super Admin account settings and preferences</p>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h2>Profile Settings</h2>
+                        <div class="form-group">
+                            <label>Display Name</label>
+                            <input type="text" id="superAdminDisplayName" value="Super Admin" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="superAdminEmail" placeholder="superadmin@learnable.com" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                        </div>
+                        <button class="btn btn-success" onclick="saveSuperAdminProfile()">Save Changes</button>
+                    </div>
+                    
+                    <div class="content-card" style="margin-top: 2rem;">
+                        <h2>Password & Security</h2>
+                        <div class="form-group">
+                            <label>Current Password</label>
+                            <input type="password" id="superAdminCurrentPassword" placeholder="Enter current password" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                        </div>
+                        <div class="form-group">
+                            <label>New Password</label>
+                            <input type="password" id="superAdminNewPassword" placeholder="Enter new password" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                        </div>
+                        <div class="form-group">
+                            <label>Confirm New Password</label>
+                            <input type="password" id="superAdminConfirmPassword" placeholder="Confirm new password" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                        </div>
+                        <button class="btn btn-primary" onclick="resetSuperAdminPassword()">Reset Password</button>
+                    </div>
+                    
+                    <div class="content-card" style="margin-top: 2rem;">
+                        <h2>Notification Preferences</h2>
+                        <div style="margin-top: 0.5rem;">
+                            <label style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                                <input type="checkbox" id="superAdminNotifSystemAlerts" checked style="margin-right: 0.5rem;"> Email notifications for critical system alerts
+                            </label>
+                            <label style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                                <input type="checkbox" id="superAdminNotifSecurity" checked style="margin-right: 0.5rem;"> Email notifications for security events
+                            </label>
+                            <label style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                                <input type="checkbox" id="superAdminNotifFinancial" checked style="margin-right: 0.5rem;"> Email notifications for financial transactions
+                            </label>
+                            <label style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                                <input type="checkbox" id="superAdminNotifAdminActivity" style="margin-right: 0.5rem;"> Email notifications for admin activity
+                            </label>
+                        </div>
+                        <button class="btn btn-success" onclick="saveSuperAdminPreferences()" style="margin-top: 1rem;">Save Preferences</button>
+                    </div>
+                    
+                    <div class="content-card" style="margin-top: 2rem;">
+                        <h2>Account Preferences</h2>
+                        <div class="form-group">
+                            <label>Language Preference</label>
+                            <select id="superAdminLanguage" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                                <option value="en">English</option>
+                                <option value="es">Spanish</option>
+                                <option value="fr">French</option>
+                                <option value="de">German</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Timezone</label>
+                            <select id="superAdminTimezone" style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                                <option value="UTC">UTC</option>
+                                <option value="America/New_York">Eastern Time (ET)</option>
+                                <option value="America/Chicago">Central Time (CT)</option>
+                                <option value="America/Denver">Mountain Time (MT)</option>
+                                <option value="America/Los_Angeles">Pacific Time (PT)</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-success" onclick="saveSuperAdminAccountPreferences()" style="margin-top: 1rem;">Save Preferences</button>
                     </div>
                 </div>
                 
@@ -3867,12 +4045,12 @@
     <div class="chatbot">
         <div class="chatbot-window" id="chatbotWindow">
             <div class="chatbot-header">
-                <h3><span style="color: white; font-weight: 700;">LEARN</span><span style="color: white; font-weight: 700;">ible</span> Help</h3>
+                <h3>Chatbot</h3>
                 <button class="chatbot-minimize" onclick="toggleChatbot()">−</button>
             </div>
             <div class="chatbot-body">
                 <div class="chatbot-message">
-                    <p>👋 Hi! I'm your <span style="color: #5B7FFF; font-weight: 600;">LEARN</span><span style="color: #10B981; font-weight: 600;">ible</span> assistant. How can I help?</p>
+                    <p>👋 Hi! I'm your <span style="color: #5B7FFF; font-weight: 600;">LEARN</span><span style="color: #10B981; font-weight: 600;">ible</span> chatbot. How can I help?</p>
                 </div>
                 <div class="faq-buttons">
                     <button class="faq-btn" onclick="showFAQAnswer('pricing')">💰 How does pricing work?</button>

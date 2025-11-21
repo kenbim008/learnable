@@ -29,6 +29,20 @@ function loadPromoCodes(role) {
     
     if (!listElement) return;
     
+    // Check if admin has permission to create promo codes
+    let canCreatePromo = true;
+    if (role === 'admin') {
+        const adminPermissions = JSON.parse(localStorage.getItem('adminPermissions') || '{}');
+        const adminPerms = adminPermissions[userSession.email] || {};
+        canCreatePromo = adminPerms.promoCodeManagement || false;
+        
+        // Hide/show create button based on permission
+        const createButton = document.querySelector(`#adminPromoCodesSection button[onclick*="openCreatePromoCodeModal"]`);
+        if (createButton) {
+            createButton.style.display = canCreatePromo ? 'block' : 'none';
+        }
+    }
+    
     if (filteredCodes.length === 0) {
         listElement.innerHTML = '<p style="color: #718096; text-align: center; padding: 2rem;">No promo codes created yet.</p>';
         return;
@@ -71,6 +85,19 @@ function loadPromoCodes(role) {
 
 // Open create promo code modal
 function openCreatePromoCodeModal(role) {
+    const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
+    
+    // Check if admin has permission to create promo codes
+    if (role === 'admin') {
+        const adminPermissions = JSON.parse(localStorage.getItem('adminPermissions') || '{}');
+        const adminPerms = adminPermissions[userSession.email] || {};
+        
+        if (!adminPerms.promoCodeManagement) {
+            alert('You do not have permission to create promo codes. Please contact Super Admin to grant this permission.');
+            return;
+        }
+    }
+    
     openModal('createPromoCode');
     document.getElementById('promoCodeCreatorRole').value = role;
     document.getElementById('promoCodeName').value = '';

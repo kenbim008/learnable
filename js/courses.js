@@ -630,8 +630,40 @@ function saveStudentSettings() {
     const displayName = document.getElementById('studentDisplayName')?.value || document.querySelector('#studentSettingsSection input[type="text"]')?.value;
     if (displayName) {
         localStorage.setItem('studentDisplayName', displayName);
+        // Update user session
+        const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
+        userSession.name = displayName;
+        localStorage.setItem('userSession', JSON.stringify(userSession));
+        updateUserNameDisplay();
         alert('Settings saved successfully!');
     }
+}
+
+function saveStudentNotifications() {
+    const notifications = {
+        courseUpdates: document.getElementById('studentNotifCourseUpdates')?.checked || false,
+        newCourses: document.getElementById('studentNotifNewCourses')?.checked || false,
+        messages: document.getElementById('studentNotifMessages')?.checked || false,
+        promotions: document.getElementById('studentNotifPromotions')?.checked || false
+    };
+    
+    localStorage.setItem('studentNotifications', JSON.stringify(notifications));
+    alert('Notification preferences saved successfully!');
+}
+
+function saveStudentPreferences() {
+    const email = document.getElementById('studentEmail')?.value;
+    const language = document.getElementById('studentLanguage')?.value;
+    const timezone = document.getElementById('studentTimezone')?.value;
+    
+    const preferences = {
+        email: email || '',
+        language: language || 'en',
+        timezone: timezone || 'UTC'
+    };
+    
+    localStorage.setItem('studentPreferences', JSON.stringify(preferences));
+    alert('Account preferences saved successfully!');
 }
 
 function saveInstructorSettings() {

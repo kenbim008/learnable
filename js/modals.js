@@ -1210,17 +1210,144 @@ function savePlatformSettings() {
 }
 
 // Save Admin Preferences (Admin Portal)
+function saveAdminProfile() {
+    const displayName = document.getElementById('adminDisplayName')?.value;
+    const email = document.getElementById('adminEmail')?.value;
+    
+    if (displayName) {
+        localStorage.setItem('adminDisplayName', displayName);
+        // Update user session
+        const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
+        userSession.name = displayName;
+        if (email) userSession.email = email;
+        localStorage.setItem('userSession', JSON.stringify(userSession));
+        updateUserNameDisplay();
+    }
+    
+    alert('Profile settings saved successfully!');
+}
+
+function resetAdminPassword() {
+    const currentPassword = document.getElementById('adminCurrentPassword')?.value;
+    const newPassword = document.getElementById('adminNewPassword')?.value;
+    const confirmPassword = document.getElementById('adminConfirmPassword')?.value;
+    
+    if (!currentPassword || !newPassword || !confirmPassword) {
+        alert('Please fill in all password fields!');
+        return;
+    }
+    
+    if (newPassword !== confirmPassword) {
+        alert('New passwords do not match!');
+        return;
+    }
+    
+    if (newPassword.length < 6) {
+        alert('Password must be at least 6 characters long!');
+        return;
+    }
+    
+    // In a real app, you would verify the current password with the server
+    const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
+    userSession.password = newPassword; // In production, this should be hashed
+    localStorage.setItem('userSession', JSON.stringify(userSession));
+    
+    alert('Password reset successfully!');
+    
+    // Clear password fields
+    document.getElementById('adminCurrentPassword').value = '';
+    document.getElementById('adminNewPassword').value = '';
+    document.getElementById('adminConfirmPassword').value = '';
+}
+
 function saveAdminPreferences() {
     const preferences = {
-        pendingReviews: document.getElementById('adminNotifPendingReviews').checked,
-        newUsers: document.getElementById('adminNotifNewUsers').checked,
-        communityReports: document.getElementById('adminNotifCommunityReports').checked
+        pendingReviews: document.getElementById('adminNotifPendingReviews')?.checked || false,
+        newUsers: document.getElementById('adminNotifNewUsers')?.checked || false,
+        communityReports: document.getElementById('adminNotifCommunityReports')?.checked || false,
+        systemAlerts: document.getElementById('adminNotifSystemAlerts')?.checked || false
     };
     
     // Store in localStorage
     localStorage.setItem('adminPreferences', JSON.stringify(preferences));
     
     alert('Preferences saved successfully!');
+}
+
+// Super Admin Settings Functions
+function saveSuperAdminProfile() {
+    const displayName = document.getElementById('superAdminDisplayName')?.value;
+    const email = document.getElementById('superAdminEmail')?.value;
+    
+    if (displayName) {
+        localStorage.setItem('superAdminDisplayName', displayName);
+        // Update user session
+        const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
+        userSession.name = displayName;
+        if (email) userSession.email = email;
+        localStorage.setItem('userSession', JSON.stringify(userSession));
+        updateUserNameDisplay();
+    }
+    
+    alert('Profile settings saved successfully!');
+}
+
+function resetSuperAdminPassword() {
+    const currentPassword = document.getElementById('superAdminCurrentPassword')?.value;
+    const newPassword = document.getElementById('superAdminNewPassword')?.value;
+    const confirmPassword = document.getElementById('superAdminConfirmPassword')?.value;
+    
+    if (!currentPassword || !newPassword || !confirmPassword) {
+        alert('Please fill in all password fields!');
+        return;
+    }
+    
+    if (newPassword !== confirmPassword) {
+        alert('New passwords do not match!');
+        return;
+    }
+    
+    if (newPassword.length < 6) {
+        alert('Password must be at least 6 characters long!');
+        return;
+    }
+    
+    // In a real app, you would verify the current password with the server
+    const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
+    userSession.password = newPassword; // In production, this should be hashed
+    localStorage.setItem('userSession', JSON.stringify(userSession));
+    
+    alert('Password reset successfully!');
+    
+    // Clear password fields
+    document.getElementById('superAdminCurrentPassword').value = '';
+    document.getElementById('superAdminNewPassword').value = '';
+    document.getElementById('superAdminConfirmPassword').value = '';
+}
+
+function saveSuperAdminPreferences() {
+    const preferences = {
+        systemAlerts: document.getElementById('superAdminNotifSystemAlerts')?.checked || false,
+        security: document.getElementById('superAdminNotifSecurity')?.checked || false,
+        financial: document.getElementById('superAdminNotifFinancial')?.checked || false,
+        adminActivity: document.getElementById('superAdminNotifAdminActivity')?.checked || false
+    };
+    
+    localStorage.setItem('superAdminPreferences', JSON.stringify(preferences));
+    alert('Notification preferences saved successfully!');
+}
+
+function saveSuperAdminAccountPreferences() {
+    const language = document.getElementById('superAdminLanguage')?.value;
+    const timezone = document.getElementById('superAdminTimezone')?.value;
+    
+    const preferences = {
+        language: language || 'en',
+        timezone: timezone || 'UTC'
+    };
+    
+    localStorage.setItem('superAdminAccountPreferences', JSON.stringify(preferences));
+    alert('Account preferences saved successfully!');
 }
 
 // Generate Admin Code from Dashboard (Super Admin Portal)
