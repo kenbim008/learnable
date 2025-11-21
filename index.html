@@ -1259,10 +1259,8 @@
                     </div>
                     <div class="content-card">
                         <h2>Enrolled Courses</h2>
-                        <div class="content-list">
-                            <div class="content-item" id="enrolledCoursesList">
-                                <p style="color: #718096; text-align: center; padding: 2rem;">No enrolled courses yet. Browse courses to get started!</p>
-                            </div>
+                        <div class="content-list" id="enrolledCoursesList">
+                            <p style="color: #718096; text-align: center; padding: 2rem;">No enrolled courses yet. Browse courses to get started!</p>
                         </div>
                     </div>
                 </div>
@@ -4049,21 +4047,19 @@
                 <button class="chatbot-minimize" onclick="toggleChatbot()">−</button>
             </div>
             <div class="chatbot-body">
-                <div class="chatbot-message">
-                    <p>👋 Hi! I'm your <span style="color: #5B7FFF; font-weight: 600;">LEARN</span><span style="color: #10B981; font-weight: 600;">ible</span> chatbot. How can I help?</p>
+                <div class="faq-buttons-container" style="margin-bottom: 1rem;">
+                    <div class="faq-buttons">
+                        <button class="faq-btn" onclick="showFAQAnswer('pricing')">💰 Pricing</button>
+                        <button class="faq-btn" onclick="showFAQAnswer('instructor')">👨‍🏫 Become Instructor</button>
+                        <button class="faq-btn" onclick="showFAQAnswer('earnings')">💵 Earnings</button>
+                        <button class="faq-btn" onclick="showFAQAnswer('payments')">💳 Payments</button>
+                        <button class="faq-btn" onclick="showFAQAnswer('currencies')">🌍 Currencies</button>
+                    </div>
                 </div>
-                <div class="faq-buttons">
-                    <button class="faq-btn" onclick="showFAQAnswer('pricing')">💰 How does pricing work?</button>
-                    <button class="faq-btn" onclick="showFAQAnswer('instructor')">👨‍🏫 How do I become an instructor?</button>
-                    <button class="faq-btn" onclick="showFAQAnswer('earnings')">💵 How much can I earn?</button>
-                    <button class="faq-btn" onclick="showFAQAnswer('payments')">💳 What payment methods do you accept?</button>
-                    <button class="faq-btn" onclick="showFAQAnswer('currencies')">🌍 Which currencies are supported?</button>
-                </div>
-                <div id="faqAnswer" style="display: none; margin-top: 1rem; padding: 1rem; background: #F7FAFC; border-radius: 8px; max-height: 300px; overflow-y: auto;"></div>
             </div>
             <div class="chatbot-input">
-                <input type="text" placeholder="Type your message...">
-                <button>→</button>
+                <input type="text" placeholder="Type your question here..." id="chatbotInput">
+                <button onclick="handleChatbotSend()">→</button>
             </div>
         </div>
         <button class="chatbot-toggle" onclick="toggleChatbot()">💬</button>
@@ -4076,6 +4072,9 @@
     <script src="/js/modals.js"></script>
     <script src="/js/pages.js"></script>
     <script src="/js/promocodes.js"></script>
+    <script src="/js/chatbot.js"></script>
+    <script src="/js/studentCourses.js"></script>
+    <script src="/js/courseSuggestions.js"></script>
     <script src="/js/app.js"></script>
 
     <style>

@@ -626,6 +626,58 @@ footer {
     cursor: pointer;
 }
 
+/* Chatbot Typing Animation */
+.chatbot-message-item {
+    animation: fadeIn 0.3s ease-in;
+}
+
+.chatbot-typing {
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.typing-dots {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.typing-dots span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4F7CFF;
+    animation: typing 1.4s infinite;
+}
+
+.typing-dots span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-dots span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typing {
+    0%, 60%, 100% {
+        transform: translateY(0);
+        opacity: 0.7;
+    }
+    30% {
+        transform: translateY(-10px);
+        opacity: 1;
+    }
+}
+
+.faq-buttons-container {
+    position: sticky;
+    bottom: 0;
+    background: white;
+    padding-top: 1rem;
+    border-top: 1px solid #E2E8F0;
+    margin-top: 1rem;
+}
+
 /* Video Player */
 .video-player-container {
     position: relative;

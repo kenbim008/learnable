@@ -378,6 +378,16 @@ function showStudentSection(sectionName, event) {
         loadStudentMessages();
     }
     
+    // Load enrolled courses when opening My Courses section
+    if (sectionName === 'myCourses' && typeof loadStudentEnrolledCourses === 'function') {
+        loadStudentEnrolledCourses();
+    }
+    
+    // Load course suggestions when opening dashboard
+    if (sectionName === 'dashboard' && typeof loadCourseSuggestions === 'function') {
+        loadCourseSuggestions();
+    }
+    
     // Scroll to top
     window.scrollTo(0, 0);
 }

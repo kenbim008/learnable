@@ -64,6 +64,12 @@ function loadCourses() {
 // Play course preview
 function playCoursePreview(courseId, event) {
     event.stopPropagation();
+    
+    // Track course view for suggestions
+    if (typeof trackCourseView === 'function') {
+        trackCourseView(courseId);
+    }
+    
     const approvedCourses = typeof getApprovedCourses === 'function' ? getApprovedCourses() : [];
     const course = approvedCourses.find(c => c.id === courseId);
     
@@ -97,6 +103,11 @@ function playCoursePreview(courseId, event) {
 
 // Add to cart
 function addToCart(courseId) {
+    // Track course view for suggestions
+    if (typeof trackCourseView === 'function') {
+        trackCourseView(courseId);
+    }
+    
     // Check both default courses and approved courses
     let course = courses.find(c => c.id === courseId);
     
@@ -418,11 +429,15 @@ function processPayment(event, total) {
                 // Add cart courses to enrolled courses
                 cart.forEach(course => {
                     // Check if already enrolled
-                    if (!enrolledCourses.find(c => c.id === course.id)) {
+                    if (!enrolledCourses.find(c => c.courseId === course.id && c.studentEmail === billingEmail)) {
                         enrolledCourses.push({
-                            ...course,
+                            courseId: course.id,
+                            studentEmail: billingEmail,
                             enrolledAt: new Date().toISOString(),
-                            progress: 0
+                            progress: 0,
+                            isPlaying: false,
+                            isPaused: false,
+                            lastWatched: null
                         });
                     }
                 });
@@ -863,12 +878,205 @@ function loadInstructorMessages() {
     }
 }
 
-// Load Student Messages
+// Load Student Messages (only for purchased courses)
 function loadStudentMessages() {
     const messagesSection = document.getElementById('studentMessagesSection');
-    if (messagesSection) {
-        // Messages would be loaded here
+    if (!messagesSection) return;
+    
+    const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
+    if (!userSession.email || userSession.role !== 'student') {
+        messagesSection.innerHTML = '<div class="content-card"><p style="color: #718096; text-align: center; padding: 2rem;">Please log in as a student to view your messages.</p></div>';
+        return;
     }
+    
+    // Get enrolled courses (purchased courses)
+    const enrolledCourses = JSON.parse(localStorage.getItem('enrolledCourses') || '[]');
+    const studentEnrolled = enrolledCourses.filter(c => c.studentEmail === userSession.email).map(c => c.courseId);
+    
+    // Get messages for this student
+    let messages = JSON.parse(localStorage.getItem('studentMessages') || '[]');
+    const studentMessages = messages.filter(msg => msg.studentEmail === userSession.email);
+    
+    // Filter messages to only show those for purchased courses
+    const purchasedMessages = studentMessages.filter(msg => {
+        return studentEnrolled.includes(msg.courseId);
+    });
+    
+    // Sort by timestamp (newest first)
+    purchasedMessages.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    
+    // Display messages
+    const messagesContent = messagesSection.querySelector('.content-card');
+    if (messagesContent) {
+        if (purchasedMessages.length === 0) {
+            messagesContent.innerHTML = `
+                <h2>Inbox</h2>
+                <p style="color: #718096; text-align: center; padding: 2rem;">
+                    No messages yet. Enroll in a course and message your instructor to get started!
+                </p>
+            `;
+        } else {
+            messagesContent.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h2>Inbox (${purchasedMessages.length})</h2>
+                    <button class="btn btn-success" onclick="createNewMessage()">+ New Message</button>
+                </div>
+                <div class="content-list">
+                    ${purchasedMessages.map(msg => {
+                        const isRead = msg.read ? '' : 'style="background: #F0F4FF; border-left: 4px solid #4F7CFF;"';
+                        return `
+                            <div class="content-item" ${isRead}>
+                                <div>
+                                    <h3>${msg.subject || 'No Subject'}</h3>
+                                    <p style="color: #718096; margin-bottom: 0.25rem;">To: ${msg.instructorName} • Course: ${msg.courseTitle}</p>
+                                    <p style="color: #4A5568; margin-bottom: 0.5rem;">${msg.content.substring(0, 100)}${msg.content.length > 100 ? '...' : ''}</p>
+                                    <p style="font-size: 0.85rem; color: #718096;">${new Date(msg.timestamp).toLocaleString()}</p>
+                                </div>
+                                <button class="btn btn-outline" onclick="viewMessage('${msg.id}')">View</button>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+    }
+}
+
+// Create new message (only for purchased courses)
+function createNewMessage() {
+    const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
+    const enrolledCourses = JSON.parse(localStorage.getItem('enrolledCourses') || '[]');
+    const studentEnrolled = enrolledCourses.filter(c => c.studentEmail === userSession.email);
+    
+    if (studentEnrolled.length === 0) {
+        alert('You must enroll in at least one course to message instructors.');
+        return;
+    }
+    
+    // Get all courses to show course selection
+    const allCourses = typeof getAllCourses === 'function' ? getAllCourses() : [];
+    const availableCourses = allCourses.filter(c => studentEnrolled.includes(c.id));
+    
+    if (availableCourses.length === 0) {
+        alert('No courses available for messaging.');
+        return;
+    }
+    
+    // Create course selection modal
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.style.zIndex = '10000';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 500px;">
+            <button class="modal-close" onclick="this.closest('.modal').remove()">×</button>
+            <h2>New Message</h2>
+            <p style="color: #718096; margin-bottom: 1.5rem;">Select a course to message the instructor</p>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.5rem;">
+                ${availableCourses.map(course => `
+                    <button class="btn btn-outline" style="text-align: left; justify-content: flex-start;" onclick="selectCourseForMessage('${course.id}', '${course.instructorName || course.instructor}', '${course.title}')">
+                        <div>
+                            <strong>${course.title}</strong>
+                            <div style="font-size: 0.85rem; color: #718096;">Instructor: ${course.instructorName || course.instructor}</div>
+                        </div>
+                    </button>
+                `).join('')}
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
+}
+
+// Select course for messaging
+function selectCourseForMessage(courseId, instructorName, courseTitle) {
+    // Close course selection modal
+    const modal = document.querySelector('.modal.active');
+    if (modal) modal.remove();
+    
+    // Open message creation (using function from studentCourses.js)
+    if (typeof createMessageToInstructor === 'function') {
+        createMessageToInstructor(courseId, instructorName);
+    } else {
+        // Fallback: create message directly
+        const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
+        const modal = document.createElement('div');
+        modal.className = 'modal active';
+        modal.style.zIndex = '10000';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 600px;">
+                <button class="modal-close" onclick="this.closest('.modal').remove()">×</button>
+                <h2>Message Instructor</h2>
+                <p style="color: #718096; margin-bottom: 1.5rem;">Sending message to ${instructorName} about ${courseTitle}</p>
+                <form onsubmit="sendMessageToInstructor(event, '${courseId}', '${instructorName}')">
+                    <div class="form-group">
+                        <label>Subject</label>
+                        <input type="text" id="messageSubject" placeholder="Course question..." required style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                    </div>
+                    <div class="form-group">
+                        <label>Message</label>
+                        <textarea id="messageContent" rows="6" placeholder="Type your message here..." required style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success" style="width: 100%;">Send Message</button>
+                </form>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
+    }
+}
+
+// View message
+function viewMessage(messageId) {
+    const messages = JSON.parse(localStorage.getItem('studentMessages') || '[]');
+    const message = messages.find(m => m.id === messageId);
+    
+    if (!message) {
+        alert('Message not found!');
+        return;
+    }
+    
+    // Mark as read
+    message.read = true;
+    localStorage.setItem('studentMessages', JSON.stringify(messages));
+    
+    // Show message modal
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.style.zIndex = '10000';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 600px;">
+            <button class="modal-close" onclick="this.closest('.modal').remove()">×</button>
+            <h2>${message.subject || 'No Subject'}</h2>
+            <div style="margin-bottom: 1rem; padding: 1rem; background: #F7F9FC; border-radius: 6px;">
+                <p style="margin: 0.25rem 0;"><strong>To:</strong> ${message.instructorName}</p>
+                <p style="margin: 0.25rem 0;"><strong>Course:</strong> ${message.courseTitle}</p>
+                <p style="margin: 0.25rem 0;"><strong>Date:</strong> ${new Date(message.timestamp).toLocaleString()}</p>
+            </div>
+            <div style="padding: 1rem; background: #F7F9FC; border-radius: 6px; white-space: pre-wrap; color: #2D3748;">
+                ${message.content}
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
+    
+    // Reload messages
+    loadStudentMessages();
 }
 
 // Load Admin Pending Courses
