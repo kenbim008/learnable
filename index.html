@@ -1425,6 +1425,7 @@
                     <li><a onclick="showInstructorSection('reviews', event)">⭐ Reviews</a></li>
                     <li><a onclick="showInstructorSection('messages', event)">✉️ Messages</a></li>
                     <li><a onclick="showInstructorSection('settings', event)">⚙️ Settings</a></li>
+                    <li><a onclick="showInstructorSection('promoCodes', event)">🎟️ Promo Codes</a></li>
                 </ul>
             </aside>
             
@@ -1741,6 +1742,25 @@
                         <button class="btn btn-success" onclick="saveInstructorNotifications()" style="margin-top: 1rem;">Save Preferences</button>
                     </div>
                 </div>
+                
+                <!-- Promo Codes Section -->
+                <div id="instructorPromoCodesSection" class="instructor-section hidden">
+                    <div class="dashboard-header">
+                        <h1>🎟️ Promo Codes</h1>
+                        <p>Create and manage promo codes for your courses</p>
+                    </div>
+                    
+                    <div class="content-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <h2>Create New Promo Code</h2>
+                            <button class="btn btn-success" onclick="openCreatePromoCodeModal('instructor')">+ Create Promo Code</button>
+                        </div>
+                        
+                        <div class="content-list" id="instructorPromoCodesList">
+                            <!-- Promo codes will be loaded here -->
+                        </div>
+                    </div>
+                </div>
             </main>
         </div>
         <footer>
@@ -1818,6 +1838,7 @@
                     <li><a onclick="showAdminSection('contentPages', event)">📝 Content Pages</a></li>
                     <li><a onclick="showAdminSection('financials', event)">💰 Financials</a></li>
                     <li><a onclick="showAdminSection('settings', event)">⚙️ Settings</a></li>
+                    <li><a onclick="showAdminSection('promoCodes', event)">🎟️ Promo Codes</a></li>
                     <li><a onclick="showAdminSection('analytics', event)">📈 Analytics</a></li>
                     <li><a onclick="showAdminSection('logs', event)">📋 Logs</a></li>
                 </ul>
@@ -2143,6 +2164,25 @@
                     </div>
                 </div>
                 
+                <!-- Admin Promo Codes Section -->
+                <div id="adminPromoCodesSection" class="admin-section hidden">
+                    <div class="dashboard-header">
+                        <h1>🎟️ Promo Codes</h1>
+                        <p>Create and manage promo codes for courses</p>
+                    </div>
+                    
+                    <div class="content-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <h2>Create New Promo Code</h2>
+                            <button class="btn btn-success" onclick="openCreatePromoCodeModal('admin')">+ Create Promo Code</button>
+                        </div>
+                        
+                        <div class="content-list" id="adminPromoCodesList">
+                            <!-- Promo codes will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+                
                 <!-- Analytics Section -->
                 <div id="adminAnalyticsSection" class="admin-section hidden">
                     <div class="dashboard-header">
@@ -2303,6 +2343,7 @@
                     <li><a onclick="showSuperAdminSection('dataManagement', event)">💾 Data Management</a></li>
                     <li><a onclick="showSuperAdminSection('siteSettings', event)">🎨 Site Settings</a></li>
                     <li><a onclick="showSuperAdminSection('socialMedia', event)">📱 Social Media Integration</a></li>
+                    <li><a onclick="showSuperAdminSection('promoCodes', event)">🎟️ Promo Codes</a></li>
                     <li><a onclick="showSuperAdminSection('analytics', event)">📈 Analytics</a></li>
                     <li><a onclick="showSuperAdminSection('systemLogs', event)">📋 System Logs</a></li>
                 </ul>
@@ -2594,7 +2635,7 @@
                             <div class="content-item">
                                 <div>
                                     <h3>Admin User 1</h3>
-                                    <p>admin1@learnable.com • Permissions: User Management, Course Review, Community Moderation</p>
+                                    <p>admin1@learnable.com • Permissions: User Management, Course Review, Community Moderation, Promo Code Management</p>
                                 </div>
                                 <div>
                                     <button class="btn btn-outline" onclick="editAdminPermissions('admin1@learnable.com')">Edit Permissions</button>
@@ -3568,7 +3609,7 @@
                         <input type="file" id="coverFile" accept="image/*" onchange="handleCoverFileSelect(this)" style="display: none;">
                     </label>
                     <div id="coverFilePreview" style="margin-top: 0.5rem; display: none;">
-                        <img id="coverPreviewImg" src="" alt="Preview" style="max-width: 100%; max-height: 200px; border-radius: 6px; border: 1px solid #E2E8F0;">
+                        <img id="coverPreviewImg" src="" alt="Preview" style="max-width: 100%; max-height: 150px; border-radius: 6px; border: 1px solid #E2E8F0;">
                     </div>
                 </div>
                 <div class="form-group">
@@ -3856,6 +3897,7 @@
     <script src="/js/courses.js"></script>
     <script src="/js/modals.js"></script>
     <script src="/js/pages.js"></script>
+    <script src="/js/promocodes.js"></script>
     <script src="/js/app.js"></script>
 
     <style>

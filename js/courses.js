@@ -23,8 +23,8 @@ function loadCourses() {
             priceUSD: approvedCourse.price,
             rating: 4.5, // Default rating
             image: approvedCourse.coverImage && approvedCourse.coverImage !== 'default' 
-                ? `<img src="${approvedCourse.coverImage}" alt="${approvedCourse.title}" style="width: 100%; height: 200px; object-fit: cover;">`
-                : '<div style="width: 100%; height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">📚</div>',
+                ? `<img src="${approvedCourse.coverImage}" alt="${approvedCourse.title}" style="width: 100%; height: 150px; object-fit: cover;">`
+                : '<div style="width: 100%; height: 150px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">📚</div>',
             hasPreview: !!approvedCourse.previewVideo,
             category: approvedCourse.category,
             subcategory: approvedCourse.subcategory,
@@ -114,7 +114,7 @@ function addToCart(courseId) {
                 rating: 4.5,
                 image: approvedCourse.coverImage && approvedCourse.coverImage !== 'default' 
                     ? `<img src="${approvedCourse.coverImage}" alt="${approvedCourse.title}">`
-                    : '<div style="width: 100%; height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>',
+                    : '<div style="width: 100%; height: 150px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>',
                 hasPreview: !!approvedCourse.previewVideo
             };
         }
@@ -286,20 +286,24 @@ function checkout() {
                 <div style="background: #F7F9FC; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
                     ${cartItemsHtml}
                 </div>
-                <div style="display: grid; gap: 0.5rem; padding: 1rem 0; border-top: 2px solid #E2E8F0;">
-                    <div style="display: flex; justify-content: space-between;">
-                        <span>Subtotal:</span>
-                        <span>$${subtotal.toFixed(2)}</span>
+                    <div style="display: grid; gap: 0.5rem; padding: 1rem 0; border-top: 2px solid #E2E8F0;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Subtotal:</span>
+                            <span id="checkoutSubtotal">$${subtotal.toFixed(2)}</span>
+                        </div>
+                        <div id="promoCodeDiscount" style="display: none; justify-content: space-between; color: #10B981;">
+                            <span>Discount:</span>
+                            <span id="discountAmount">-$0.00</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Tax (5% GST):</span>
+                            <span id="checkoutTax">$${tax.toFixed(2)}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 1.25rem; font-weight: bold; padding-top: 0.5rem; border-top: 2px solid #E2E8F0; color: #10B981;">
+                            <span>Total:</span>
+                            <span id="checkoutTotal">$${total.toFixed(2)}</span>
+                        </div>
                     </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span>Tax (5% GST):</span>
-                        <span>$${tax.toFixed(2)}</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; font-size: 1.25rem; font-weight: bold; padding-top: 0.5rem; border-top: 2px solid #E2E8F0; color: #10B981;">
-                        <span>Total:</span>
-                        <span>$${total.toFixed(2)}</span>
-                    </div>
-                </div>
             </div>
             
             ${!isStripeConnected ? `
@@ -309,10 +313,20 @@ function checkout() {
                 </div>
             ` : ''}
             
+            <!-- Promo Code Section -->
+            <div>
+                <h3 style="margin-bottom: 1rem;">Promo Code</h3>
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                    <input type="text" id="promoCode" placeholder="Enter promo code" style="flex: 1; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                    <button type="button" class="btn btn-outline" onclick="applyPromoCode(${subtotal})">Apply</button>
+                </div>
+                <div id="promoCodeMessage" style="font-size: 0.9rem; margin-bottom: 1rem;"></div>
+            </div>
+            
             <!-- Payment Form -->
             <div>
                 <h3 style="margin-bottom: 1rem;">Payment Information</h3>
-                <form id="checkoutForm" onsubmit="processPayment(event, ${total})">
+                <form id="checkoutForm" onsubmit="processPaymentWithPromo(event, ${subtotal})">
                     <div class="form-group">
                         <label>Card Number</label>
                         <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" required
@@ -341,7 +355,7 @@ function checkout() {
                     <div style="background: #F7F9FC; padding: 1rem; border-radius: 8px; margin: 1rem 0; font-size: 0.85rem; color: #718096;">
                         <strong>🔒 Secure Payment:</strong> Your payment information is encrypted and processed securely through Stripe. We never store your full card details.
                     </div>
-                    <button type="submit" class="btn btn-success" style="width: 100%;" ${!isStripeConnected ? 'disabled' : ''}>
+                    <button type="submit" class="btn btn-success" style="width: 100%;" ${!isStripeConnected ? 'disabled' : ''} id="checkoutSubmitBtn">
                         ${isStripeConnected ? `Pay $${total.toFixed(2)}` : 'Payment Unavailable'}
                     </button>
                 </form>
@@ -384,67 +398,94 @@ function processPayment(event, total) {
     }
     
     // Show processing message
-    const submitBtn = event.target.querySelector('button[type="submit"]');
+    const submitBtn = document.getElementById('checkoutSubmitBtn') || event.target.querySelector('button[type="submit"]');
+    if (!submitBtn) {
+        alert('Payment button not found!');
+        return;
+    }
     const originalText = submitBtn.textContent;
     submitBtn.textContent = 'Processing...';
     submitBtn.disabled = true;
     
     // Simulate payment processing (in production, this would use Stripe.js)
-    setTimeout(() => {
-        // Get enrolled courses
-        let enrolledCourses = JSON.parse(localStorage.getItem('enrolledCourses') || '[]');
-        
-        // Add cart courses to enrolled courses
-        cart.forEach(course => {
-            // Check if already enrolled
-            if (!enrolledCourses.find(c => c.id === course.id)) {
-                enrolledCourses.push({
-                    ...course,
-                    enrolledAt: new Date().toISOString(),
-                    progress: 0
+    try {
+        setTimeout(() => {
+            try {
+                // Get enrolled courses
+                let enrolledCourses = JSON.parse(localStorage.getItem('enrolledCourses') || '[]');
+                const cartLength = cart.length;
+                
+                // Add cart courses to enrolled courses
+                cart.forEach(course => {
+                    // Check if already enrolled
+                    if (!enrolledCourses.find(c => c.id === course.id)) {
+                        enrolledCourses.push({
+                            ...course,
+                            enrolledAt: new Date().toISOString(),
+                            progress: 0
+                        });
+                    }
                 });
-            }
-        });
-        
-        // Save enrolled courses
-        localStorage.setItem('enrolledCourses', JSON.stringify(enrolledCourses));
-        
-        // Record payment (in production, this would be done server-side)
-        let payments = JSON.parse(localStorage.getItem('payments') || '[]');
-        payments.push({
-            id: 'pay_' + Date.now(),
-            courses: cart.map(c => ({ id: c.id, title: c.title, price: c.price })),
-            total: total,
-            cardLast4: cardNumber.slice(-4),
-            email: billingEmail,
-            date: new Date().toISOString(),
-            status: 'completed'
-        });
-        localStorage.setItem('payments', JSON.stringify(payments));
-        
-        // Clear cart
-        cart = [];
-        updateCartUI();
-        
-        // Close modals
-        closeModal('checkout');
-        if (typeof toggleCart === 'function') {
-            toggleCart(); // Close cart sidebar
-        }
-        
-        // Show success message
-        alert(`Payment successful! 🎉\n\nYou have been enrolled in ${enrolledCourses.length - (enrolledCourses.length - cart.length)} course(s).\n\nTotal paid: $${total.toFixed(2)}\n\nCheck your enrolled courses to start learning!`);
-        
-        // Refresh page or navigate to enrolled courses
-        if (typeof showStudentSection === 'function') {
-            showPage('studentDashboard');
-            setTimeout(() => {
-                if (typeof showStudentSection === 'function') {
-                    showStudentSection('myCourses');
+                
+                // Save enrolled courses
+                localStorage.setItem('enrolledCourses', JSON.stringify(enrolledCourses));
+                
+                // Record payment (in production, this would be done server-side)
+                let payments = JSON.parse(localStorage.getItem('payments') || '[]');
+                payments.push({
+                    id: 'pay_' + Date.now(),
+                    courses: cart.map(c => ({ id: c.id, title: c.title, price: c.price || c.priceUSD || 0 })),
+                    total: total,
+                    cardLast4: cardNumber.slice(-4),
+                    email: billingEmail,
+                    date: new Date().toISOString(),
+                    status: 'completed'
+                });
+                localStorage.setItem('payments', JSON.stringify(payments));
+                
+                // Clear cart
+                cart = [];
+                if (typeof updateCartUI === 'function') {
+                    updateCartUI();
                 }
-            }, 100);
-        }
-    }, 2000);
+                
+                // Close modals
+                if (typeof closeModal === 'function') {
+                    closeModal('checkout');
+                } else {
+                    const modal = document.getElementById('checkoutModal');
+                    if (modal) modal.classList.remove('active');
+                }
+                
+                if (typeof toggleCart === 'function') {
+                    toggleCart(); // Close cart sidebar
+                }
+                
+                // Show success message
+                alert(`Payment successful! 🎉\n\nYou have been enrolled in ${cartLength} course(s).\n\nTotal paid: $${total.toFixed(2)}\n\nCheck your enrolled courses to start learning!`);
+                
+                // Refresh page or navigate to enrolled courses
+                if (typeof showPage === 'function') {
+                    showPage('studentDashboard');
+                    setTimeout(() => {
+                        if (typeof showStudentSection === 'function') {
+                            showStudentSection('myCourses');
+                        }
+                    }, 100);
+                }
+            } catch (error) {
+                console.error('Payment processing error:', error);
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+                alert('Payment processing failed. Please try again. Error: ' + (error.message || 'Unknown error'));
+            }
+        }, 2000);
+    } catch (error) {
+        console.error('Payment setup error:', error);
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+        alert('Payment processing failed. Please try again.');
+    }
 }
 
 // Format card number
@@ -461,6 +502,123 @@ function formatExpiry(input) {
         value = value.substring(0, 2) + '/' + value.substring(2, 4);
     }
     input.value = value;
+}
+
+// Promo Code Functions
+let appliedPromoCode = null;
+
+// Apply promo code
+function applyPromoCode(subtotal) {
+    const promoCodeInput = document.getElementById('promoCode');
+    const promoCodeMessage = document.getElementById('promoCodeMessage');
+    const discountDiv = document.getElementById('promoCodeDiscount');
+    const discountAmount = document.getElementById('discountAmount');
+    
+    if (!promoCodeInput || !promoCodeInput.value) {
+        alert('Please enter a promo code');
+        return;
+    }
+    
+    const code = promoCodeInput.value.trim().toUpperCase();
+    const promoCodes = JSON.parse(localStorage.getItem('promoCodes') || '[]');
+    const promo = promoCodes.find(p => p.code.toUpperCase() === code && p.active);
+    
+    if (!promo) {
+        promoCodeMessage.innerHTML = '<span style="color: #EF4444;">Invalid or inactive promo code</span>';
+        appliedPromoCode = null;
+        updateCheckoutTotals(subtotal, 0);
+        return;
+    }
+    
+    // Check expiry
+    if (promo.expiryDate && new Date(promo.expiryDate) < new Date()) {
+        promoCodeMessage.innerHTML = '<span style="color: #EF4444;">This promo code has expired</span>';
+        appliedPromoCode = null;
+        updateCheckoutTotals(subtotal, 0);
+        return;
+    }
+    
+    // Check usage limit
+    if (promo.maxUses && promo.usedCount >= promo.maxUses) {
+        promoCodeMessage.innerHTML = '<span style="color: #EF4444;">This promo code has reached its usage limit</span>';
+        appliedPromoCode = null;
+        updateCheckoutTotals(subtotal, 0);
+        return;
+    }
+    
+    // Calculate discount
+    let discount = 0;
+    if (promo.discountType === 'percentage') {
+        discount = subtotal * (promo.discountValue / 100);
+        if (promo.maxDiscount) {
+            discount = Math.min(discount, promo.maxDiscount);
+        }
+    } else if (promo.discountType === 'fixed') {
+        discount = Math.min(promo.discountValue, subtotal);
+    }
+    
+    appliedPromoCode = promo;
+    promoCodeMessage.innerHTML = `<span style="color: #10B981;">✓ Promo code applied! ${promo.discountType === 'percentage' ? promo.discountValue + '%' : '$' + promo.discountValue} discount</span>`;
+    if (discountDiv) {
+        discountDiv.style.display = 'flex';
+    }
+    if (discountAmount) {
+        discountAmount.textContent = `-$${discount.toFixed(2)}`;
+    }
+    
+    updateCheckoutTotals(subtotal, discount);
+}
+
+// Update checkout totals
+function updateCheckoutTotals(subtotal, discount) {
+    const subtotalAfterDiscount = subtotal - discount;
+    const tax = subtotalAfterDiscount * 0.05; // 5% Alberta GST
+    const total = subtotalAfterDiscount + tax;
+    
+    const checkoutSubtotal = document.getElementById('checkoutSubtotal');
+    const checkoutTax = document.getElementById('checkoutTax');
+    const checkoutTotal = document.getElementById('checkoutTotal');
+    const checkoutSubmitBtn = document.getElementById('checkoutSubmitBtn');
+    
+    if (checkoutSubtotal) checkoutSubtotal.textContent = `$${subtotal.toFixed(2)}`;
+    if (checkoutTax) checkoutTax.textContent = `$${tax.toFixed(2)}`;
+    if (checkoutTotal) checkoutTotal.textContent = `$${total.toFixed(2)}`;
+    if (checkoutSubmitBtn) checkoutSubmitBtn.textContent = `Pay $${total.toFixed(2)}`;
+}
+
+// Process payment with promo code
+function processPaymentWithPromo(event, subtotal) {
+    event.preventDefault();
+    
+    // Calculate final total with promo code
+    let discount = 0;
+    if (appliedPromoCode) {
+        if (appliedPromoCode.discountType === 'percentage') {
+            discount = subtotal * (appliedPromoCode.discountValue / 100);
+            if (appliedPromoCode.maxDiscount) {
+                discount = Math.min(discount, appliedPromoCode.maxDiscount);
+            }
+        } else if (appliedPromoCode.discountType === 'fixed') {
+            discount = Math.min(appliedPromoCode.discountValue, subtotal);
+        }
+    }
+    
+    const subtotalAfterDiscount = subtotal - discount;
+    const tax = subtotalAfterDiscount * 0.05; // 5% Alberta GST
+    const total = subtotalAfterDiscount + tax;
+    
+    // Update promo code usage
+    if (appliedPromoCode) {
+        const promoCodes = JSON.parse(localStorage.getItem('promoCodes') || '[]');
+        const promoIndex = promoCodes.findIndex(p => p.id === appliedPromoCode.id);
+        if (promoIndex !== -1) {
+            promoCodes[promoIndex].usedCount = (promoCodes[promoIndex].usedCount || 0) + 1;
+            localStorage.setItem('promoCodes', JSON.stringify(promoCodes));
+        }
+    }
+    
+    // Process payment with calculated total
+    processPayment(event, total);
 }
 
 // Additional button functions
@@ -1163,10 +1321,7 @@ function handleContactSubmit(e) {
     document.getElementById('contactMessage').value = '';
 }
 
-// Admin Management Functions
-function editAdminPermissions(adminEmail) {
-    alert(`Editing permissions for: ${adminEmail}\n\nThis would open a permissions editor modal.`);
-}
+// Admin Management Functions - editAdminPermissions moved to promocodes.js
 
 function removeAdmin(adminEmail) {
     if (confirm(`Are you sure you want to remove admin privileges for ${adminEmail}?`)) {
@@ -1275,8 +1430,8 @@ function loadFeaturedCourses() {
             priceUSD: course.price,
             rating: 4.5,
             image: course.coverImage && course.coverImage !== 'default' 
-                ? `<img src="${course.coverImage}" alt="${course.title}" style="width: 100%; height: 200px; object-fit: cover;">`
-                : '<div style="width: 100%; height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">📚</div>',
+                ? `<img src="${course.coverImage}" alt="${course.title}" style="width: 100%; height: 150px; object-fit: cover;">`
+                : '<div style="width: 100%; height: 150px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">📚</div>',
             hasPreview: !!course.previewVideo
         };
         
@@ -1881,7 +2036,7 @@ function editInstructorCourse(courseId) {
             // Display existing cover image
             const coverPreview = document.getElementById('coverPreview');
             if (coverPreview) {
-                coverPreview.innerHTML = `<img src="${course.coverImage}" style="max-width: 100%; max-height: 200px; border-radius: 6px; margin-top: 1rem;" alt="Course cover">`;
+                coverPreview.innerHTML = `<img src="${course.coverImage}" style="max-width: 100%; max-height: 150px; border-radius: 6px; margin-top: 1rem;" alt="Course cover">`;
             }
         }
         

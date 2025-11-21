@@ -400,6 +400,7 @@ function showAdminSection(sectionName, event) {
         'contentPages': 'adminContentPagesSection',
         'financials': 'adminFinancialsSection',
         'settings': 'adminSettingsSection',
+        'promoCodes': 'adminPromoCodesSection',
         'analytics': 'adminAnalyticsSection',
         'logs': 'adminLogsSection'
     };
@@ -426,6 +427,8 @@ function showAdminSection(sectionName, event) {
         loadAdminPendingCourses();
     } else if (sectionName === 'courses' && typeof loadAdminAllCourses === 'function') {
         loadAdminAllCourses();
+    } else if (sectionName === 'promoCodes' && typeof loadPromoCodes === 'function') {
+        loadPromoCodes('admin');
     }
     
     // Scroll to top
@@ -449,7 +452,8 @@ function showInstructorSection(sectionName, event) {
         'analytics': 'instructorAnalyticsSection',
         'reviews': 'instructorReviewsSection',
         'messages': 'instructorMessagesSection',
-        'settings': 'instructorSettingsSection'
+        'settings': 'instructorSettingsSection',
+        'promoCodes': 'instructorPromoCodesSection'
     };
     
     const targetSectionId = sectionMap[sectionName] || sectionName;
@@ -506,6 +510,7 @@ function showSuperAdminSection(sectionName, event) {
         'contentManagement': 'superAdminContentManagementSection',
         'dataManagement': 'superAdminDataManagementSection',
         'siteSettings': 'superAdminSiteSettingsSection',
+        'promoCodes': 'superAdminPromoCodesSection',
         'socialMedia': 'superAdminSocialMediaSection',
         'analytics': 'superAdminAnalyticsSection',
         'systemLogs': 'superAdminSystemLogsSection',
@@ -553,6 +558,13 @@ function showSuperAdminSection(sectionName, event) {
         if (typeof loadVideoPreviewSettings === 'function') {
             loadVideoPreviewSettings();
         }
+    } else if (sectionName === 'promoCodes' && typeof loadPromoCodes === 'function') {
+        loadPromoCodes('superadmin');
+    }
+    
+    // Load promo codes for admin
+    if (sectionName === 'promoCodes' && typeof loadPromoCodes === 'function') {
+        loadPromoCodes('admin');
     }
     
     // Scroll to top
