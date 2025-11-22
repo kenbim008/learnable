@@ -2579,6 +2579,15 @@
                         <button class="btn btn-primary" style="margin-top: 1rem;">+ Create New Page</button>
                     </div>
                     
+                    <div class="content-card" style="margin-top: 2rem;">
+                        <h2>Chatbot FAQ Content</h2>
+                        <p style="margin-bottom: 1.5rem;">Manage FAQ questions and answers displayed in the chatbot</p>
+                        <div class="content-list" id="faqContentList">
+                            <!-- FAQ items will be loaded here -->
+                        </div>
+                        <button class="btn btn-primary" style="margin-top: 1rem;" onclick="loadFAQContent()">Refresh FAQ List</button>
+                    </div>
+                    
                     <div class="content-card">
                         <h2>Media Library</h2>
                         <p style="margin-bottom: 1.5rem;">Upload and manage images, videos, and other media files</p>
@@ -4094,6 +4103,7 @@
     <script src="/js/courseSuggestions.js"></script>
     <script src="/js/instructorDashboard.js"></script>
     <script src="/js/adminMessages.js"></script>
+    <script src="/js/faqManager.js"></script>
     <script src="/js/app.js"></script>
 
     <style>

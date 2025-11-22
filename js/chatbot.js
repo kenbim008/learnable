@@ -9,6 +9,11 @@ function initChatbot() {
     const chatbotSendBtn = document.querySelector('.chatbot-input button');
     const chatbotBody = document.querySelector('.chatbot-body');
     
+    // Update FAQ buttons with editable content
+    if (typeof updateChatbotFAQButtons === 'function') {
+        updateChatbotFAQButtons();
+    }
+    
     // Add welcome message
     if (chatbotBody && chatbotMessages.length === 0) {
         addBotMessage('👋 Hi! I\'m your LEARNible FAQ Bot. Ask me anything or click the buttons below for quick answers!');
@@ -185,10 +190,17 @@ function hideTypingIndicator() {
 
 // Handle FAQ button clicks
 function showFAQAnswer(faqType) {
-    const answers = {
-        'pricing': {
-            title: '💰 How does pricing work?',
-            content: `Course pricing is set by instructors. Here's how it works:
+    // Get FAQ content from localStorage (editable content)
+    let answer;
+    
+    if (typeof getFAQContent === 'function') {
+        answer = getFAQContent(faqType);
+    } else {
+        // Fallback to default content
+        const defaultAnswers = {
+            'pricing': {
+                title: '💰 How does pricing work?',
+                content: `Course pricing is set by instructors. Here's how it works:
 
 • Instructors set their own course prices
 • Students pay the listed price to enroll
@@ -197,10 +209,10 @@ function showFAQAnswer(faqType) {
 • All payments are processed securely with DRM protection
 
 Instructors keep 60% of course sales, and we only deduct fees when you earn - no hidden costs!`
-        },
-        'instructor': {
-            title: '👨‍🏫 How do I become an instructor?',
-            content: `Becoming an instructor is easy:
+            },
+            'instructor': {
+                title: '👨‍🏫 How do I become an instructor?',
+                content: `Becoming an instructor is easy:
 
 1. Sign up as an instructor
 2. Create your first course with videos, descriptions, and pricing
@@ -214,10 +226,10 @@ You can upload:
 • Course descriptions and materials
 
 Start sharing your knowledge today!`
-        },
-        'earnings': {
-            title: '💵 How much can I earn?',
-            content: `Your earning potential is unlimited! Here's the breakdown:
+            },
+            'earnings': {
+                title: '💵 How much can I earn?',
+                content: `Your earning potential is unlimited! Here's the breakdown:
 
 • You keep 60% of every course sale
 • No monthly fees - we only take a percentage when you make a sale
@@ -225,10 +237,10 @@ Start sharing your knowledge today!`
 • Track your earnings in real-time through your instructor dashboard
 
 Top instructors earn thousands per month by creating quality courses and building their student base. The more courses you create and the better they are, the more you can earn!`
-        },
-        'payments': {
-            title: '💳 What payment methods do you accept?',
-            content: `We accept all major payment methods through Stripe:
+            },
+            'payments': {
+                title: '💳 What payment methods do you accept?',
+                content: `We accept all major payment methods through Stripe:
 
 • Credit cards (Visa, Mastercard, American Express)
 • Debit cards
@@ -236,10 +248,10 @@ Top instructors earn thousands per month by creating quality courses and buildin
 • Bank transfers (in supported regions)
 
 All payments are processed securely through Stripe's industry-leading security. Your payment information is never stored on our servers.`
-        },
-        'currencies': {
-            title: '🌍 Which currencies are supported?',
-            content: `We support multiple currencies for global accessibility:
+            },
+            'currencies': {
+                title: '🌍 Which currencies are supported?',
+                content: `We support multiple currencies for global accessibility:
 
 • USD - US Dollar
 • NGN - Nigerian Naira
@@ -248,11 +260,12 @@ All payments are processed securely through Stripe's industry-leading security. 
 • CAD - Canadian Dollar
 
 Prices are automatically converted to your local currency based on current exchange rates. You can change your currency preference in the header selector.`
-        }
-    };
+            }
+        };
+        answer = defaultAnswers[faqType];
+    }
     
-    const answer = answers[faqType];
-    if (answer) {
+    if (answer && answer.title && answer.content) {
         // Add as bot message with typing effect
         const fullResponse = `${answer.title}\n\n${answer.content}`;
         addBotMessage(fullResponse);

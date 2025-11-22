@@ -573,6 +573,11 @@ function showSuperAdminSection(sectionName, event) {
         loadAdminMessages();
     }
     
+    // Load FAQ content if Content Management section is opened
+    if (sectionName === 'contentManagement' && typeof loadFAQContent === 'function') {
+        loadFAQContent();
+    }
+    
     // Load data when opening specific sections
     if (sectionName === 'dataManagement' && typeof loadDataManagementTable === 'function') {
         loadDataManagementTable();
