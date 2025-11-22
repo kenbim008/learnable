@@ -445,11 +445,23 @@ function processPayment(event, total) {
                 // Save enrolled courses
                 localStorage.setItem('enrolledCourses', JSON.stringify(enrolledCourses));
                 
+                // Get all courses to find instructor emails
+                const allCourses = typeof getAllCourses === 'function' ? getAllCourses() : [];
+                
                 // Record payment (in production, this would be done server-side)
                 let payments = JSON.parse(localStorage.getItem('payments') || '[]');
                 payments.push({
                     id: 'pay_' + Date.now(),
-                    courses: cart.map(c => ({ id: c.id, title: c.title, price: c.price || c.priceUSD || 0 })),
+                    courses: cart.map(c => {
+                        const course = allCourses.find(ac => ac.id === c.id);
+                        return { 
+                            id: c.id, 
+                            title: c.title, 
+                            price: c.price || c.priceUSD || 0,
+                            instructorEmail: course?.instructorEmail || course?.instructor || '',
+                            instructorName: course?.instructorName || course?.instructor || ''
+                        };
+                    }),
                     total: total,
                     cardLast4: cardNumber.slice(-4),
                     email: billingEmail,

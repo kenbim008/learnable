@@ -1884,6 +1884,7 @@
                     <li><a onclick="showAdminSection('financials', event)">💰 Financials</a></li>
                     <li><a onclick="showAdminSection('settings', event)">⚙️ Settings</a></li>
                     <li><a onclick="showAdminSection('promoCodes', event)">🎟️ Promo Codes</a></li>
+                    <li><a onclick="showAdminSection('messages', event)">✉️ Messages</a></li>
                     <li><a onclick="showAdminSection('analytics', event)">📈 Analytics</a></li>
                     <li><a onclick="showAdminSection('logs', event)">📋 Logs</a></li>
                 </ul>
@@ -3121,6 +3122,21 @@
                     </div>
                 </div>
                 
+                <!-- Super Admin Messages Section -->
+                <div id="superAdminMessagesSection" class="super-admin-section hidden">
+                    <div class="dashboard-header">
+                        <h1>✉️ Messages</h1>
+                        <p>View all platform messages</p>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h2>All Messages</h2>
+                        <div class="content-list">
+                            <!-- Messages will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+                
                 <!-- Analytics Section -->
                 <div id="superAdminAnalyticsSection" class="super-admin-section hidden">
                     <div class="dashboard-header">
@@ -4075,6 +4091,7 @@
     <script src="/js/chatbot.js"></script>
     <script src="/js/studentCourses.js"></script>
     <script src="/js/courseSuggestions.js"></script>
+    <script src="/js/instructorDashboard.js"></script>
     <script src="/js/app.js"></script>
 
     <style>

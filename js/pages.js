@@ -411,6 +411,7 @@ function showAdminSection(sectionName, event) {
         'financials': 'adminFinancialsSection',
         'settings': 'adminSettingsSection',
         'promoCodes': 'adminPromoCodesSection',
+        'messages': 'adminMessagesSection',
         'analytics': 'adminAnalyticsSection',
         'logs': 'adminLogsSection'
     };
@@ -439,6 +440,8 @@ function showAdminSection(sectionName, event) {
         loadAdminAllCourses();
     } else if (sectionName === 'promoCodes' && typeof loadPromoCodes === 'function') {
         loadPromoCodes('admin');
+    } else if (sectionName === 'messages' && typeof loadAdminMessages === 'function') {
+        loadAdminMessages();
     }
     
     // Scroll to top
@@ -494,6 +497,9 @@ function showInstructorSection(sectionName, event) {
         loadInstructorReviews();
     } else if (sectionName === 'messages' && typeof loadInstructorMessages === 'function') {
         loadInstructorMessages();
+    } else if (sectionName === 'promoCodes' && typeof loadPromoCodes === 'function') {
+        loadPromoCodes('instructor');
+        loadInstructorMessages();
     }
     
     // Scroll to top
@@ -521,6 +527,7 @@ function showSuperAdminSection(sectionName, event) {
         'dataManagement': 'superAdminDataManagementSection',
         'siteSettings': 'superAdminSiteSettingsSection',
         'promoCodes': 'superAdminPromoCodesSection',
+        'messages': 'superAdminMessagesSection',
         'settings': 'superAdminSettingsSection',
         'socialMedia': 'superAdminSocialMediaSection',
         'analytics': 'superAdminAnalyticsSection',
@@ -559,6 +566,11 @@ function showSuperAdminSection(sectionName, event) {
     // Load promo codes if Promo Codes section is opened
     if (sectionName === 'promoCodes' && typeof loadPromoCodes === 'function') {
         loadPromoCodes('superadmin');
+    }
+    
+    // Load messages if Messages section is opened
+    if (sectionName === 'messages' && typeof loadAdminMessages === 'function') {
+        loadAdminMessages();
     }
     
     // Load data when opening specific sections
