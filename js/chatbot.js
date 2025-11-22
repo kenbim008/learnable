@@ -98,7 +98,7 @@ function renderChatbotMessages(instant = false) {
         messagesContainer.appendChild(messageDiv);
     });
     
-    chatbotBody.insertBefore(messagesContainer, chatbotBody.querySelector('.faq-buttons-container') || chatbotBody.firstChild);
+    chatbotBody.appendChild(messagesContainer);
     
     // Scroll to bottom
     chatbotBody.scrollTop = chatbotBody.scrollHeight;

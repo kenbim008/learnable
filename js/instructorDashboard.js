@@ -1,5 +1,17 @@
 // Instructor Dashboard Functions
 
+// Helper function to get all courses
+function getAllCoursesHelper() {
+    if (typeof getAllCourses === 'function') {
+        return getAllCourses();
+    }
+    
+    // Fallback: get courses from localStorage
+    const approvedCourses = JSON.parse(localStorage.getItem('courses') || '[]')
+        .filter(c => c.status === 'approved');
+    return approvedCourses;
+}
+
 // Load instructor revenue data
 function loadInstructorRevenue() {
     const revenueSection = document.getElementById('instructorRevenueSection');
