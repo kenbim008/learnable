@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Student portal · LEARNible{% endblock %}
+{% block body %}
+<header>
+    <div class="header-container">
+        <a class="logo" href="{{ nav_home.url }}">
+            <span class="logo-icon">📖</span>
+            <span><span class="logo-learn">LEARN</span><span class="logo-ible">ible</span></span>
+        </a>
+        <nav><span style="font-weight: 600;">Student Portal</span></nav>
+        <div class="header-right">
+            <form class="inline-form" action="{% url 'accounts:logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="header-link-btn">Sign out</button>
+            </form>
+        </div>
+    </div>
+</header>
+
+<div class="dashboard">
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li><a class="active" href="{% url 'courses:dashboard_student' %}">Dashboard</a></li>
+                <li><a href="{% url 'courses:landing' %}#courses">Browse courses</a></li>
+                <li><a href="{% url 'courses:community' %}">Community</a></li>
+            </ul>
+        </aside>
+        <main class="main-content">
+            <div class="dashboard-header">
+                <h1>Welcome back{% if user.first_name %}, {{ user.first_name }}{% endif %} 👋</h1>
+                <p>Continue your learning journey</p>
+            </div>
+
+            <div class="content-card">
+                <h2>Continue learning</h2>
+                <div class="drm-notice">Videos play in your browser. Downloading course media is not available from here.</div>
+                {% if enrollments %}
+                    <ul style="list-style:none;padding:0;margin:0;">
+                        {% for e in enrollments %}
+                            <li class="enrollment-row">
+                                <div class="enrollment-row__head">
+                                    <a class="enrollment-row__title" href="{% url 'courses:course_learn' e.course.slug %}">{{ e.course.title }}</a>
+                                </div>
+                                <a class="btn btn-primary enrollment-row__open" href="{% url 'courses:course_learn' e.course.slug %}">Open course</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>You are not enrolled in any courses yet.</p>
+                    <a class="btn btn-primary" href="{% url 'courses:landing' %}#courses">Browse courses</a>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

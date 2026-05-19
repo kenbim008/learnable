@@ -1,0 +1,35 @@
+{% load static %}
+<header class="site-header">
+    <div class="header-container">
+        <a class="logo" href="{{ nav_home.url }}" title="{{ nav_home.label }}">
+            <span class="logo-icon">📖</span>
+            <span><span class="logo-learn">LEARN</span><span class="logo-ible">ible</span></span>
+        </a>
+        <nav class="site-header__nav" aria-label="Primary">
+            {% if nav_show_public_home_link %}
+                <a href="{% url 'courses:landing' %}">Home</a>
+            {% endif %}
+            <a href="{{ nav_catalog_url }}">Courses</a>
+            <a href="{% url 'courses:community' %}">Community</a>
+            <a href="{% url 'courses:landing' %}#pricing">Pricing</a>
+        </nav>
+        <div class="header-right site-header__actions">
+            <select class="currency-selector" id="countrySelector" aria-label="Currency preview">
+                <option value="US">US - USD</option>
+                <option value="NG">Nigeria - NGN</option>
+                <option value="GB">UK - GBP</option>
+                <option value="EU">Europe - EUR</option>
+                <option value="CA">Canada - CAD</option>
+            </select>
+            {% if user.is_authenticated %}
+                <form class="inline-form site-header__logout" action="{% url 'accounts:logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="header-link-btn">Sign out</button>
+                </form>
+            {% else %}
+                <a class="header-link" href="{% url 'accounts:login' %}">Sign in</a>
+                <a class="btn btn-primary" href="{% url 'accounts:signup' %}">Get started</a>
+            {% endif %}
+        </div>
+    </div>
+</header>

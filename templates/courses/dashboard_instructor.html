@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Instructor portal · LEARNible{% endblock %}
+{% block body %}
+<header>
+    <div class="header-container">
+        <a class="logo" href="{{ nav_home.url }}">
+            <span class="logo-icon">📖</span>
+            <span><span class="logo-learn">LEARN</span><span class="logo-ible">ible</span></span>
+        </a>
+        <nav><span style="font-weight: 600;">Instructor Portal</span></nav>
+        <div class="header-right">
+            <form class="inline-form" action="{% url 'accounts:logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="header-link-btn">Sign out</button>
+            </form>
+        </div>
+    </div>
+</header>
+
+<div class="dashboard">
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li><a class="active" href="{% url 'courses:dashboard_instructor' %}">Dashboard</a></li>
+                <li><a href="{% url 'courses:instructor_course_create' %}">Create course</a></li>
+                <li><a href="{% url 'courses:landing' %}#courses">Browse catalog</a></li>
+            </ul>
+        </aside>
+        <main class="main-content">
+            <div class="dashboard-header">
+                <h1>Welcome back{% if user.first_name %}, {{ user.first_name }}{% endif %} 👨‍🏫</h1>
+                <p>Your teaching dashboard</p>
+            </div>
+
+            <div class="content-card">
+                <h2>Your courses</h2>
+                {% if courses %}
+                    <ul>
+                        {% for c in courses %}
+                            <li>
+                                <a href="{% url 'courses:course_learn' c.slug %}">{{ c.title }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No courses yet. Create your first course to get started.</p>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

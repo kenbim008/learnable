@@ -1,0 +1,35 @@
+{% load static %}
+<footer>
+    <div class="footer-container">
+        <div class="footer-brand">
+            <h3><span style="color: #5B7FFF; font-weight: 700;">LEARN</span><span style="color: #10B981; font-weight: 700;">ible</span></h3>
+            <p>Transform your knowledge into income. Join instructors and students on a platform built for teaching and learning.</p>
+        </div>
+        <div class="footer-column">
+            <h4>Platform</h4>
+            <a href="{% url 'courses:landing' %}#courses">Browse Courses</a>
+            <a href="{% url 'accounts:signup' %}">Join as Student</a>
+            <a href="{% url 'accounts:signup' %}">Become Instructor</a>
+            <a href="{% url 'courses:community' %}">Community</a>
+            <a href="{% url 'courses:landing' %}#pricing">Pricing</a>
+        </div>
+        <div class="footer-column">
+            <h4>Accounts</h4>
+            <a href="{% url 'accounts:signup' %}?role=instructor">Instructor signup</a>
+            <a href="{% url 'accounts:signup' %}">Student signup</a>
+        </div>
+        <div class="footer-column">
+            <h4>Support</h4>
+            <a href="{% url 'accounts:login' %}">Login</a>
+            <a href="/admin/">Staff tools</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'courses:admin_entry' %}" style="color: #FFB800;">Admin portal entry</a>
+            {% else %}
+                <a href="{% url 'accounts:login' %}" style="color: #FFB800;">Admin portal (login first)</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2026 <span style="color: #5B7FFF; font-weight: 600;">LEARN</span><span style="color: #10B981; font-weight: 600;">ible</span>. All rights reserved.</p>
+    </div>
+</footer>

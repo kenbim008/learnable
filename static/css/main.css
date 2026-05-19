@@ -1,0 +1,148 @@
+/* Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    color: #2D3748;
+    line-height: 1.6;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Button Styles */
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-outline {
+    border: 2px solid #4F7CFF;
+    color: #4F7CFF;
+    background: white;
+}
+
+.btn-outline:hover {
+    background: #4F7CFF;
+    color: white;
+}
+
+.btn-primary {
+    background: #4F7CFF;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #3D63D9;
+}
+
+.btn-success {
+    background: #10B981;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #059669;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 2rem;
+    }
+    
+    .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    nav {
+        display: none;
+    }
+    
+    .cart-sidebar {
+        width: 100vw;
+        right: -100vw;
+    }
+
+    .dashboard-container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+    }
+
+    .community-content {
+        grid-template-columns: 1fr;
+    }
+}
+
+a.logo {
+    text-decoration: none;
+    color: inherit;
+}
+
+.header-right .inline-form {
+    display: inline;
+    margin-left: 0.5rem;
+}
+
+/* Ephemeral toast (e.g. after signup ?welcome=1) */
+.learnable-toast {
+    position: fixed;
+    bottom: 1.25rem;
+    left: 50%;
+    z-index: 10000;
+    max-width: min(90vw, 22rem);
+    padding: 0.65rem 1.1rem;
+    border-radius: 8px;
+    background: #1F1F3D;
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    transform: translate(-50%, 120%);
+    opacity: 0;
+    transition: transform 0.22s ease, opacity 0.22s ease;
+    pointer-events: none;
+}
+
+.learnable-toast--visible {
+    transform: translate(-50%, 0);
+    opacity: 1;
+}
+
+/* Screen-reader only (icon picker labels) */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Default sizing for inlined course SVGs (override with extra classes at call site) */
+.svg-icon {
+    display: block;
+    width: 1.5rem;
+    height: 1.5rem;
+    flex-shrink: 0;
+}
+

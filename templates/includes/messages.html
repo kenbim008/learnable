@@ -1,0 +1,10 @@
+{% if messages %}
+<div class="site-messages" role="region" aria-label="Notifications" aria-live="polite">
+    {% for message in messages %}
+        <div class="site-message site-message--{{ message.level_tag }}">
+            <span class="site-message__text">{{ message }}</span>
+            <button type="button" class="site-message__dismiss" aria-label="Dismiss">&times;</button>
+        </div>
+    {% endfor %}
+</div>
+{% endif %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block body %}
+{% include "includes/header_public.html" %}
+
+<div class="community-page">
+    <div class="community-header">
+        <h1>LEARNible Community</h1>
+        <p>Connect, learn, and grow together.</p>
+    </div>
+
+    <div class="community-tabs">
+        <button type="button" class="community-tab active">Forums</button>
+        <button type="button" class="community-tab">Study Groups</button>
+        <button type="button" class="community-tab">Challenges</button>
+        <button type="button" class="community-tab">Events</button>
+    </div>
+
+    <div class="community-content">
+        <div class="forum-list">
+            <div class="forum-category">
+                <h3>Web Development</h3>
+                <p style="color: #718096; margin-bottom: 1rem;">More discussions and topics are coming soon.</p>
+            </div>
+        </div>
+        <div class="community-sidebar">
+            <div class="sidebar-card">
+                <h3>Guidelines</h3>
+                <ul class="guidelines-list">
+                    <li>Be respectful and constructive.</li>
+                    <li>Keep posts relevant to learning.</li>
+                    <li>No spam or unsolicited promotions.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include "includes/footer_public.html" %}
+{% endblock %}

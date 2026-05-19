@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Create course · LEARNible{% endblock %}
+{% block body %}
+<header>
+    <div class="header-container">
+        <a class="logo" href="{{ nav_home.url }}">
+            <span class="logo-icon">📖</span>
+            <span><span class="logo-learn">LEARN</span><span class="logo-ible">ible</span></span>
+        </a>
+        <nav><span style="font-weight: 600;">Create course</span></nav>
+        <div class="header-right">
+            <a class="header-link" href="{% url 'courses:dashboard_instructor' %}">Back to dashboard</a>
+        </div>
+    </div>
+</header>
+
+<div class="dashboard">
+    <div class="dashboard-container dashboard-container--centered-main">
+        <main class="main-content main-content--centered-form">
+            <div class="content-card content-card--centered-flow">
+                <h1>Create a course</h1>
+                <p class="content-card__lead">
+                    Add the basics first. You can attach a preview clip, lesson video, and cover image whenever you are ready.
+                </p>
+                <form class="form--centered" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="form-group">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.help_text %}<small class="form-help">{{ field.help_text }}</small>{% endif %}
+                            {{ field.errors }}
+                        </div>
+                    {% endfor %}
+                    <button class="btn btn-success" type="submit">Save course</button>
+                </form>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

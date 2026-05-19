@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load course_icons %}
+{% block title %}{{ course.title }} · LEARNible{% endblock %}
+{% block body %}
+<header>
+    <div class="header-container">
+        <a class="logo" href="{{ nav_home.url }}">
+            <span class="logo-icon">📖</span>
+            <span><span class="logo-learn">LEARN</span><span class="logo-ible">ible</span></span>
+        </a>
+        <nav><span style="font-weight: 600;">Course</span></nav>
+        <div class="header-right">
+            <a class="header-link" href="{{ back_url }}">← Back</a>
+        </div>
+    </div>
+</header>
+
+<main class="course-learn">
+    <div class="course-learn__inner">
+        <header class="course-learn__header">
+            <div class="course-learn__icon-wrap course-image--icon">
+                {% course_icon course.icon_key "course-card__icon" %}
+            </div>
+            <div>
+                <h1 class="course-learn__title">{{ course.title }}</h1>
+                <p class="course-learn__meta">
+                    By {{ course.instructor.get_full_name|default:course.instructor.email }}
+                </p>
+            </div>
+        </header>
+
+        {% if can_watch_lesson and course.primary_video_storage_key %}
+            <section class="course-learn__player" aria-label="Lesson video">
+                <h2 class="course-learn__section-title">{% if is_instructor %}Your lesson video{% else %}Lesson video{% endif %}</h2>
+                <video
+                    class="course-learn__video"
+                    controls
+                    playsinline
+                    preload="metadata"
+                    src="{% url 'courses:serve_knowledge' %}?key={{ course.primary_video_storage_key|iriencode }}"
+                    aria-label="Lesson video for {{ course.title }}"
+                ></video>
+            </section>
+        {% elif can_watch_lesson %}
+            <div class="course-learn__notice">
+                <p>Your instructor has not added the main lesson video yet. Check back soon.</p>
+            </div>
+        {% elif course.preview_storage_key %}
+            <section class="course-learn__player" aria-label="Course preview">
+                <h2 class="course-learn__section-title">Preview</h2>
+                <video
+                    class="course-learn__video"
+                    controls
+                    playsinline
+                    preload="metadata"
+                    src="{% url 'courses:serve_knowledge' %}?key={{ course.preview_storage_key|iriencode }}"
+                    aria-label="Preview for {{ course.title }}"
+                ></video>
+                {% if is_student and not is_enrolled %}
+                    <form class="course-learn__enroll" method="post" action="{% url 'courses:enroll' course.slug %}">
+                        {% csrf_token %}
+                        <button class="btn btn-success" type="submit">Enroll to unlock full lessons</button>
+                    </form>
+                {% endif %}
+            </section>
+        {% else %}
+            <div class="course-learn__notice">
+                {% if is_student and not is_enrolled %}
+                    <p>Enroll to access this course when lessons are available.</p>
+                    <form class="course-learn__enroll" method="post" action="{% url 'courses:enroll' course.slug %}">
+                        {% csrf_token %}
+                        <button class="btn btn-success" type="submit">Enroll now</button>
+                    </form>
+                {% else %}
+                    <p>No videos are available for this course yet.</p>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        {% if course.description %}
+            <section class="course-learn__about">
+                <h2 class="course-learn__section-title">About this course</h2>
+                <div class="course-learn__description">{{ course.description|linebreaks }}</div>
+            </section>
+        {% endif %}
+    </div>
+</main>
+{% endblock %}

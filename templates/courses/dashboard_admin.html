@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Admin portal · LEARNible{% endblock %}
+{% block body %}
+<header>
+    <div class="header-container">
+        <a class="logo" href="{{ nav_home.url }}">
+            <span class="logo-icon">📖</span>
+            <span><span class="logo-learn">LEARN</span><span class="logo-ible">ible</span></span>
+        </a>
+        <nav><span style="font-weight: 600;">Admin Portal</span></nav>
+        <div class="header-right">
+            <a class="header-link" href="/admin/">Staff tools</a>
+            <form class="inline-form" action="{% url 'accounts:logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="header-link-btn">Sign out</button>
+            </form>
+        </div>
+    </div>
+</header>
+
+<div class="dashboard">
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li><a class="active" href="{% url 'courses:dashboard_admin' %}">Dashboard</a></li>
+                <li><a href="/admin/auth/user/">Users</a></li>
+                <li><a href="/admin/courses/course/">Courses</a></li>
+            </ul>
+        </aside>
+        <main class="main-content">
+            <div class="dashboard-header">
+                <h1>Admin dashboard 👑</h1>
+                <p>Operational overview</p>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-value">{{ user_count }}</div>
+                    <div class="stat-label">Total users</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📚</div>
+                    <div class="stat-value">{{ course_count }}</div>
+                    <div class="stat-label">Courses</div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

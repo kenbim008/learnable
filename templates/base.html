@@ -1,0 +1,19 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}LEARNible{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components.css' %}">
+    <link rel="stylesheet" href="{% static 'css/pages.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+{% include "includes/messages.html" %}
+{% block body %}{% endblock %}
+<script src="{% static 'js/learnable.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

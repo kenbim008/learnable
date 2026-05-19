@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Super admin · LEARNible{% endblock %}
+{% block body %}
+<header>
+    <div class="header-container">
+        <a class="logo" href="{{ nav_home.url }}">
+            <span class="logo-icon">📖</span>
+            <span><span class="logo-learn">LEARN</span><span class="logo-ible">ible</span></span>
+        </a>
+        <nav><span style="font-weight: 600;">Super Admin Portal</span></nav>
+        <div class="header-right">
+            <a class="header-link" href="/admin/">Staff tools</a>
+            <form class="inline-form" action="{% url 'accounts:logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="header-link-btn">Sign out</button>
+            </form>
+        </div>
+    </div>
+</header>
+
+<div class="dashboard">
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li><a class="active" href="{% url 'courses:dashboard_superadmin' %}">Dashboard</a></li>
+                <li><a href="/admin/auth/group/">Groups</a></li>
+                <li><a href="/admin/auth/user/">Users</a></li>
+            </ul>
+        </aside>
+        <main class="main-content">
+            <div class="dashboard-header">
+                <h1>Super admin dashboard 👑</h1>
+                <p>Full platform control</p>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-value">{{ user_count }}</div>
+                    <div class="stat-label">Total users</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👨‍🏫</div>
+                    <div class="stat-value">{{ instructor_count }}</div>
+                    <div class="stat-label">Instructors</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👨‍🎓</div>
+                    <div class="stat-value">{{ student_count }}</div>
+                    <div class="stat-label">Students</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👑</div>
+                    <div class="stat-value">{{ admin_count }}</div>
+                    <div class="stat-label">Admins</div>
+                </div>
+            </div>
+            <div class="content-card">
+                <h2>User management</h2>
+                <p>Use <a href="/admin/auth/user/">user management</a> to create operator accounts, assign the <strong>Admins</strong> or <strong>Super Admins</strong> role, and grant full platform access where appropriate. Public signup remains for students and instructors only.</p>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

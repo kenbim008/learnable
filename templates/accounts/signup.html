@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Sign up · LEARNible{% endblock %}
+{% block body %}
+{% include "includes/header_public.html" %}
+
+<main class="content-auth">
+    <div class="content-card content-card--auth">
+        <h1>Join LEARNible</h1>
+        <p class="content-card--auth__intro">Create a student or instructor account.</p>
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}<div style="color:#B91C1C;font-size:0.9rem;">{{ field.errors }}</div>{% endif %}
+                </div>
+            {% endfor %}
+            {% if form.non_field_errors %}
+                <div style="color:#B91C1C;margin-bottom:0.75rem;">{{ form.non_field_errors }}</div>
+            {% endif %}
+            <button class="btn btn-success" type="submit" style="width:100%;">Create account</button>
+        </form>
+        <p class="content-card--auth__after-form">
+            <a href="{% url 'accounts:login' %}">Already have an account?</a>
+        </p>
+    </div>
+</main>
+
+{% include "includes/footer_public.html" %}
+{% endblock %}
