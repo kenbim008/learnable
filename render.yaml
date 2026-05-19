@@ -1,0 +1,33 @@
+# Optional Blueprint: Render Dashboard → New → Blueprint → connect this repo.
+# Or create a Web Service manually and use the same build/start commands.
+
+databases:
+  - name: learnable-db
+    plan: free
+    databaseName: learnable
+    user: learnable
+
+services:
+  - type: web
+    name: learnable
+    runtime: python
+    plan: free
+    buildCommand: chmod +x build.sh && ./build.sh
+    startCommand: gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: DATABASE_URL
+        fromDatabase:
+          name: learnable-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "false"
+      - key: ALLOWED_HOSTS
+        value: "127.0.0.1,localhost,.onrender.com"
+      # Add in the Render dashboard (Environment):
+      # AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_STORAGE_BUCKET_NAME,
+      # S3_ENDPOINT_URL, AWS_S3_REGION_NAME,
+      # STRIPE_SECRET_KEY, STRIPE_PUBLISHABLE_KEY (optional until billing is live)
