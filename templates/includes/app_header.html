@@ -1,0 +1,27 @@
+{% comment %}
+Authenticated app top bar.
+Params: portal_label (str), back_url (optional), back_label (optional).
+{% endcomment %}
+<header class="app-header">
+    <div class="header-container">
+        <a class="logo" href="{{ nav_home.url }}">
+            <span class="logo-icon">📖</span>
+            <span><span class="logo-learn">LEARN</span><span class="logo-ible">ible</span></span>
+        </a>
+        {% if portal_label %}
+            <span class="topbar-portal">{{ portal_label }}</span>
+        {% endif %}
+        <div class="header-right">
+            {% if back_url %}
+                <a class="header-link" href="{{ back_url }}">← {{ back_label|default:"Back" }}</a>
+            {% endif %}
+            <div class="topbar-user">
+                <span class="avatar">{{ user.first_name|first|default:user.email|first }}</span>
+                <form class="inline-form" action="{% url 'accounts:logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="header-link-btn">Sign out</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</header>

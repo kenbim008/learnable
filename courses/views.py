@@ -1,33 +1,75 @@
+import datetime
+import logging
+from decimal import Decimal
+
+import stripe
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
 from django.db import transaction
-from django.http import HttpResponseForbidden
+from django.db.models import Count, Q, Sum
+from django.db.models.functions import ExtractMonth, ExtractYear
+
+from accounts.models import ReferralEarning
+from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
 
 from accounts.constants import GROUP_ADMIN, GROUP_INSTRUCTOR, GROUP_STUDENT
 from accounts.forms import user_in_group
+from accounts.navigation import dashboard_url_name
+from accounts.stripe_customer import stripe_is_configured
+from accounts.referrals import get_or_create_referral_code, referral_link
 
 from .access import can_serve_knowledge, can_view_course_lessons, normalize_storage_key
-from .models import Course, Enrollment
+from .models import (
+    Course,
+    Enrollment,
+    InstructorEarning,
+    InstructorSubscription,
+    PLATFORM_PAYOUT_RATE,
+    PAYOUT_MINIMUM,
+    PayoutRequest,
+)
 from .s3 import presigned_get_url
 from .upload import CourseUploadError, apply_course_media_uploads
 
 User = get_user_model()
+logger = logging.getLogger(__name__)
+
+PAYOUT_ADMIN_EMAIL = "ingo.learnible@gmail.com"
+
+
+def _instructor_plan_exists() -> bool:
+    from .models import StripeProduct
+    return StripeProduct.objects.filter(key="instructor_plan", active=True).exists()
 
 
 def landing(request):
     courses = Course.objects.select_related("instructor").all()
     enrolled_ids: set[int] = set()
     is_student = False
+    is_instructor = False
+    instructor_subscription = None
     if request.user.is_authenticated:
         is_student = user_in_group(request.user, GROUP_STUDENT)
+        is_instructor = user_in_group(request.user, GROUP_INSTRUCTOR)
         enrolled_ids = set(
             Enrollment.objects.filter(user=request.user).values_list("course_id", flat=True)
         )
+        if is_instructor:
+            instructor_subscription = InstructorSubscription.objects.filter(
+                user=request.user
+            ).first()
+    # Logged-in users with a role dashboard see the clean catalog, not the
+    # marketing home (hero / how-it-works / pricing sign-up CTAs).
+    show_marketing = not (
+        request.user.is_authenticated and dashboard_url_name(request.user)
+    )
     return render(
         request,
         "courses/landing.html",
@@ -35,6 +77,11 @@ def landing(request):
             "courses": courses,
             "enrolled_course_ids": enrolled_ids,
             "is_student": is_student,
+            "is_instructor": is_instructor,
+            "instructor_subscription": instructor_subscription,
+            "show_marketing": show_marketing,
+            "stripe_configured": stripe_is_configured(),
+            "instructor_price_configured": _instructor_plan_exists(),
         },
     )
 
@@ -83,6 +130,41 @@ def _guard_group(request, group_name: str, message: str):
 
 
 @login_required
+def dashboard(request):
+    """Unified dashboard — shows student/instructor/admin/superadmin content based on role."""
+    if request.user.is_superuser:
+        return dashboard_superadmin(request)
+    if request.user.is_staff and user_in_group(request.user, GROUP_ADMIN):
+        return dashboard_admin(request)
+    if user_in_group(request.user, GROUP_INSTRUCTOR):
+        return dashboard_instructor(request)
+    if user_in_group(request.user, GROUP_STUDENT):
+        return dashboard_student(request)
+    # Fallback: no role assigned
+    messages.info(request, "Your account doesn't have a role yet. Contact your administrator.")
+    return redirect("courses:landing")
+
+
+def dashboard_student_redirect(request):
+    """Redirect legacy /dashboard/student/ to /dashboard/"""
+    return redirect("courses:dashboard")
+
+
+def dashboard_instructor_redirect(request):
+    """Redirect legacy /dashboard/instructor/ to /dashboard/"""
+    return redirect("courses:dashboard")
+
+
+def dashboard_admin_redirect(request):
+    """Redirect legacy /dashboard/admin/ to /dashboard/"""
+    return redirect("courses:dashboard")
+
+
+def dashboard_superadmin_redirect(request):
+    """Redirect legacy /dashboard/superadmin/ to /dashboard/"""
+    return redirect("courses:dashboard")
+
+
 def dashboard_student(request):
     redirect_response = _guard_group(
         request,
@@ -92,13 +174,25 @@ def dashboard_student(request):
     if redirect_response:
         return redirect_response
 
-    enrollments = (
-        Enrollment.objects.filter(user=request.user).select_related("course", "course__instructor").all()
+    enrollments = list(
+        Enrollment.objects.filter(user=request.user)
+        .select_related("course", "course__instructor")
+        .all()
     )
+    active = [e for e in enrollments if e.paid or e.course.price == Decimal("0.00")]
+    pending = [e for e in enrollments if not (e.paid or e.course.price == Decimal("0.00"))]
+    instructor_count = len({e.course.instructor_id for e in active})
     return render(
         request,
         "courses/dashboard_student.html",
-        {"enrollments": enrollments},
+        {
+            "enrollments": enrollments,
+            "active_enrollments": active,
+            "stat_total": len(enrollments),
+            "stat_active": len(active),
+            "stat_pending": len(pending),
+            "stat_instructors": instructor_count,
+        },
     )
 
 
@@ -112,12 +206,100 @@ def dashboard_instructor(request):
     if redirect_response:
         return redirect_response
 
-    teaching = Course.objects.filter(instructor=request.user)
+    teaching = list(
+        Course.objects.filter(instructor=request.user).annotate(
+            enrollment_count=Count("enrollments", filter=Q(enrollments__paid=True))
+        )
+    )
+    total_enrollments = sum((c.enrollment_count or 0) for c in teaching)
+
+    subscription = InstructorSubscription.objects.filter(user=request.user).first()
+
+    earnings_chart = _monthly_earnings_series(request.user)
+
+    course_earnings = (
+        InstructorEarning.objects.filter(instructor=request.user, payout_request=None)
+        .aggregate(total=Sum("payout_amount"))["total"]
+        or Decimal("0.00")
+    )
+    referral_earnings = (
+        ReferralEarning.objects.filter(referrer=request.user)
+        .aggregate(total=Sum("amount"))["total"]
+        or Decimal("0.00")
+    )
+    pending_balance = course_earnings + referral_earnings
+    total_earned = (
+        InstructorEarning.objects.filter(instructor=request.user)
+        .aggregate(total=Sum("payout_amount"))["total"]
+        or Decimal("0.00")
+    ) + referral_earnings
+    referral_count = ReferralEarning.objects.filter(referrer=request.user).count()
+    payout_requests = PayoutRequest.objects.filter(instructor=request.user).order_by("-requested_at")[:5]
+
     return render(
         request,
         "courses/dashboard_instructor.html",
-        {"courses": teaching},
+        {
+            "courses": teaching,
+            "subscription": subscription,
+            "pending_balance": pending_balance,
+            "total_earned": total_earned,
+            "can_request_payout": pending_balance >= PAYOUT_MINIMUM,
+            "payout_minimum": PAYOUT_MINIMUM,
+            "payout_requests": payout_requests,
+            "earnings_chart": earnings_chart,
+            "total_enrollments": total_enrollments,
+            "referral_link": referral_link(request.user, request),
+            "referral_count": referral_count,
+            "referral_earnings": referral_earnings,
+            "course_earnings": course_earnings,
+            "stripe_configured": stripe_is_configured(),
+            "instructor_price_configured": _instructor_plan_exists(),
+        },
     )
+
+
+def _monthly_earnings_series(user, months: int = 6):
+    """Payout-amount totals per month for the last ``months`` months.
+
+    Returns a list of dicts ``{label, amount, pct}`` ordered oldest→newest,
+    where ``pct`` is the bar height (0–100) relative to the busiest month.
+    """
+    from django.utils import timezone
+
+    today = timezone.localdate()
+    buckets: list[dict] = []
+    year, month = today.year, today.month
+    # Build the oldest→newest month windows.
+    seq = []
+    for _ in range(months):
+        seq.append((year, month))
+        month -= 1
+        if month == 0:
+            month = 12
+            year -= 1
+    seq.reverse()
+
+    totals = {
+        (e["y"], e["m"]): e["total"]
+        for e in InstructorEarning.objects.filter(instructor=user)
+        .annotate(y=ExtractYear("created_at"), m=ExtractMonth("created_at"))
+        .values("y", "m")
+        .annotate(total=Sum("payout_amount"))
+    }
+
+    month_names = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    amounts = [float(totals.get((y, m), 0) or 0) for (y, m) in seq]
+    peak = max(amounts) if amounts else 0
+    for (y, m), amount in zip(seq, amounts):
+        buckets.append(
+            {
+                "label": month_names[m],
+                "amount": amount,
+                "pct": round((amount / peak) * 100) if peak else 0,
+            }
+        )
+    return buckets
 
 
 @login_required
@@ -181,6 +363,7 @@ def dashboard_admin(request):
         {
             "user_count": User.objects.count(),
             "course_count": Course.objects.count(),
+            "referral_link": referral_link(request.user, request),
         },
     )
 
@@ -199,6 +382,7 @@ def dashboard_superadmin(request):
             "instructor_count": User.objects.filter(groups__name=GROUP_INSTRUCTOR).distinct().count(),
             "student_count": User.objects.filter(groups__name=GROUP_STUDENT).distinct().count(),
             "admin_count": User.objects.filter(groups__name=GROUP_ADMIN).distinct().count(),
+            "referral_link": referral_link(request.user, request),
         },
     )
 
@@ -211,9 +395,236 @@ def enroll(request, slug):
         return redirect("courses:landing")
 
     course = get_object_or_404(Course, slug=slug)
-    Enrollment.objects.get_or_create(user=request.user, course=course)
-    messages.success(request, f"You are now enrolled in {course.title}.")
-    return redirect("courses:course_learn", slug=slug)
+
+    existing = Enrollment.objects.filter(user=request.user, course=course).first()
+    if existing and (existing.paid or course.price == Decimal("0.00")):
+        return redirect("courses:course_learn", slug=slug)
+
+    if course.price == Decimal("0.00"):
+        Enrollment.objects.get_or_create(
+            user=request.user, course=course, defaults={"paid": True}
+        )
+        messages.success(request, f"You are now enrolled in {course.title}.")
+        return redirect("courses:course_learn", slug=slug)
+
+    if not stripe_is_configured():
+        messages.error(request, "Payment processing is not available right now.")
+        return redirect("courses:landing")
+
+    from .billing import create_course_checkout_session
+
+    try:
+        session = create_course_checkout_session(request.user, course, request)
+        return redirect(session.url, permanent=False)
+    except Exception:
+        logger.exception("Failed to create checkout session for course %s", course.pk)
+        messages.error(request, "Could not start checkout. Please try again.")
+        return redirect("courses:landing")
+
+
+@login_required
+@require_GET
+def checkout_success(request):
+    return render(request, "courses/checkout_success.html")
+
+
+@login_required
+@require_GET
+def checkout_cancel(request):
+    course_slug = request.GET.get("course", "")
+    return render(request, "courses/checkout_cancel.html", {"course_slug": course_slug})
+
+
+@login_required
+@require_POST
+def instructor_subscribe(request):
+    redirect_response = _guard_group(
+        request,
+        GROUP_INSTRUCTOR,
+        "Only instructor accounts can subscribe to an instructor plan.",
+    )
+    if redirect_response:
+        return redirect_response
+
+    existing = InstructorSubscription.objects.filter(user=request.user).first()
+    if existing and existing.is_active:
+        messages.info(request, "You already have an active subscription.")
+        return redirect("courses:dashboard_instructor")
+
+    if not stripe_is_configured() or not _instructor_plan_exists():
+        messages.error(request, "Subscription billing is not configured yet.")
+        return redirect("courses:dashboard_instructor")
+
+    from .billing import create_instructor_subscription_session
+
+    try:
+        session = create_instructor_subscription_session(request.user, request)
+        return redirect(session.url, permanent=False)
+    except Exception:
+        logger.exception("Failed to create subscription session for user %s", request.user.pk)
+        messages.error(request, "Could not start subscription checkout. Please try again.")
+        return redirect("courses:dashboard_instructor")
+
+
+@login_required
+@require_POST
+def request_payout(request):
+    redirect_response = _guard_group(
+        request,
+        GROUP_INSTRUCTOR,
+        "Only instructor accounts can request payouts.",
+    )
+    if redirect_response:
+        return redirect_response
+
+    with transaction.atomic():
+        unpaid_earnings = InstructorEarning.objects.select_for_update().filter(
+            instructor=request.user, payout_request=None
+        )
+        pending_balance = unpaid_earnings.aggregate(total=Sum("payout_amount"))["total"] or Decimal("0.00")
+
+        if pending_balance < PAYOUT_MINIMUM:
+            messages.error(
+                request,
+                f"Your pending balance (${pending_balance:.2f}) is below the ${PAYOUT_MINIMUM} minimum.",
+            )
+            return redirect("courses:dashboard_instructor")
+
+        payout = PayoutRequest.objects.create(instructor=request.user, amount=pending_balance)
+        unpaid_earnings.update(payout_request=payout)
+
+    _send_payout_request_email(request.user, pending_balance, payout)
+    messages.success(
+        request,
+        f"Payout request of ${pending_balance:.2f} submitted. We'll process it shortly.",
+    )
+    return redirect("courses:dashboard_instructor")
+
+
+def _send_payout_request_email(instructor, amount: Decimal, payout: PayoutRequest):
+    name = instructor.get_full_name() or instructor.username
+    subject = f"Payout Request — {name} — ${amount:.2f}"
+    body = (
+        f"Instructor payout request received.\n\n"
+        f"Instructor: {name}\n"
+        f"Email: {instructor.email}\n"
+        f"Requested amount: ${amount:.2f}\n"
+        f"Request ID: {payout.pk}\n"
+        f"Requested at: {payout.requested_at}\n\n"
+        f"Log in to the Django admin to mark this payout as paid.\n"
+    )
+    try:
+        send_mail(
+            subject,
+            body,
+            settings.DEFAULT_FROM_EMAIL,
+            [PAYOUT_ADMIN_EMAIL],
+            fail_silently=False,
+        )
+    except Exception:
+        logger.exception("Failed to send payout request email for payout %s", payout.pk)
+
+
+@csrf_exempt
+@require_POST
+def stripe_webhook(request):
+    payload = request.body
+    sig_header = request.META.get("HTTP_STRIPE_SIGNATURE", "")
+    webhook_secret = getattr(settings, "STRIPE_WEBHOOK_SECRET", "")
+
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+
+    try:
+        event = stripe.Webhook.construct_event(payload, sig_header, webhook_secret)
+    except (ValueError, stripe.error.SignatureVerificationError):
+        return HttpResponse(status=400)
+
+    event_type = event["type"]
+    data = event["data"]["object"]
+
+    if event_type == "checkout.session.completed":
+        _handle_checkout_completed(data)
+    elif event_type in ("customer.subscription.updated", "customer.subscription.deleted"):
+        _handle_subscription_change(data)
+
+    return HttpResponse(status=200)
+
+
+def _handle_checkout_completed(session):
+    meta = session.get("metadata") or {}
+    purchase_type = meta.get("type")
+
+    if purchase_type == "course_purchase":
+        course_id = meta.get("course_id")
+        user_id = meta.get("user_id")
+        if not course_id or not user_id:
+            return
+
+        payment_intent_id = session.get("payment_intent") or ""
+
+        try:
+            user = User.objects.get(pk=user_id)
+            course = Course.objects.get(pk=course_id)
+        except (User.DoesNotExist, Course.DoesNotExist):
+            logger.error("Webhook: user %s or course %s not found", user_id, course_id)
+            return
+
+        with transaction.atomic():
+            enrollment, created = Enrollment.objects.get_or_create(
+                user=user,
+                course=course,
+                defaults={"paid": True, "stripe_payment_intent_id": payment_intent_id},
+            )
+            if not created and not enrollment.paid:
+                enrollment.paid = True
+                enrollment.stripe_payment_intent_id = payment_intent_id
+                enrollment.save(update_fields=["paid", "stripe_payment_intent_id"])
+
+            if not hasattr(enrollment, "earning"):
+                payout_amount = (course.price * PLATFORM_PAYOUT_RATE).quantize(Decimal("0.01"))
+                InstructorEarning.objects.create(
+                    instructor=course.instructor,
+                    enrollment=enrollment,
+                    gross_amount=course.price,
+                    payout_amount=payout_amount,
+                )
+
+    elif purchase_type == "instructor_subscription":
+        user_id = meta.get("user_id")
+        if not user_id:
+            return
+        subscription_id = session.get("subscription") or ""
+        customer_id = session.get("customer") or ""
+
+        try:
+            user = User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            logger.error("Webhook: user %s not found for instructor subscription", user_id)
+            return
+
+        InstructorSubscription.objects.update_or_create(
+            user=user,
+            defaults={
+                "stripe_subscription_id": subscription_id,
+                "stripe_customer_id": customer_id,
+                "status": "active",
+            },
+        )
+
+
+def _handle_subscription_change(subscription):
+    sub_id = subscription.get("id") or ""
+    status = subscription.get("status") or ""
+    current_period_end = subscription.get("current_period_end")
+    period_end = (
+        datetime.datetime.fromtimestamp(current_period_end, tz=datetime.timezone.utc)
+        if current_period_end
+        else None
+    )
+    InstructorSubscription.objects.filter(stripe_subscription_id=sub_id).update(
+        status=status,
+        current_period_end=period_end,
+    )
 
 
 @login_required

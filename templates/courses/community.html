@@ -1,16 +1,17 @@
 {% extends "base.html" %}
+{% block title %}Community · LEARNible{% endblock %}
 {% block body %}
 {% include "includes/header_public.html" %}
 
 <div class="community-page">
     <div class="community-header">
-        <h1>LEARNible Community</h1>
-        <p>Connect, learn, and grow together.</p>
+        <h1>LEARNible community</h1>
+        <p>Connect, learn, and grow together with instructors and students worldwide.</p>
     </div>
 
     <div class="community-tabs">
         <button type="button" class="community-tab active">Forums</button>
-        <button type="button" class="community-tab">Study Groups</button>
+        <button type="button" class="community-tab">Study groups</button>
         <button type="button" class="community-tab">Challenges</button>
         <button type="button" class="community-tab">Events</button>
     </div>
@@ -18,17 +19,40 @@
     <div class="community-content">
         <div class="forum-list">
             <div class="forum-category">
-                <h3>Web Development</h3>
-                <p style="color: #718096; margin-bottom: 1rem;">More discussions and topics are coming soon.</p>
+                <h3>💻 Web Development</h3>
+                <p class="muted" style="margin-bottom:1rem;font-size:0.92rem;">Help each other with HTML, CSS, JavaScript, React, and backend frameworks.</p>
             </div>
+            <div class="forum-category">
+                <h3>🎨 Design &amp; UX</h3>
+                <p class="muted" style="margin-bottom:1rem;font-size:0.92rem;">Share design resources, get feedback, and discuss UI/UX principles.</p>
+            </div>
+            <div class="forum-category">
+                <h3>📊 Data &amp; analytics</h3>
+                <p class="muted" style="margin-bottom:1rem;font-size:0.92rem;">Discuss data science, SQL, Python, machine learning, and analytics tools.</p>
+            </div>
+            <p class="muted" style="margin-top:2rem;font-size:0.92rem;">More discussions, categories, and live features coming soon. Check back regularly!</p>
         </div>
+
         <div class="community-sidebar">
             <div class="sidebar-card">
-                <h3>Guidelines</h3>
+                <h3>Community guidelines</h3>
                 <ul class="guidelines-list">
-                    <li>Be respectful and constructive.</li>
-                    <li>Keep posts relevant to learning.</li>
-                    <li>No spam or unsolicited promotions.</li>
+                    <li>Be respectful and constructive</li>
+                    <li>Keep posts relevant to learning</li>
+                    <li>Search before posting duplicates</li>
+                    <li>No spam or self-promotion</li>
+                    <li>Share knowledge generously</li>
+                </ul>
+            </div>
+
+            <div class="sidebar-card">
+                <h3>Quick tips</h3>
+                <ul class="guidelines-list">
+                    <li>Use descriptive titles for posts</li>
+                    <li>Include code samples when relevant</li>
+                    <li>Help others with their questions</li>
+                    <li>Mark helpful answers as solutions</li>
+                    <li>Join study groups for your courses</li>
                 </ul>
             </div>
         </div>

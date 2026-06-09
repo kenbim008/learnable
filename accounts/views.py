@@ -7,6 +7,7 @@ from django.views.decorators.http import require_http_methods
 
 from .forms import LoginForm, StudentInstructorSignupForm, assign_role_groups
 from .navigation import dashboard_url_name
+from .referrals import attach_referral, remember_referral
 
 
 def _redirect_home_for_user(user: User):
@@ -51,8 +52,10 @@ def signup_view(request):
         return _redirect_home_for_user(request.user)
 
     initial = {}
-    if request.method == "GET" and request.GET.get("role") == "instructor":
-        initial["role"] = "instructor"
+    if request.method == "GET":
+        remember_referral(request)
+        if request.GET.get("role") == "instructor":
+            initial["role"] = "instructor"
 
     if request.method == "POST":
         form = StudentInstructorSignupForm(request.POST)
@@ -72,6 +75,7 @@ def signup_view(request):
             assign_role_groups(user, instructor=True)
         else:
             assign_role_groups(user, student=True)
+        attach_referral(request, user)
         login(request, user)
         dashboard = (
             "courses:dashboard_instructor" if role == "instructor" else "courses:dashboard_student"

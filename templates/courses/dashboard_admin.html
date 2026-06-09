@@ -1,47 +1,55 @@
 {% extends "base.html" %}
 {% block title %}Admin portal · LEARNible{% endblock %}
 {% block body %}
-<header>
-    <div class="header-container">
-        <a class="logo" href="{{ nav_home.url }}">
-            <span class="logo-icon">📖</span>
-            <span><span class="logo-learn">LEARN</span><span class="logo-ible">ible</span></span>
-        </a>
-        <nav><span style="font-weight: 600;">Admin Portal</span></nav>
-        <div class="header-right">
-            <a class="header-link" href="/admin/">Staff tools</a>
-            <form class="inline-form" action="{% url 'accounts:logout' %}" method="post">
-                {% csrf_token %}
-                <button type="submit" class="header-link-btn">Sign out</button>
-            </form>
-        </div>
-    </div>
-</header>
+{% include "includes/app_header.html" with portal_label="Admin" back_url="/admin/" back_label="Staff tools" %}
 
 <div class="dashboard">
     <div class="dashboard-container">
         <aside class="sidebar">
+            <div class="sidebar-heading">Menu</div>
             <ul class="sidebar-menu">
-                <li><a class="active" href="{% url 'courses:dashboard_admin' %}">Dashboard</a></li>
-                <li><a href="/admin/auth/user/">Users</a></li>
-                <li><a href="/admin/courses/course/">Courses</a></li>
+                <li><a class="active" href="{% url 'courses:dashboard' %}">🏠 Dashboard</a></li>
+                <li><a href="/admin/auth/user/">👥 Users</a></li>
+                <li><a href="/admin/courses/course/">📚 Courses</a></li>
             </ul>
         </aside>
         <main class="main-content">
-            <div class="dashboard-header">
-                <h1>Admin dashboard 👑</h1>
-                <p>Operational overview</p>
+            <div class="page-header">
+                <div>
+                    <h1>Admin dashboard 👑</h1>
+                    <p class="page-sub">Operational overview of the platform.</p>
+                </div>
             </div>
             <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon">👥</div>
+                <div class="stat-card stat-card--brand">
+                    <div class="stat-card__icon">👥</div>
                     <div class="stat-value">{{ user_count }}</div>
                     <div class="stat-label">Total users</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon">📚</div>
+                <div class="stat-card stat-card--success">
+                    <div class="stat-card__icon">📚</div>
                     <div class="stat-value">{{ course_count }}</div>
                     <div class="stat-label">Courses</div>
+                </div>
+            </div>
+            <div class="content-card">
+                <div class="card-head"><h2>Invite others</h2></div>
+                <p class="muted" style="margin-bottom:1rem;font-size:0.92rem;">Share your referral link to invite new admins, instructors, or students to LEARNible.</p>
+                <div style="display:flex;gap:0.75rem;align-items:center;margin-bottom:2rem;">
+                    <input type="text" readonly value="{{ referral_link }}" style="flex:1;padding:0.7rem 0.85rem;border:1px solid var(--border-strong);border-radius:var(--radius-sm);font-size:0.9rem;font-family:monospace;" onclick="this.select()" title="Click to select">
+                    <button class="btn btn-outline btn-sm" onclick="navigator.clipboard.writeText('{{ referral_link }}');alert('Copied!')">Copy</button>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <div class="card-head"><h2>Quick links</h2></div>
+                <div class="list-row">
+                    <div class="list-row__main"><div class="list-row__title">User management</div><div class="list-row__sub">Create operators, assign roles</div></div>
+                    <a class="btn btn-outline btn-sm" href="/admin/auth/user/">Open →</a>
+                </div>
+                <div class="list-row">
+                    <div class="list-row__main"><div class="list-row__title">Course catalog</div><div class="list-row__sub">Review and moderate courses</div></div>
+                    <a class="btn btn-outline btn-sm" href="/admin/courses/course/">Open →</a>
                 </div>
             </div>
         </main>

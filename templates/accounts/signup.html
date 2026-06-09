@@ -1,31 +1,47 @@
 {% extends "base.html" %}
 {% block title %}Sign up · LEARNible{% endblock %}
 {% block body %}
-{% include "includes/header_public.html" %}
+<div class="auth-wrap">
+    <aside class="auth-aside">
+        <a class="logo" href="{% url 'courses:landing' %}">
+            <span class="logo-icon">📖</span>
+            <span><span class="logo-learn">LEARN</span><span class="logo-ible">ible</span></span>
+        </a>
+        <div>
+            <h2 class="auth-aside__headline">Turn what you know into income.</h2>
+            <p class="auth-aside__sub">Join thousands learning new skills — or teaching them. Set up your account in seconds.</p>
+            <ul class="auth-aside__points">
+                <li>Free to join as a student</li>
+                <li>Publish unlimited courses as an instructor</li>
+                <li>Earn 50% on every paid enrollment</li>
+            </ul>
+        </div>
+        <p class="muted" style="color:#8c95b4;font-size:0.85rem;">© 2026 LEARNible</p>
+    </aside>
 
-<main class="content-auth">
-    <div class="content-card content-card--auth">
-        <h1>Join LEARNible</h1>
-        <p class="content-card--auth__intro">Create a student or instructor account.</p>
-        <form method="post" novalidate>
-            {% csrf_token %}
-            {% for field in form %}
-                <div class="form-group">
-                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                    {{ field }}
-                    {% if field.errors %}<div style="color:#B91C1C;font-size:0.9rem;">{{ field.errors }}</div>{% endif %}
-                </div>
-            {% endfor %}
-            {% if form.non_field_errors %}
-                <div style="color:#B91C1C;margin-bottom:0.75rem;">{{ form.non_field_errors }}</div>
-            {% endif %}
-            <button class="btn btn-success" type="submit" style="width:100%;">Create account</button>
-        </form>
-        <p class="content-card--auth__after-form">
-            <a href="{% url 'accounts:login' %}">Already have an account?</a>
-        </p>
-    </div>
-</main>
-
-{% include "includes/footer_public.html" %}
+    <main class="auth-main">
+        <div class="auth-card">
+            <h1>Create your account</h1>
+            <p class="auth-card__intro">Join as a student or instructor.</p>
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}<small class="form-help">{{ field.help_text }}</small>{% endif %}
+                        {% if field.errors %}<div class="errorlist">{{ field.errors }}</div>{% endif %}
+                    </div>
+                {% endfor %}
+                {% if form.non_field_errors %}
+                    <div class="errorlist" style="margin-bottom:0.75rem;">{{ form.non_field_errors }}</div>
+                {% endif %}
+                <button class="btn btn-success btn-block" type="submit">Create account</button>
+            </form>
+            <p class="auth-card__after">
+                Already have an account? <a href="{% url 'accounts:login' %}">Sign in</a>
+            </p>
+        </div>
+    </main>
+</div>
 {% endblock %}

@@ -1,54 +1,95 @@
 {% extends "base.html" %}
+{% load course_icons %}
 {% block title %}Student portal · LEARNible{% endblock %}
 {% block body %}
-<header>
-    <div class="header-container">
-        <a class="logo" href="{{ nav_home.url }}">
-            <span class="logo-icon">📖</span>
-            <span><span class="logo-learn">LEARN</span><span class="logo-ible">ible</span></span>
-        </a>
-        <nav><span style="font-weight: 600;">Student Portal</span></nav>
-        <div class="header-right">
-            <form class="inline-form" action="{% url 'accounts:logout' %}" method="post">
-                {% csrf_token %}
-                <button type="submit" class="header-link-btn">Sign out</button>
-            </form>
-        </div>
-    </div>
-</header>
+{% include "includes/app_header.html" with portal_label="Student" %}
 
 <div class="dashboard">
     <div class="dashboard-container">
         <aside class="sidebar">
+            <div class="sidebar-heading">Menu</div>
             <ul class="sidebar-menu">
-                <li><a class="active" href="{% url 'courses:dashboard_student' %}">Dashboard</a></li>
-                <li><a href="{% url 'courses:landing' %}#courses">Browse courses</a></li>
-                <li><a href="{% url 'courses:community' %}">Community</a></li>
+                <li><a class="active" href="{% url 'courses:dashboard' %}">🏠 Dashboard</a></li>
+                <li><a href="{% url 'courses:landing' %}#courses">🧭 Browse courses</a></li>
+                <li><a href="{% url 'courses:community' %}">💬 Community</a></li>
             </ul>
         </aside>
         <main class="main-content">
-            <div class="dashboard-header">
-                <h1>Welcome back{% if user.first_name %}, {{ user.first_name }}{% endif %} 👋</h1>
-                <p>Continue your learning journey</p>
+            <div class="page-header">
+                <div>
+                    <h1>Welcome back{% if user.first_name %}, {{ user.first_name }}{% endif %} 👋</h1>
+                    <p class="page-sub">Pick up where you left off and keep the streak going.</p>
+                </div>
+                <div class="page-header__actions">
+                    <a class="btn btn-outline" href="{% url 'courses:landing' %}#courses">Browse catalog</a>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card stat-card--brand">
+                    <div class="stat-card__icon">📚</div>
+                    <div class="stat-value">{{ stat_total }}</div>
+                    <div class="stat-label">Courses enrolled</div>
+                </div>
+                <div class="stat-card stat-card--success">
+                    <div class="stat-card__icon">▶</div>
+                    <div class="stat-value">{{ stat_active }}</div>
+                    <div class="stat-label">Ready to learn</div>
+                </div>
+                <div class="stat-card stat-card--violet">
+                    <div class="stat-card__icon">🎓</div>
+                    <div class="stat-value">{{ stat_instructors }}</div>
+                    <div class="stat-label">Instructors</div>
+                </div>
+                {% if stat_pending %}
+                <div class="stat-card stat-card--amber">
+                    <div class="stat-card__icon">⏳</div>
+                    <div class="stat-value">{{ stat_pending }}</div>
+                    <div class="stat-label">Awaiting payment</div>
+                </div>
+                {% endif %}
             </div>
 
             <div class="content-card">
-                <h2>Continue learning</h2>
-                <div class="drm-notice">Videos play in your browser. Downloading course media is not available from here.</div>
+                <div class="card-head">
+                    <h2>Continue learning</h2>
+                    <span class="drm-notice">🔒 Stream-only · no downloads</span>
+                </div>
+
                 {% if enrollments %}
-                    <ul style="list-style:none;padding:0;margin:0;">
+                    <div class="courses-grid">
                         {% for e in enrollments %}
-                            <li class="enrollment-row">
-                                <div class="enrollment-row__head">
-                                    <a class="enrollment-row__title" href="{% url 'courses:course_learn' e.course.slug %}">{{ e.course.title }}</a>
+                            <div class="course-card">
+                                <div class="course-image course-image--icon">
+                                    {% course_icon e.course.icon_key "course-card__icon" %}
+                                    {% if e.paid or e.course.price == 0 %}
+                                        <span class="preview-badge">Enrolled</span>
+                                    {% else %}
+                                        <span class="preview-badge" style="background:rgba(239,68,68,.85);">Payment due</span>
+                                    {% endif %}
                                 </div>
-                                <a class="btn btn-primary enrollment-row__open" href="{% url 'courses:course_learn' e.course.slug %}">Open course</a>
-                            </li>
+                                <div class="course-content">
+                                    <a class="course-title course-title--link" href="{% url 'courses:course_learn' e.course.slug %}">{{ e.course.title }}</a>
+                                    <div class="course-instructor">By {{ e.course.instructor.get_full_name|default:e.course.instructor.email }}</div>
+                                    {% if e.paid or e.course.price == 0 %}
+                                        <a class="btn btn-primary btn-block" style="margin-top:auto;" href="{% url 'courses:course_learn' e.course.slug %}">Resume course</a>
+                                    {% else %}
+                                        <form method="post" action="{% url 'courses:enroll' e.course.slug %}" style="margin-top:auto;">
+                                            {% csrf_token %}
+                                            <button class="btn btn-success btn-block" type="submit">Complete purchase · ${{ e.course.price }}</button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            </div>
                         {% endfor %}
-                    </ul>
+                    </div>
                 {% else %}
-                    <p>You are not enrolled in any courses yet.</p>
-                    <a class="btn btn-primary" href="{% url 'courses:landing' %}#courses">Browse courses</a>
+                    <div class="empty-state">
+                        <div class="empty-state__icon">📚</div>
+                        <h3>No courses yet</h3>
+                        <p>Explore the catalog and enroll in your first course to get started.</p>
+                        <a class="btn btn-primary" href="{% url 'courses:landing' %}#courses">Browse courses</a>
+                    </div>
                 {% endif %}
             </div>
         </main>

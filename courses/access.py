@@ -1,9 +1,13 @@
 import re
+from decimal import Decimal
+
 from django.contrib.auth import get_user_model
 
 from accounts.constants import GROUP_ADMIN
 from accounts.forms import user_in_group
 from .models import Course, Enrollment
+
+_ZERO = Decimal("0.00")
 
 User = get_user_model()
 
@@ -68,7 +72,14 @@ def can_serve_knowledge(user: User, storage_key: str) -> bool:
 
     if not user.is_authenticated:
         return False
-    return Enrollment.objects.filter(user=user, course=course).exists()
+    return _has_access(user, course)
+
+
+def _has_access(user, course: Course) -> bool:
+    """True if the user's enrollment satisfies the course's payment requirement."""
+    if course.price <= _ZERO:
+        return Enrollment.objects.filter(user=user, course=course).exists()
+    return Enrollment.objects.filter(user=user, course=course, paid=True).exists()
 
 
 def can_view_course_lessons(user: User, course: Course) -> bool:
@@ -81,4 +92,4 @@ def can_view_course_lessons(user: User, course: Course) -> bool:
         return True
     if course.instructor_id == user.id:
         return True
-    return Enrollment.objects.filter(user=user, course=course).exists()
+    return _has_access(user, course)

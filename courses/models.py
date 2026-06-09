@@ -1,8 +1,35 @@
+from decimal import Decimal
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import models
 
 User = get_user_model()
+
+PLATFORM_PAYOUT_RATE = Decimal("0.50")
+PAYOUT_MINIMUM = Decimal("50.00")
+
+
+class StripeProduct(models.Model):
+    """
+    Stores Stripe Product + Price IDs for platform billing plans.
+    stripe_price_id is populated lazily on first use via the Stripe API.
+    """
+
+    key = models.CharField(max_length=100, unique=True, help_text="Internal identifier, e.g. 'instructor_plan'.")
+    name = models.CharField(max_length=255)
+    stripe_product_id = models.CharField(max_length=255, unique=True)
+    stripe_price_id = models.CharField(
+        max_length=255,
+        blank=True,
+        help_text="Populated automatically from Stripe on first checkout. You can also set it manually.",
+    )
+    active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self) -> str:
+        return f"{self.name} ({self.key})"
 
 
 class Course(models.Model):
@@ -76,6 +103,8 @@ class Course(models.Model):
 class Enrollment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="enrollments")
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="enrollments")
+    paid = models.BooleanField(default=False)
+    stripe_payment_intent_id = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -85,3 +114,48 @@ class Enrollment(models.Model):
 
     def __str__(self) -> str:
         return f"{self.user_id} → {self.course_id}"
+
+
+class InstructorSubscription(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="instructor_subscription")
+    stripe_subscription_id = models.CharField(max_length=255, unique=True)
+    stripe_customer_id = models.CharField(max_length=255, blank=True)
+    status = models.CharField(max_length=50)
+    current_period_end = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    @property
+    def is_active(self) -> bool:
+        return self.status in ("active", "trialing")
+
+    def __str__(self) -> str:
+        return f"{self.user_id} subscription ({self.status})"
+
+
+class PayoutRequest(models.Model):
+    STATUS_PENDING = "pending"
+    STATUS_PAID = "paid"
+    STATUS_REJECTED = "rejected"
+
+    instructor = models.ForeignKey(User, on_delete=models.CASCADE, related_name="payout_requests")
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=20, default=STATUS_PENDING)
+    requested_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return f"Payout ${self.amount} for {self.instructor_id} ({self.status})"
+
+
+class InstructorEarning(models.Model):
+    instructor = models.ForeignKey(User, on_delete=models.CASCADE, related_name="earnings")
+    enrollment = models.OneToOneField(Enrollment, on_delete=models.CASCADE, related_name="earning")
+    gross_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    payout_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    payout_request = models.ForeignKey(
+        PayoutRequest, null=True, blank=True, on_delete=models.SET_NULL, related_name="earnings"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return f"Earning ${self.payout_amount} for instructor {self.instructor_id}"

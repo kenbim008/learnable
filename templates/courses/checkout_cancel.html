@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Payment cancelled · LEARNible{% endblock %}
+{% block body %}
+{% include "includes/app_header.html" with portal_label="Checkout" %}
+
+<div class="dashboard">
+    <div style="max-width:540px;margin:4rem auto;padding:0 1.5rem;">
+        <div class="content-card" style="text-align:center;padding:3rem 2rem;">
+            <div class="empty-state__icon" style="background:var(--amber-50);color:#b45309;margin-inline:auto;">↩️</div>
+            <h1 style="margin-bottom:0.5rem;">Payment cancelled</h1>
+            <p class="muted" style="margin-bottom:2rem;">
+                No charge was made. You can try again whenever you're ready.
+            </p>
+            {% if course_slug %}
+                <a class="btn btn-primary" href="{% url 'courses:course_learn' course_slug %}">Back to course</a>
+            {% else %}
+                <a class="btn btn-primary" href="{% url 'courses:landing' %}#courses">Browse courses</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

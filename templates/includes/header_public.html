@@ -15,11 +15,11 @@
         </nav>
         <div class="header-right site-header__actions">
             <select class="currency-selector" id="countrySelector" aria-label="Currency preview">
-                <option value="US">US - USD</option>
-                <option value="NG">Nigeria - NGN</option>
-                <option value="GB">UK - GBP</option>
-                <option value="EU">Europe - EUR</option>
-                <option value="CA">Canada - CAD</option>
+                <option value="US">US · USD</option>
+                <option value="NG">Nigeria · NGN</option>
+                <option value="GB">UK · GBP</option>
+                <option value="EU">Europe · EUR</option>
+                <option value="CA">Canada · CAD</option>
             </select>
             {% if user.is_authenticated %}
                 <form class="inline-form site-header__logout" action="{% url 'accounts:logout' %}" method="post">

@@ -1,104 +1,61 @@
 {% extends "base.html" %}
 {% load course_icons %}
 {% block body %}
+
+{% if show_marketing %}
 {% include "includes/header_public.html" %}
 
 <div id="landingPage">
     <section class="hero">
-        <h1>Transform Your Knowledge Into Income</h1>
-        <p>Join instructors and students on <span class="brand-name">LEARNible</span></p>
+        <span class="hero__eyebrow">✦ Teach. Learn. Earn.</span>
+        <h1>Transform your knowledge into income</h1>
+        <p>Join instructors and students building real skills on <span class="brand-name">LEARNible</span>.</p>
         <div class="hero-buttons">
-            <a class="btn btn-success" href="{% url 'accounts:signup' %}?role=instructor">Join As Instructor</a>
-            <a class="btn btn-primary" href="{% url 'accounts:signup' %}">Join As Student</a>
+            <a class="btn btn-success" href="{% url 'accounts:signup' %}?role=instructor">Join as instructor</a>
+            <a class="btn btn-outline" style="color:#fff;border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.08);" href="{% url 'accounts:signup' %}">Join as student</a>
         </div>
     </section>
 
     <section class="how-it-works">
-        <h2 class="section-title">How It Works</h2>
+        <h2 class="section-title">How it works</h2>
+        <p class="section-lead">From sign-up to your first sale in four simple steps.</p>
         <div class="steps">
             <div class="step">
                 <div class="step-number">1</div>
-                <h3>Sign Up</h3>
+                <h3>Sign up</h3>
                 <p>Create your account as a student or instructor.</p>
             </div>
             <div class="step">
                 <div class="step-number">2</div>
-                <h3>Create Courses</h3>
-                <p>Upload videos and course materials from your instructor dashboard.</p>
+                <h3>Create courses</h3>
+                <p>Upload videos and course materials from your dashboard.</p>
             </div>
             <div class="step">
                 <div class="step-number">3</div>
-                <h3>Publish &amp; Earn</h3>
+                <h3>Publish &amp; earn</h3>
                 <p>Launch your courses and grow your audience.</p>
             </div>
             <div class="step">
                 <div class="step-number">4</div>
-                <h3>Track Success</h3>
-                <p>Monitor enrollments and engagement from your dashboards.</p>
+                <h3>Track success</h3>
+                <p>Monitor enrollments and earnings from your dashboard.</p>
             </div>
         </div>
     </section>
 
     <section class="featured-courses" id="courses">
-        <h2 class="section-title">Featured Courses</h2>
+        <h2 class="section-title">Featured courses</h2>
+        <p class="section-lead">Hand-picked classes from instructors across the platform.</p>
         <div class="courses-grid">
-            {% for course in courses %}
-                <div class="course-card">
-                        <div class="course-image course-image--icon" style="position: relative;">
-                            {% course_icon course.icon_key "course-card__icon" %}
-                        {% if course.preview_storage_key and user.is_authenticated %}
-                            <button
-                                type="button"
-                                class="preview-badge preview-badge--btn js-preview-open"
-                                data-preview-src="{% url 'courses:serve_knowledge' %}?key={{ course.preview_storage_key|iriencode }}"
-                                data-preview-title="{{ course.title }}"
-                            >▶ Preview</button>
-                        {% elif course.preview_storage_key %}
-                            <div class="preview-badge">▶ Preview</div>
-                        {% endif %}
-                    </div>
-                    <div class="course-content">
-                        <a class="course-title course-title--link" href="{% url 'courses:course_learn' course.slug %}">{{ course.title }}</a>
-                        <div class="course-instructor">By {{ course.instructor.get_full_name|default:course.instructor.email }}</div>
-                        <div class="course-meta">
-                            <div class="course-price" data-price-usd="{{ course.price }}">${{ course.price }}</div>
-                            <div class="course-rating">⭐ {{ course.rating }}</div>
-                        </div>
-                        {% if user.is_authenticated %}
-                            {% if is_student %}
-                                {% if course.id in enrolled_course_ids %}
-                                    <a class="btn btn-outline" style="width:100%; text-align:center;" href="{% url 'courses:course_learn' course.slug %}">Open course</a>
-                                {% else %}
-                                    <form method="post" action="{% url 'courses:enroll' course.slug %}">
-                                        {% csrf_token %}
-                                        <button class="add-to-cart-btn" type="submit">Enroll</button>
-                                    </form>
-                                {% endif %}
-                            {% else %}
-                                <p class="muted" style="margin-top:0.75rem;">Student accounts can enroll.</p>
-                            {% endif %}
-                        {% else %}
-                            <a class="btn btn-primary" style="width:100%; text-align:center;" href="{% url 'accounts:login' %}">Log in to enroll</a>
-                        {% endif %}
-                        {% if course.preview_storage_key and user.is_authenticated %}
-                            <button
-                                type="button"
-                                class="btn btn-outline js-preview-open"
-                                style="width:100%; margin-top:0.5rem;"
-                                data-preview-src="{% url 'courses:serve_knowledge' %}?key={{ course.preview_storage_key|iriencode }}"
-                                data-preview-title="{{ course.title }}"
-                            >Watch preview</button>
-                        {% endif %}
-                    </div>
-                </div>
-            {% empty %}
+            {% for course in courses %}{% include "courses/_course_card.html" with course=course %}{% empty %}
                 <p>No courses are listed yet. New classes appear here as instructors publish them.</p>
             {% endfor %}
         </div>
     </section>
 
     <section class="why-choose">
-        <h2 class="section-title">Why Choose <span style="color: #5B7FFF;">LEARN</span><span style="color: #10B981;">ible</span>?</h2>
+        <h2 class="section-title">Why choose <span style="color:var(--brand);">LEARN</span><span style="color:var(--accent);">ible</span>?</h2>
+        <p class="section-lead">A focused platform built for teaching and learning — nothing in the way.</p>
         <div class="features">
             <div class="feature-card blue">
                 <div class="feature-icon">💼</div>
@@ -108,7 +65,7 @@
             <div class="feature-card green">
                 <div class="feature-icon">🔒</div>
                 <h3>Protected delivery</h3>
-                <p>Course media is streamed safely—access matches who is enrolled and what they are allowed to see.</p>
+                <p>Course media is streamed safely—access matches who is enrolled.</p>
             </div>
             <div class="feature-card blue">
                 <div class="feature-icon">🎓</div>
@@ -120,23 +77,23 @@
 
     <section class="pricing" id="pricing">
         <div class="pricing-header">
-            <h2>Simple, Transparent Pricing</h2>
+            <h2>Simple, transparent pricing</h2>
+            <p class="section-lead" style="margin-bottom:0;">One plan for instructors. Students browse for free.</p>
         </div>
         <div class="instructor-pricing-card">
-            <div class="plan-badge">Instructor Plan</div>
+            <div class="plan-badge">Instructor plan</div>
             <div class="price-large" id="instructorPrice">$9.99</div>
             <div class="price-period">per month</div>
             <div class="pricing-features">
                 <ul>
                     <li>Unlimited course creation</li>
                     <li>Video hosting &amp; streaming</li>
-                    <li>Student analytics dashboard</li>
+                    <li>Earnings dashboard</li>
                     <li>Multi-currency display</li>
                 </ul>
             </div>
             <div class="pricing-cta">
-                <a class="btn btn-success" href="{% url 'accounts:signup' %}?role=instructor">Start Teaching Today</a>
-                <div class="trial-notice">Configure billing when you connect payments.</div>
+                <a class="btn btn-success" href="{% url 'accounts:signup' %}?role=instructor">Start teaching today</a>
             </div>
         </div>
     </section>
@@ -144,17 +101,42 @@
     {% include "includes/footer_public.html" %}
 </div>
 
+{% else %}
+{% comment %} ---- Logged-in catalog ---- {% endcomment %}
+{% include "includes/app_header.html" with portal_label="Catalog" back_url=nav_home.url back_label="Dashboard" %}
+
+<div class="catalog-page">
+    <div class="catalog-head">
+        <div>
+            <h1>Explore courses</h1>
+            <p>Discover classes from instructors across LEARNible.</p>
+        </div>
+        <select class="currency-selector" id="countrySelector" aria-label="Currency preview">
+            <option value="US">US · USD</option>
+            <option value="NG">Nigeria · NGN</option>
+            <option value="GB">UK · GBP</option>
+            <option value="EU">Europe · EUR</option>
+            <option value="CA">Canada · CAD</option>
+        </select>
+    </div>
+    <div class="courses-grid">
+        {% for course in courses %}{% include "courses/_course_card.html" with course=course %}{% empty %}
+            <div class="empty-state" style="grid-column:1/-1;">
+                <div class="empty-state__icon">🧭</div>
+                <h3>No courses yet</h3>
+                <p>New classes appear here as instructors publish them.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
 {% if user.is_authenticated %}
 <div id="previewModal" class="modal preview-modal" role="dialog" aria-modal="true" aria-labelledby="previewModalTitle" hidden>
     <div class="modal-content modal-content--video">
         <button type="button" class="modal-close" id="previewModalClose" aria-label="Close preview">&times;</button>
         <h2 id="previewModalTitle" class="preview-modal__title">Course preview</h2>
-        <video
-            id="previewModalVideo"
-            class="preview-modal__video"
-            controls
-            playsinline
-        ></video>
+        <video id="previewModalVideo" class="preview-modal__video" controls playsinline></video>
     </div>
 </div>
 {% endif %}

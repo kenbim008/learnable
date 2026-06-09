@@ -2,87 +2,141 @@
 {% load course_icons %}
 {% block title %}{{ course.title }} · LEARNible{% endblock %}
 {% block body %}
-<header>
-    <div class="header-container">
-        <a class="logo" href="{{ nav_home.url }}">
-            <span class="logo-icon">📖</span>
-            <span><span class="logo-learn">LEARN</span><span class="logo-ible">ible</span></span>
-        </a>
-        <nav><span style="font-weight: 600;">Course</span></nav>
-        <div class="header-right">
-            <a class="header-link" href="{{ back_url }}">← Back</a>
-        </div>
-    </div>
-</header>
+{% include "includes/app_header.html" with portal_label="Course" back_url=back_url back_label="Back" %}
 
 <main class="course-learn">
     <div class="course-learn__inner">
-        <header class="course-learn__header">
-            <div class="course-learn__icon-wrap course-image--icon">
+        <header class="course-learn__hero">
+            <div class="course-learn__icon-wrap">
                 {% course_icon course.icon_key "course-card__icon" %}
             </div>
             <div>
                 <h1 class="course-learn__title">{{ course.title }}</h1>
                 <p class="course-learn__meta">
                     By {{ course.instructor.get_full_name|default:course.instructor.email }}
+                    {% if is_instructor %}<span class="badge badge--violet">You teach this</span>
+                    {% elif is_enrolled %}<span class="badge badge--success">Enrolled</span>{% endif %}
                 </p>
             </div>
         </header>
 
-        {% if can_watch_lesson and course.primary_video_storage_key %}
-            <section class="course-learn__player" aria-label="Lesson video">
-                <h2 class="course-learn__section-title">{% if is_instructor %}Your lesson video{% else %}Lesson video{% endif %}</h2>
-                <video
-                    class="course-learn__video"
-                    controls
-                    playsinline
-                    preload="metadata"
-                    src="{% url 'courses:serve_knowledge' %}?key={{ course.primary_video_storage_key|iriencode }}"
-                    aria-label="Lesson video for {{ course.title }}"
-                ></video>
-            </section>
-        {% elif can_watch_lesson %}
-            <div class="course-learn__notice">
-                <p>Your instructor has not added the main lesson video yet. Check back soon.</p>
-            </div>
-        {% elif course.preview_storage_key %}
-            <section class="course-learn__player" aria-label="Course preview">
-                <h2 class="course-learn__section-title">Preview</h2>
-                <video
-                    class="course-learn__video"
-                    controls
-                    playsinline
-                    preload="metadata"
-                    src="{% url 'courses:serve_knowledge' %}?key={{ course.preview_storage_key|iriencode }}"
-                    aria-label="Preview for {{ course.title }}"
-                ></video>
-                {% if is_student and not is_enrolled %}
-                    <form class="course-learn__enroll" method="post" action="{% url 'courses:enroll' course.slug %}">
-                        {% csrf_token %}
-                        <button class="btn btn-success" type="submit">Enroll to unlock full lessons</button>
-                    </form>
-                {% endif %}
-            </section>
-        {% else %}
-            <div class="course-learn__notice">
-                {% if is_student and not is_enrolled %}
-                    <p>Enroll to access this course when lessons are available.</p>
-                    <form class="course-learn__enroll" method="post" action="{% url 'courses:enroll' course.slug %}">
-                        {% csrf_token %}
-                        <button class="btn btn-success" type="submit">Enroll now</button>
-                    </form>
+        <div class="course-learn__grid">
+            <div>
+                {% if can_watch_lesson and course.primary_video_storage_key %}
+                    <section class="course-learn__player" aria-label="Lesson video">
+                        <h2 class="course-learn__section-title">{% if is_instructor %}Your lesson video{% else %}Lesson video{% endif %}</h2>
+                        <video
+                            class="course-learn__video"
+                            controls
+                            playsinline
+                            preload="metadata"
+                            src="{% url 'courses:serve_knowledge' %}?key={{ course.primary_video_storage_key|iriencode }}"
+                            aria-label="Lesson video for {{ course.title }}"
+                        ></video>
+                    </section>
+                {% elif can_watch_lesson %}
+                    <div class="course-learn__notice">
+                        <div class="course-learn__notice-icon">🎬</div>
+                        <p>Your instructor has not added the main lesson video yet. Check back soon.</p>
+                    </div>
+                {% elif course.preview_storage_key %}
+                    <section class="course-learn__player" aria-label="Course preview">
+                        <h2 class="course-learn__section-title">Preview</h2>
+                        <video
+                            class="course-learn__video"
+                            controls
+                            playsinline
+                            preload="metadata"
+                            src="{% url 'courses:serve_knowledge' %}?key={{ course.preview_storage_key|iriencode }}"
+                            aria-label="Preview for {{ course.title }}"
+                        ></video>
+                        {% if is_student and not is_enrolled %}
+                            <form class="course-learn__enroll" method="post" action="{% url 'courses:enroll' course.slug %}">
+                                {% csrf_token %}
+                                <button class="btn btn-success btn-block" type="submit">Enroll to unlock full lessons</button>
+                            </form>
+                        {% endif %}
+                    </section>
                 {% else %}
-                    <p>No videos are available for this course yet.</p>
+                    <div class="course-learn__notice">
+                        <div class="course-learn__notice-icon">🔒</div>
+                        {% if is_student and not is_enrolled %}
+                            <p style="margin-bottom:1rem;">Enroll to access this course when lessons are available.</p>
+                            <form class="course-learn__enroll" method="post" action="{% url 'courses:enroll' course.slug %}">
+                                {% csrf_token %}
+                                <button class="btn btn-success" type="submit">Enroll now</button>
+                            </form>
+                        {% else %}
+                            <p>No videos are available for this course yet.</p>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+                {% if course.description %}
+                    <section class="content-card course-learn__about">
+                        <h2>About this course</h2>
+                        <div class="course-learn__description">{{ course.description|linebreaks }}</div>
+                    </section>
+                {% else %}
+                    <section class="content-card course-learn__about">
+                        <h2>About this course</h2>
+                        <p class="muted">The instructor hasn't added a description yet.</p>
+                    </section>
                 {% endif %}
             </div>
-        {% endif %}
 
-        {% if course.description %}
-            <section class="course-learn__about">
-                <h2 class="course-learn__section-title">About this course</h2>
-                <div class="course-learn__description">{{ course.description|linebreaks }}</div>
-            </section>
-        {% endif %}
+            <!-- Side rail -->
+            <aside class="course-rail">
+                <div class="rail-card">
+                    <div class="rail-price">
+                        {% if course.price > 0 %}${{ course.price }}{% else %}Free{% endif %}
+                    </div>
+                    {% if is_student and not is_enrolled %}
+                        <form method="post" action="{% url 'courses:enroll' course.slug %}" style="margin-top:0.85rem;">
+                            {% csrf_token %}
+                            {% if course.price > 0 %}
+                                <button class="btn btn-success btn-block" type="submit">Enroll · ${{ course.price }}</button>
+                            {% else %}
+                                <button class="btn btn-success btn-block" type="submit">Enroll free</button>
+                            {% endif %}
+                        </form>
+                    {% elif is_enrolled %}
+                        <p class="muted" style="margin-top:0.5rem;font-size:0.9rem;">You're enrolled — enjoy the lessons.</p>
+                    {% endif %}
+                </div>
+
+                <div class="rail-card">
+                    <h3>Course details</h3>
+                    <div class="rail-detail">
+                        <span class="rail-detail__label">💵 Price</span>
+                        <span class="rail-detail__value">{% if course.price > 0 %}${{ course.price }}{% else %}Free{% endif %}</span>
+                    </div>
+                    <div class="rail-detail">
+                        <span class="rail-detail__label">⭐ Rating</span>
+                        <span class="rail-detail__value">{{ course.rating }}</span>
+                    </div>
+                    <div class="rail-detail">
+                        <span class="rail-detail__label">🎬 Lessons</span>
+                        <span class="rail-detail__value">{% if course.primary_video_storage_key %}Video included{% else %}Coming soon{% endif %}</span>
+                    </div>
+                    <div class="rail-detail">
+                        <span class="rail-detail__label">🔒 Access</span>
+                        <span class="rail-detail__value">Stream only</span>
+                    </div>
+                </div>
+
+                <div class="rail-card">
+                    <h3>Instructor</h3>
+                    <div class="rail-instructor">
+                        <span class="avatar">{{ course.instructor.first_name|first|default:course.instructor.email|first }}</span>
+                        <div>
+                            <div class="rail-instructor__name">{{ course.instructor.get_full_name|default:course.instructor.email }}</div>
+                            <div class="rail-instructor__role">LEARNible instructor</div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
     </div>
 </main>
 {% endblock %}

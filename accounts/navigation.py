@@ -12,13 +12,13 @@ from accounts.forms import user_in_group
 def dashboard_url_name(user: User) -> str | None:
     """Named URL for the user's main portal, or None if they only have the public catalog."""
     if user.is_superuser:
-        return "courses:dashboard_superadmin"
+        return "courses:dashboard"
     if user.is_staff and user_in_group(user, GROUP_ADMIN):
-        return "courses:dashboard_admin"
+        return "courses:dashboard"
     if user_in_group(user, GROUP_INSTRUCTOR):
-        return "courses:dashboard_instructor"
+        return "courses:dashboard"
     if user_in_group(user, GROUP_STUDENT):
-        return "courses:dashboard_student"
+        return "courses:dashboard"
     return None
 
 

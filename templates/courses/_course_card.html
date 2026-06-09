@@ -1,0 +1,42 @@
+{% load course_icons %}
+<div class="course-card">
+    <div class="course-image course-image--icon">
+        {% course_icon course.icon_key "course-card__icon" %}
+        {% if course.preview_storage_key and user.is_authenticated %}
+            <button type="button"
+                    class="preview-badge preview-badge--btn js-preview-open"
+                    data-preview-src="{% url 'courses:serve_knowledge' %}?key={{ course.preview_storage_key|iriencode }}"
+                    data-preview-title="{{ course.title }}">▶ Preview</button>
+        {% elif course.preview_storage_key %}
+            <span class="preview-badge">▶ Preview</span>
+        {% endif %}
+    </div>
+    <div class="course-content">
+        <a class="course-title course-title--link" href="{% url 'courses:course_learn' course.slug %}">{{ course.title }}</a>
+        <div class="course-instructor">By {{ course.instructor.get_full_name|default:course.instructor.email }}</div>
+        <div class="course-meta">
+            <div class="course-price"{% if course.price > 0 %} data-price-usd="{{ course.price }}"{% endif %}>{% if course.price > 0 %}${{ course.price }}{% else %}Free{% endif %}</div>
+            <div class="course-rating">⭐ {{ course.rating }}</div>
+        </div>
+        {% if user.is_authenticated %}
+            {% if is_student %}
+                {% if course.id in enrolled_course_ids %}
+                    <a class="btn btn-outline btn-block" style="margin-top:1rem;" href="{% url 'courses:course_learn' course.slug %}">Open course</a>
+                {% else %}
+                    <form method="post" action="{% url 'courses:enroll' course.slug %}">
+                        {% csrf_token %}
+                        {% if course.price > 0 %}
+                            <button class="add-to-cart-btn" type="submit">Enroll · ${{ course.price }}</button>
+                        {% else %}
+                            <button class="add-to-cart-btn" type="submit">Enroll free</button>
+                        {% endif %}
+                    </form>
+                {% endif %}
+            {% else %}
+                <a class="btn btn-outline btn-block" style="margin-top:1rem;" href="{% url 'courses:course_learn' course.slug %}">View course</a>
+            {% endif %}
+        {% else %}
+            <a class="btn btn-primary btn-block" style="margin-top:1rem;" href="{% url 'accounts:login' %}">Log in to enroll</a>
+        {% endif %}
+    </div>
+</div>

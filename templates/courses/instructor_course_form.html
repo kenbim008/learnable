@@ -1,40 +1,100 @@
 {% extends "base.html" %}
+{% load course_icons %}
 {% block title %}Create course · LEARNible{% endblock %}
 {% block body %}
-<header>
-    <div class="header-container">
-        <a class="logo" href="{{ nav_home.url }}">
-            <span class="logo-icon">📖</span>
-            <span><span class="logo-learn">LEARN</span><span class="logo-ible">ible</span></span>
-        </a>
-        <nav><span style="font-weight: 600;">Create course</span></nav>
-        <div class="header-right">
-            <a class="header-link" href="{% url 'courses:dashboard_instructor' %}">Back to dashboard</a>
-        </div>
-    </div>
-</header>
+{% include "includes/app_header.html" with portal_label="Create course" back_url=back_url back_label="Dashboard" %}
 
 <div class="dashboard">
     <div class="dashboard-container dashboard-container--centered-main">
         <main class="main-content main-content--centered-form">
-            <div class="content-card content-card--centered-flow">
-                <h1>Create a course</h1>
-                <p class="content-card__lead">
-                    Add the basics first. You can attach a preview clip, lesson video, and cover image whenever you are ready.
-                </p>
-                <form class="form--centered" method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    {% for field in form %}
-                        <div class="form-group">
-                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                            {{ field }}
-                            {% if field.help_text %}<small class="form-help">{{ field.help_text }}</small>{% endif %}
-                            {{ field.errors }}
-                        </div>
-                    {% endfor %}
-                    <button class="btn btn-success" type="submit">Save course</button>
-                </form>
+            <div class="page-header" style="margin-bottom:1rem;">
+                <div>
+                    <h1>Create a course</h1>
+                    <p class="page-sub">Add the basics now — attach media whenever you're ready.</p>
+                </div>
             </div>
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="content-card">
+                    <div class="form-section">
+                        <div class="form-section__title">Basics</div>
+                        <div class="form-group">
+                            <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+                            {{ form.title }}
+                            {% if form.title.help_text %}<small class="form-help">{{ form.title.help_text }}</small>{% endif %}
+                            {{ form.title.errors }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+                            {{ form.description }}
+                            {% if form.description.help_text %}<small class="form-help">{{ form.description.help_text }}</small>{% endif %}
+                            {{ form.description.errors }}
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-section__title">Pricing</div>
+                        <div class="form-group">
+                            <label for="{{ form.price.id_for_label }}">{{ form.price.label }}</label>
+                            {{ form.price }}
+                            {% if form.price.help_text %}<small class="form-help">{{ form.price.help_text }}</small>{% endif %}
+                            {{ form.price.errors }}
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-section__title">Appearance</div>
+                        <div class="form-group">
+                            <label>{{ form.icon_key.label }}</label>
+                            <div class="icon-picker">
+                                {% for value, label in form.icon_key.field.choices %}
+                                    <input type="radio" name="{{ form.icon_key.html_name }}" id="icon_{{ value }}"
+                                           value="{{ value }}"
+                                           {% if form.icon_key.value|stringformat:"s" == value|stringformat:"s" %}checked{% endif %}>
+                                    <label for="icon_{{ value }}" title="{{ label }}">
+                                        {% course_icon value %}
+                                        <span class="visually-hidden">{{ label }}</span>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                            {% if form.icon_key.help_text %}<small class="form-help">{{ form.icon_key.help_text }}</small>{% endif %}
+                            {{ form.icon_key.errors }}
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-section__title">Media <span style="font-weight:500;text-transform:none;letter-spacing:0;">· optional</span></div>
+                        <div class="form-group">
+                            <label for="{{ form.preview_video.id_for_label }}">{{ form.preview_video.label }}</label>
+                            {{ form.preview_video }}
+                            <small class="form-help">A short, free clip students can watch before enrolling.</small>
+                            {{ form.preview_video.errors }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.primary_video.id_for_label }}">{{ form.primary_video.label }}</label>
+                            {{ form.primary_video }}
+                            <small class="form-help">The main lesson, unlocked for enrolled students.</small>
+                            {{ form.primary_video.errors }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.cover_image.id_for_label }}">{{ form.cover_image.label }}</label>
+                            {{ form.cover_image }}
+                            {{ form.cover_image.errors }}
+                        </div>
+                    </div>
+
+                    {% if form.non_field_errors %}
+                        <div class="errorlist" style="margin-top:1rem;">{{ form.non_field_errors }}</div>
+                    {% endif %}
+
+                    <div class="form-actions">
+                        <button class="btn btn-success" type="submit">Save course</button>
+                        <a class="btn btn-ghost" href="{% url 'courses:dashboard' %}">Cancel</a>
+                    </div>
+                </div>
+            </form>
         </main>
     </div>
 </div>
