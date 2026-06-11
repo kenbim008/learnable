@@ -3,33 +3,47 @@
     <div class="footer-container">
         <div class="footer-brand">
             <h3><span class="logo-learn">LEARN</span><span class="logo-ible">ible</span></h3>
-            <p>Transform your knowledge into income. Join instructors and students on a platform built for teaching and learning.</p>
+            <p>Transform your knowledge into income. Join thousands of instructors earning from their expertise on the world's most instructor-friendly platform.</p>
+            <div class="social-icons">
+                <a class="social-icon twitter" href="#" aria-label="X (Twitter)">𝕏</a>
+                <a class="social-icon youtube" href="#" aria-label="YouTube">▶</a>
+                <a class="social-icon instagram" href="#" aria-label="Instagram">📷</a>
+                <a class="social-icon linkedin" href="#" aria-label="LinkedIn">in</a>
+            </div>
         </div>
         <div class="footer-column">
             <h4>Platform</h4>
-            <a href="{% url 'courses:landing' %}#courses">Browse courses</a>
-            <a href="{% url 'accounts:signup' %}">Join as student</a>
-            <a href="{% url 'accounts:signup' %}?role=instructor">Become instructor</a>
+            <a href="{% url 'courses:landing' %}#courses">Browse Courses</a>
+            <a href="{% url 'accounts:signup' %}?role=instructor">Become Instructor</a>
+            <a href="{% url 'accounts:signup' %}">Join as Student</a>
             <a href="{% url 'courses:community' %}">Community</a>
             <a href="{% url 'courses:landing' %}#pricing">Pricing</a>
         </div>
         <div class="footer-column">
-            <h4>Accounts</h4>
-            <a href="{% url 'accounts:signup' %}?role=instructor">Instructor signup</a>
-            <a href="{% url 'accounts:signup' %}">Student signup</a>
+            <h4>Popular Categories</h4>
+            <a href="{% url 'courses:landing' %}#courses">Business &amp; Entrepreneurship</a>
+            <a href="{% url 'courses:landing' %}#courses">Technology &amp; IT</a>
+            <a href="{% url 'courses:landing' %}#courses">Data &amp; Analytics</a>
+            <a href="{% url 'courses:landing' %}#courses">Design &amp; Creativity</a>
+            <a href="{% url 'courses:landing' %}#courses">Project Management</a>
+            <a href="{% url 'courses:landing' %}#courses">Marketing &amp; Communication</a>
         </div>
         <div class="footer-column">
             <h4>Support</h4>
-            <a href="{% url 'accounts:login' %}">Login</a>
-            <a href="/admin/">Staff tools</a>
+            <a href="{% url 'courses:landing' %}#courses">Help Center</a>
+            <a href="{% url 'courses:community' %}">Contact Us</a>
+            <a href="{% url 'courses:landing' %}#pricing">Terms of Service</a>
+            <a href="{% url 'courses:landing' %}#pricing">Privacy Policy</a>
+            <a href="{% url 'courses:landing' %}">About Us</a>
             {% if user.is_authenticated %}
-                <a href="{% url 'courses:admin_entry' %}" style="color: var(--amber);">Admin portal entry</a>
+                <a href="{% url 'courses:admin_entry' %}" style="color: var(--amber);">👑 Admin Access</a>
             {% else %}
-                <a href="{% url 'accounts:login' %}" style="color: var(--amber);">Admin portal (login first)</a>
+                <a href="{% url 'accounts:login' %}" style="color: var(--amber);">👑 Admin Access</a>
             {% endif %}
         </div>
     </div>
     <div class="footer-bottom">
-        <p>© 2026 <span class="logo-learn">LEARN</span><span class="logo-ible">ible</span>. All rights reserved.</p>
+        <p>© 2026 <span class="logo-learn">LEARN</span><span class="logo-ible">ible</span>. All rights reserved. | Made with ❤️ for educators worldwide</p>
+        <p class="footer-trust">🌍 Available in 10+ countries | 🔒 SSL Secured | ⚡ Powered by Stripe</p>
     </div>
 </footer>

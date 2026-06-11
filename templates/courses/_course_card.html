@@ -1,5 +1,5 @@
 {% load course_icons %}
-<div class="course-card">
+<div class="course-card" data-search-title="{{ course.title|lower }}" data-search-instructor="{{ course.instructor.get_full_name|default:course.instructor.email|lower }}" data-price="{{ course.price }}" data-rating="{{ course.rating }}">
     <div class="course-image course-image--icon">
         {% course_icon course.icon_key "course-card__icon" %}
         {% if course.preview_storage_key and user.is_authenticated %}

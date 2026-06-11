@@ -16,83 +16,121 @@
     </section>
 
     <section class="how-it-works">
-        <h2 class="section-title">How it works</h2>
-        <p class="section-lead">From sign-up to your first sale in four simple steps.</p>
+        <h2 class="section-title">How It Works</h2>
         <div class="steps">
             <div class="step">
                 <div class="step-number">1</div>
-                <h3>Sign up</h3>
-                <p>Create your account as a student or instructor.</p>
+                <h3>Sign Up</h3>
+                <p>Create your instructor account and subscribe for $9.99/month</p>
             </div>
             <div class="step">
                 <div class="step-number">2</div>
-                <h3>Create courses</h3>
-                <p>Upload videos and course materials from your dashboard.</p>
+                <h3>Create Courses</h3>
+                <p>Upload your videos and build engaging course content</p>
             </div>
             <div class="step">
                 <div class="step-number">3</div>
-                <h3>Publish &amp; earn</h3>
-                <p>Launch your courses and grow your audience.</p>
+                <h3>Publish &amp; Earn</h3>
+                <p>Launch your courses and earn 60% from every sale</p>
             </div>
             <div class="step">
                 <div class="step-number">4</div>
-                <h3>Track success</h3>
-                <p>Monitor enrollments and earnings from your dashboard.</p>
+                <h3>Track Success</h3>
+                <p>Monitor your earnings and student progress with detailed analytics</p>
             </div>
         </div>
     </section>
 
     <section class="featured-courses" id="courses">
-        <h2 class="section-title">Featured courses</h2>
-        <p class="section-lead">Hand-picked classes from instructors across the platform.</p>
-        <div class="courses-grid">
+        <h2 class="section-title">Featured Courses</h2>
+        <div class="filter-bar">
+            <input type="search" id="courseSearch" placeholder="Search courses..." aria-label="Search courses">
+            <select id="courseCategory" aria-label="Filter by category">
+                <option value="">All Categories</option>
+                <option value="technology">Technology &amp; IT</option>
+                <option value="business">Business</option>
+                <option value="design">Design</option>
+            </select>
+            <select id="courseLevel" aria-label="Filter by level">
+                <option value="">All Levels</option>
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
+            </select>
+            <select id="courseSort" aria-label="Sort courses">
+                <option value="popular">Most Popular</option>
+                <option value="rating">Highest Rated</option>
+                <option value="newest">Newest</option>
+                <option value="price-low">Price: Low to High</option>
+                <option value="price-high">Price: High to Low</option>
+            </select>
+        </div>
+        <div class="courses-grid" id="coursesGrid">
             {% for course in courses %}{% include "courses/_course_card.html" with course=course %}{% empty %}
-                <p>No courses are listed yet. New classes appear here as instructors publish them.</p>
+                <p class="courses-empty-filter">No courses are listed yet. New classes appear here as instructors publish them.</p>
             {% endfor %}
+            <p class="courses-empty-filter hidden" id="coursesNoMatch">No courses match your filters.</p>
         </div>
     </section>
 
     <section class="why-choose">
-        <h2 class="section-title">Why choose <span style="color:var(--brand);">LEARN</span><span style="color:var(--accent);">ible</span>?</h2>
-        <p class="section-lead">A focused platform built for teaching and learning — nothing in the way.</p>
+        <h2 class="section-title">Why Choose <span class="logo-learn">LEARN</span><span class="logo-ible">ible</span>?</h2>
         <div class="features">
             <div class="feature-card blue">
                 <div class="feature-icon">💼</div>
-                <h3>Organized content</h3>
-                <p>Videos, images, and documents stay with each course so nothing gets lost.</p>
+                <h3>Easy Course Creation</h3>
+                <p>Upload videos, create quizzes, and build comprehensive courses with our intuitive tools</p>
             </div>
             <div class="feature-card green">
-                <div class="feature-icon">🔒</div>
-                <h3>Protected delivery</h3>
-                <p>Course media is streamed safely—access matches who is enrolled.</p>
+                <div class="feature-icon">💰</div>
+                <h3>Earn More</h3>
+                <p>Keep 60% of your course sales. We only deduct when you earn — no hidden fees</p>
+            </div>
+            <div class="feature-card blue">
+                <div class="feature-icon">📊</div>
+                <h3>Detailed Analytics</h3>
+                <p>Track your earnings, student progress, and performance with comprehensive reports</p>
+            </div>
+            <div class="feature-card green">
+                <div class="feature-icon">🌍</div>
+                <h3>Global Marketplace</h3>
+                <p>Reach students worldwide with multi-currency support and international payments</p>
             </div>
             <div class="feature-card blue">
                 <div class="feature-icon">🎓</div>
-                <h3>Role-based access</h3>
-                <p>Separate experiences for students, instructors, and your platform team.</p>
+                <h3>Student Success</h3>
+                <p>Help students learn with interactive content, progress tracking, and certificates</p>
+            </div>
+            <div class="feature-card green">
+                <div class="feature-icon">🔒</div>
+                <h3>Secure Platform</h3>
+                <p>Encrypted content delivery and secure payment processing to protect your work</p>
             </div>
         </div>
     </section>
 
     <section class="pricing" id="pricing">
         <div class="pricing-header">
-            <h2>Simple, transparent pricing</h2>
-            <p class="section-lead" style="margin-bottom:0;">One plan for instructors. Students browse for free.</p>
+            <h2>Simple, Transparent Pricing</h2>
         </div>
         <div class="instructor-pricing-card">
-            <div class="plan-badge">Instructor plan</div>
+            <div class="plan-badge">Instructor Plan</div>
             <div class="price-large" id="instructorPrice">$9.99</div>
             <div class="price-period">per month</div>
             <div class="pricing-features">
                 <ul>
                     <li>Unlimited course creation</li>
                     <li>Video hosting &amp; streaming</li>
-                    <li>Earnings dashboard</li>
-                    <li>Multi-currency display</li>
+                    <li>Student analytics dashboard</li>
+                    <li>Marketing tools included</li>
+                    <li>60% of course sales revenue</li>
+                    <li>Multi-currency support</li>
+                    <li>24/7 customer support</li>
                 </ul>
             </div>
             <div class="pricing-cta">
-                <a class="btn btn-success" href="{% url 'accounts:signup' %}?role=instructor">Start teaching today</a>
+                <a class="btn btn-success" href="{% url 'accounts:signup' %}?role=instructor">Start Teaching Today</a>
+                <div class="trial-notice">Try 30-Days Free • No Credit Card Required</div>
             </div>
         </div>
     </section>
@@ -111,11 +149,11 @@
             <p>Discover classes from instructors across LEARNible.</p>
         </div>
         <select class="currency-selector" id="countrySelector" aria-label="Currency preview">
-            <option value="US">US · USD</option>
-            <option value="NG">Nigeria · NGN</option>
-            <option value="GB">UK · GBP</option>
-            <option value="EU">Europe · EUR</option>
-            <option value="CA">Canada · CAD</option>
+            <option value="US">US - USD</option>
+            <option value="NG">Nigeria - NGN</option>
+            <option value="GB">UK - GBP</option>
+            <option value="EU">Europe - EUR</option>
+            <option value="CA">Canada - CAD</option>
         </select>
     </div>
     <div class="courses-grid">

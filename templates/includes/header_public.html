@@ -15,20 +15,24 @@
         </nav>
         <div class="header-right site-header__actions">
             <select class="currency-selector" id="countrySelector" aria-label="Currency preview">
-                <option value="US">US · USD</option>
-                <option value="NG">Nigeria · NGN</option>
-                <option value="GB">UK · GBP</option>
-                <option value="EU">Europe · EUR</option>
-                <option value="CA">Canada · CAD</option>
+                <option value="US">US - USD</option>
+                <option value="NG">Nigeria - NGN</option>
+                <option value="GB">UK - GBP</option>
+                <option value="EU">Europe - EUR</option>
+                <option value="CA">Canada - CAD</option>
             </select>
+            <a class="cart-icon" href="{% url 'courses:landing' %}#courses" aria-label="Browse courses">
+                🛒
+                <span class="cart-badge" id="cartBadge" aria-hidden="true"></span>
+            </a>
             {% if user.is_authenticated %}
                 <form class="inline-form site-header__logout" action="{% url 'accounts:logout' %}" method="post">
                     {% csrf_token %}
                     <button type="submit" class="header-link-btn">Sign out</button>
                 </form>
             {% else %}
-                <a class="header-link" href="{% url 'accounts:login' %}">Sign in</a>
-                <a class="btn btn-primary" href="{% url 'accounts:signup' %}">Get started</a>
+                <a class="btn btn-outline btn-sm" href="{% url 'accounts:login' %}">Login</a>
+                <a class="btn btn-primary btn-sm" href="{% url 'accounts:signup' %}">Sign Up</a>
             {% endif %}
         </div>
     </div>

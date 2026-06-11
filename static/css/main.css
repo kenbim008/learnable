@@ -3,17 +3,17 @@
    ========================================================================== */
 
 :root {
-    /* Brand — matches Vercel LEARNible static site */
-    --brand: #4f7cff;
-    --brand-logo: #5b7fff;
-    --brand-600: #3d63d9;
-    --brand-700: #2f4fc0;
-    --brand-50: #e6f2ff;
-    --brand-100: #dde6ff;
+    /* Brand — LEARNible spec */
+    --brand: #3b82f6;
+    --brand-logo: #3b82f6;
+    --brand-600: #2563eb;
+    --brand-700: #1d4ed8;
+    --brand-50: #eff6ff;
+    --brand-100: #dbeafe;
 
     --accent: #10b981;
     --accent-600: #059669;
-    --accent-50: #e6fff5;
+    --accent-50: #ecfdf5;
     --accent-100: #d1fae5;
 
     --violet: #8b7cff;
@@ -26,20 +26,21 @@
     --sky-50: #ecfbff;
 
     /* Neutrals */
-    --bg: #f5f7fa;
+    --bg: #ffffff;
+    --section-bg: #f9fafb;
+    --section-bg-alt: #f3f4f6;
     --surface: #ffffff;
-    --surface-2: #f7fafc;
-    --border: #e2e8f0;
-    --border-strong: #e2e8f0;
-    --text: #2d3748;
-    --text-soft: #4a5568;
-    --text-muted: #718096;
+    --surface-2: #f9fafb;
+    --border: #e5e7eb;
+    --border-strong: #e5e7eb;
+    --text: #1f2937;
+    --text-soft: #4b5563;
+    --text-muted: #6b7280;
 
     /* Gradients */
-    --grad-brand: linear-gradient(135deg, #4f7cff 0%, #00d4a1 100%);
-    --grad-hero: linear-gradient(135deg, #4f7cff 0%, #00d4a1 100%);
+    --grad-brand: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+    --grad-hero: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
     --grad-violet: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --grad-night: #1f1f3d;
     --footer-bg: #1f1f3d;
 
     /* Radius */
@@ -54,7 +55,7 @@
     --shadow-sm: 0 2px 6px rgba(24, 33, 58, 0.06), 0 1px 2px rgba(24, 33, 58, 0.04);
     --shadow: 0 6px 20px rgba(24, 33, 58, 0.08), 0 2px 6px rgba(24, 33, 58, 0.04);
     --shadow-lg: 0 18px 48px rgba(24, 33, 58, 0.14);
-    --ring: 0 0 0 3px rgba(79, 124, 255, 0.25);
+    --ring: 0 0 0 3px rgba(59, 130, 246, 0.25);
 
     --header-h: 68px;
 }

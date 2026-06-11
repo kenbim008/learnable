@@ -86,7 +86,61 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     initPreviewModal();
+    initCourseFilters();
 });
+
+function initCourseFilters() {
+    const grid = document.getElementById("coursesGrid");
+    const search = document.getElementById("courseSearch");
+    if (!grid || !search) return;
+
+    const category = document.getElementById("courseCategory");
+    const level = document.getElementById("courseLevel");
+    const sort = document.getElementById("courseSort");
+    const noMatch = document.getElementById("coursesNoMatch");
+
+    function getCards() {
+        return Array.from(grid.querySelectorAll(".course-card"));
+    }
+
+    function applyFilters() {
+        const query = search.value.trim().toLowerCase();
+        let visible = 0;
+
+        getCards().forEach((card) => {
+            const title = card.getAttribute("data-search-title") || "";
+            const instructor = card.getAttribute("data-search-instructor") || "";
+            const matches = !query || title.includes(query) || instructor.includes(query);
+            card.classList.toggle("is-filtered-out", !matches);
+            if (matches) visible += 1;
+        });
+
+        const cards = getCards().filter((c) => !c.classList.contains("is-filtered-out"));
+        const sortValue = sort?.value || "popular";
+
+        cards.sort((a, b) => {
+            const priceA = parseFloat(a.getAttribute("data-price") || "0");
+            const priceB = parseFloat(b.getAttribute("data-price") || "0");
+            const ratingA = parseFloat(a.getAttribute("data-rating") || "0");
+            const ratingB = parseFloat(b.getAttribute("data-rating") || "0");
+            if (sortValue === "rating") return ratingB - ratingA;
+            if (sortValue === "price-low") return priceA - priceB;
+            if (sortValue === "price-high") return priceB - priceA;
+            return 0;
+        });
+
+        cards.forEach((card) => grid.appendChild(card));
+
+        if (noMatch) {
+            noMatch.classList.toggle("hidden", visible > 0 || getCards().length === 0);
+        }
+    }
+
+    search.addEventListener("input", applyFilters);
+    category?.addEventListener("change", applyFilters);
+    level?.addEventListener("change", applyFilters);
+    sort?.addEventListener("change", applyFilters);
+}
 
 function initPreviewModal() {
     const modal = document.getElementById("previewModal");
