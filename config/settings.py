@@ -27,6 +27,13 @@ _render_url = env("RENDER_EXTERNAL_URL", default="")
 if _render_url and _render_url not in CSRF_TRUSTED_ORIGINS:
     CSRF_TRUSTED_ORIGINS = [*CSRF_TRUSTED_ORIGINS, _render_url]
 
+for _host in ALLOWED_HOSTS:
+    if _host.startswith(".") or _host in {"localhost", "127.0.0.1", "testserver"}:
+        continue
+    _origin = f"https://{_host.lstrip('.')}"
+    if _origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS = [*CSRF_TRUSTED_ORIGINS, _origin]
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",

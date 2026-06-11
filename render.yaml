@@ -26,7 +26,9 @@ services:
       - key: DEBUG
         value: "false"
       - key: ALLOWED_HOSTS
-        value: "127.0.0.1,localhost,.onrender.com"
+        value: "127.0.0.1,localhost,.onrender.com,learnible.ca,www.learnible.ca"
+      - key: CSRF_TRUSTED_ORIGINS
+        value: "https://learnible.ca,https://www.learnible.ca"
       # Add in the Render dashboard (Environment):
       # AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_STORAGE_BUCKET_NAME,
       # S3_ENDPOINT_URL, AWS_S3_REGION_NAME,
