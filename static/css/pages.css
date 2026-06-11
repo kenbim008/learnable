@@ -277,18 +277,13 @@
 }
 .pricing-cta { margin-top: 1.75rem; }
 .pricing-cta .btn { width: 100%; padding: 0.9rem; font-size: 1.05rem; }
-.trial-notice { margin-top: 1rem; color: var(--text-muted); font-size: 0.9rem; }
+.trial-notice { margin-top: 1rem; color: var(--text-muted); font-size: 0.95rem; }
 
 /* ---- Auth (split layout) ------------------------------------------------ */
 .auth-wrap {
     min-height: 100vh;
     display: grid;
     grid-template-columns: 1.05fr 1fr;
-}
-.trial-notice {
-    margin-top: 1rem;
-    color: var(--text-muted);
-    font-size: 0.95rem;
 }
 
 .auth-aside {
