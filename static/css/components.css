@@ -6,9 +6,9 @@
 header.site-header,
 .app-header,
 .dashboard-topbar {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: saturate(180%) blur(12px);
-    border-bottom: 1px solid var(--border);
+    background: #fff;
+    border-bottom: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 0 1.5rem;
     height: var(--header-h);
     position: sticky;
@@ -39,7 +39,7 @@ header.site-header,
     cursor: pointer;
 }
 .logo-icon { font-size: 1.4rem; }
-.logo-learn { color: var(--brand); }
+.logo-learn { color: var(--brand-logo); }
 .logo-ible { color: var(--accent); }
 
 nav {
@@ -48,7 +48,7 @@ nav {
     align-items: center;
 }
 nav a {
-    color: var(--text-soft);
+    color: var(--text);
     text-decoration: none;
     font-weight: 500;
     font-size: 0.95rem;
@@ -421,9 +421,9 @@ nav a:hover { color: var(--brand); }
 
 /* ---- Footer ------------------------------------------------------------- */
 footer {
-    background: var(--grad-night);
-    color: #c8cfe4;
-    padding: 3.5rem 2rem 1.5rem;
+    background: var(--footer-bg);
+    color: #cbd5e0;
+    padding: 3rem 2rem 1rem;
 }
 .footer-container {
     max-width: 1200px;
@@ -433,24 +433,24 @@ footer {
     gap: 2rem;
 }
 .footer-brand { color: #fff; max-width: 320px; }
-.footer-brand h3 { font-size: 1.5rem; margin-bottom: 0.85rem; }
-.footer-brand p { color: #aab2cd; font-size: 0.92rem; }
+.footer-brand h3 { font-size: 1.5rem; margin-bottom: 1rem; }
+.footer-brand p { color: #cbd5e0; font-size: 0.92rem; }
 .footer-column h4 { color: #fff; margin-bottom: 1rem; font-size: 0.95rem; }
 .footer-column a {
-    color: #aab2cd;
+    color: #cbd5e0;
     text-decoration: none;
     display: block;
-    padding: 0.3rem 0;
+    padding: 0.25rem 0;
     font-size: 0.92rem;
     transition: color 0.18s;
 }
 .footer-column a:hover { color: #fff; }
 .footer-bottom {
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    padding-top: 1.25rem;
+    border-top: 1px solid #4a5568;
+    padding-top: 1rem;
     text-align: center;
-    font-size: 0.88rem;
-    color: #8c95b4;
+    font-size: 0.9rem;
+    color: #cbd5e0;
 }
 
 /* ---- Forms -------------------------------------------------------------- */

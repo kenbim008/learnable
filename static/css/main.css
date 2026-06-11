@@ -3,41 +3,44 @@
    ========================================================================== */
 
 :root {
-    /* Brand */
+    /* Brand — matches Vercel LEARNible static site */
     --brand: #4f7cff;
+    --brand-logo: #5b7fff;
     --brand-600: #3d63d9;
     --brand-700: #2f4fc0;
-    --brand-50: #eef3ff;
+    --brand-50: #e6f2ff;
     --brand-100: #dde6ff;
 
     --accent: #10b981;
     --accent-600: #059669;
-    --accent-50: #ecfdf5;
+    --accent-50: #e6fff5;
     --accent-100: #d1fae5;
 
     --violet: #8b7cff;
-    --violet-50: #f1efff;
-    --amber: #f59e0b;
-    --amber-50: #fff8eb;
+    --violet-50: #f3e6ff;
+    --amber: #ffb800;
+    --amber-50: #fff5e6;
     --danger: #ef4444;
     --danger-50: #fef2f2;
     --sky: #0ea5e9;
     --sky-50: #ecfbff;
 
     /* Neutrals */
-    --bg: #f4f6fb;
+    --bg: #f5f7fa;
     --surface: #ffffff;
-    --surface-2: #f8fafc;
-    --border: #e8ebf3;
-    --border-strong: #dbe0ec;
-    --text: #18213a;
-    --text-soft: #475067;
-    --text-muted: #828ba3;
+    --surface-2: #f7fafc;
+    --border: #e2e8f0;
+    --border-strong: #e2e8f0;
+    --text: #2d3748;
+    --text-soft: #4a5568;
+    --text-muted: #718096;
 
     /* Gradients */
     --grad-brand: linear-gradient(135deg, #4f7cff 0%, #00d4a1 100%);
-    --grad-violet: linear-gradient(135deg, #6a8bff 0%, #8b7cff 100%);
-    --grad-night: linear-gradient(150deg, #1f2547 0%, #2b3566 100%);
+    --grad-hero: linear-gradient(135deg, #4f7cff 0%, #00d4a1 100%);
+    --grad-violet: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --grad-night: #1f1f3d;
+    --footer-bg: #1f1f3d;
 
     /* Radius */
     --radius-xs: 8px;
@@ -67,7 +70,7 @@ html {
 }
 
 body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     color: var(--text);
     background: var(--bg);
     line-height: 1.6;
@@ -163,23 +166,21 @@ a.logo {
 
 .btn-primary {
     --btn-bg: var(--brand);
-    box-shadow: 0 6px 16px rgba(79, 124, 255, 0.3);
 }
-.btn-primary:hover { background: var(--brand-600); box-shadow: 0 10px 22px rgba(79, 124, 255, 0.36); }
+.btn-primary:hover { background: var(--brand-600); }
 
 .btn-success {
     --btn-bg: var(--accent);
-    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.28);
 }
-.btn-success:hover { background: var(--accent-600); box-shadow: 0 10px 22px rgba(16, 185, 129, 0.34); }
+.btn-success:hover { background: var(--accent-600); }
 
 .btn-outline {
     background: var(--surface);
     color: var(--brand);
-    border-color: var(--border-strong);
-    box-shadow: var(--shadow-xs);
+    border: 2px solid var(--brand);
+    box-shadow: none;
 }
-.btn-outline:hover { border-color: var(--brand); background: var(--brand-50); }
+.btn-outline:hover { background: var(--brand); color: #fff; }
 
 .btn-ghost {
     background: transparent;
@@ -293,7 +294,7 @@ a.logo {
     max-width: min(90vw, 22rem);
     padding: 0.7rem 1.2rem;
     border-radius: var(--radius-sm);
-    background: #1f2547;
+    background: var(--footer-bg);
     color: #fff;
     font-size: 0.95rem;
     font-weight: 600;
