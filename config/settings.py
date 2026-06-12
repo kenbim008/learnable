@@ -28,7 +28,7 @@ if _render_url and _render_url not in CSRF_TRUSTED_ORIGINS:
     CSRF_TRUSTED_ORIGINS = [*CSRF_TRUSTED_ORIGINS, _render_url]
 
 for _host in ALLOWED_HOSTS:
-    if _host.startswith(".") or _host in ['localhost', 'learnable-l3bu.onrender.com']:
+    if _host.startswith(".") or _host in ['localhost', 'learnible.ca']:
         continue
     _origin = f"https://{_host.lstrip('.')}"
     if _origin not in CSRF_TRUSTED_ORIGINS:
