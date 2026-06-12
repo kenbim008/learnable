@@ -9,7 +9,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env(
     DEBUG=(bool, False),
-    ALLOWED_HOSTS = ['localhost', 'learnable.ca'],
+    ALLOWED_HOSTS=(
+        list,
+        ["127.0.0.1", "localhost", "testserver", "learnible.ca", "www.learnible.ca"],
+    ),
 )
 
 environ.Env.read_env(BASE_DIR / ".env")
@@ -28,7 +31,7 @@ if _render_url and _render_url not in CSRF_TRUSTED_ORIGINS:
     CSRF_TRUSTED_ORIGINS = [*CSRF_TRUSTED_ORIGINS, _render_url]
 
 for _host in ALLOWED_HOSTS:
-    if _host.startswith(".") or _host in ['localhost', 'learnible.ca']:
+    if _host.startswith(".") or _host in {"localhost", "127.0.0.1", "testserver"}:
         continue
     _origin = f"https://{_host.lstrip('.')}"
     if _origin not in CSRF_TRUSTED_ORIGINS:
