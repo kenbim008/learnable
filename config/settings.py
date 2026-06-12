@@ -9,7 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env(
     DEBUG=(bool, False),
-    ALLOWED_HOSTS=(list, ["127.0.0.1", "localhost", "testserver"]),
+    ALLOWED_HOSTS = ['localhost', 'learnable.ca'],
 )
 
 environ.Env.read_env(BASE_DIR / ".env")
