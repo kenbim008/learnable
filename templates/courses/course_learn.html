@@ -22,7 +22,22 @@
 
         <div class="course-learn__grid">
             <div>
-                {% if can_watch_lesson and course.primary_video_storage_key %}
+                {% if modules %}
+                    {% for module in modules %}
+                        <section class="course-learn__player content-card" style="margin-bottom:1rem;padding:1rem;">
+                            <h2 class="course-learn__section-title">{{ module.title }}</h2>
+                            {% if module.description %}<p class="muted">{{ module.description }}</p>{% endif %}
+                            {% if can_watch_lesson and module.video_storage_key %}
+                                <video class="course-learn__video" controls playsinline preload="metadata"
+                                    src="{% url 'courses:serve_knowledge' %}?key={{ module.video_storage_key|iriencode %}"></video>
+                            {% elif can_watch_lesson %}
+                                <p class="muted">Video not uploaded yet.</p>
+                            {% else %}
+                                <p class="muted">Enroll to unlock this module.</p>
+                            {% endif %}
+                        </section>
+                    {% endfor %}
+                {% elif can_watch_lesson and course.primary_video_storage_key %}
                     <section class="course-learn__player" aria-label="Lesson video">
                         <h2 class="course-learn__section-title">{% if is_instructor %}Your lesson video{% else %}Lesson video{% endif %}</h2>
                         <video
@@ -89,13 +104,16 @@
             <aside class="course-rail">
                 <div class="rail-card">
                     <div class="rail-price">
-                        {% if course.price > 0 %}${{ course.price }}{% else %}Free{% endif %}
+                        {% if course.has_discount %}
+                            <span style="text-decoration:line-through;opacity:0.65;">${{ course.price }}</span>
+                            ${{ course.discount_price }}
+                        {% elif course.price > 0 %}${{ course.price }}{% else %}Free{% endif %}
                     </div>
                     {% if is_student and not is_enrolled %}
                         <form method="post" action="{% url 'courses:enroll' course.slug %}" style="margin-top:0.85rem;">
                             {% csrf_token %}
-                            {% if course.price > 0 %}
-                                <button class="btn btn-success btn-block" type="submit">Enroll · ${{ course.price }}</button>
+                            {% if course.effective_price > 0 %}
+                                <button class="btn btn-success btn-block" type="submit">Enroll · ${{ course.effective_price }}</button>
                             {% else %}
                                 <button class="btn btn-success btn-block" type="submit">Enroll free</button>
                             {% endif %}

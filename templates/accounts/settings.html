@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Account settings · LEARNible{% endblock %}
+{% block body %}
+{% include "includes/app_header.html" with portal_label="Settings" back_url=back_url back_label="Dashboard" %}
+
+<div class="dashboard">
+    <div class="dashboard-container dashboard-container--centered-main">
+        <main class="main-content main-content--centered-form">
+            <div class="page-header" style="margin-bottom:1rem;">
+                <div>
+                    <h1>Account settings</h1>
+                    <p class="page-sub">Update your profile and password.</p>
+                </div>
+            </div>
+
+            <div class="content-card" style="margin-bottom:1.5rem;">
+                <div class="form-section">
+                    <div class="form-section__title">Personal information</div>
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="profile">
+                        <div class="form-group">
+                            <label for="{{ profile_form.first_name.id_for_label }}">First name</label>
+                            {{ profile_form.first_name }}
+                            {{ profile_form.first_name.errors }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ profile_form.last_name.id_for_label }}">Last name</label>
+                            {{ profile_form.last_name }}
+                            {{ profile_form.last_name.errors }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ profile_form.email.id_for_label }}">Email</label>
+                            {{ profile_form.email }}
+                            {{ profile_form.email.errors }}
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-primary" type="submit">Save profile</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <div class="form-section">
+                    <div class="form-section__title">Change password</div>
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="password">
+                        <div class="form-group">
+                            <label for="{{ password_form.old_password.id_for_label }}">Current password</label>
+                            {{ password_form.old_password }}
+                            {{ password_form.old_password.errors }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ password_form.new_password1.id_for_label }}">New password</label>
+                            {{ password_form.new_password1 }}
+                            {{ password_form.new_password1.errors }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ password_form.new_password2.id_for_label }}">Confirm new password</label>
+                            {{ password_form.new_password2 }}
+                            {{ password_form.new_password2.errors }}
+                        </div>
+                        {{ password_form.non_field_errors }}
+                        <div class="form-actions">
+                            <button class="btn btn-success" type="submit">Update password</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

@@ -10,8 +10,10 @@
             <div class="sidebar-heading">Menu</div>
             <ul class="sidebar-menu">
                 <li><a class="active" href="{% url 'courses:dashboard' %}">🏠 Dashboard</a></li>
+                <li><a href="{% url 'courses:landing' %}">🌐 Home</a></li>
                 <li><a href="{% url 'courses:instructor_course_create' %}">➕ Create course</a></li>
                 <li><a href="{% url 'courses:landing' %}#courses">🧭 Browse catalog</a></li>
+                <li><a href="{% url 'accounts:settings' %}">⚙️ Settings</a></li>
             </ul>
         </aside>
         <main class="main-content">
@@ -131,12 +133,26 @@
                             </span>
                             <div class="list-row__main">
                                 <a class="list-row__title" href="{% url 'courses:course_learn' c.slug %}">{{ c.title }}</a>
-                                <div class="list-row__sub">{{ c.enrollment_count }} enrolled</div>
+                                <div class="list-row__sub">{{ c.enrollment_count }} enrolled · {{ c.get_status_display }}</div>
                             </div>
-                            <span class="badge {% if c.price > 0 %}badge--brand{% else %}badge--success{% endif %}">
-                                {% if c.price > 0 %}${{ c.price }}{% else %}Free{% endif %}
+                            <span class="badge {% if c.status == 'published' %}badge--success{% elif c.status == 'paused' %}badge--amber{% elif c.status == 'pending_review' %}badge--violet{% else %}badge--muted{% endif %}">{{ c.get_status_display }}</span>
+                            <span class="badge {% if c.has_discount %}badge--success{% elif c.price > 0 %}badge--brand{% else %}badge--success{% endif %}">
+                                {% if c.has_discount %}<s style="opacity:0.7;">${{ c.price }}</s> ${{ c.discount_price }}
+                                {% elif c.price > 0 %}${{ c.price }}{% else %}Free{% endif %}
                             </span>
-                            <a class="btn btn-ghost btn-sm" href="{% url 'courses:course_learn' c.slug %}">Open →</a>
+                            <div style="display:flex;gap:0.35rem;flex-wrap:wrap;">
+                                <a class="btn btn-ghost btn-sm" href="{% url 'courses:instructor_course_edit' c.slug %}">Edit</a>
+                                {% if c.status == 'published' or c.status == 'paused' %}
+                                    <form method="post" action="{% url 'courses:instructor_course_pause' c.slug %}">
+                                        {% csrf_token %}
+                                        <button class="btn btn-outline btn-sm" type="submit">{% if c.status == 'paused' %}Resume{% else %}Pause{% endif %}</button>
+                                    </form>
+                                {% endif %}
+                                <form method="post" action="{% url 'courses:instructor_course_delete' c.slug %}" onsubmit="return confirm('Delete this course permanently?');">
+                                    {% csrf_token %}
+                                    <button class="btn btn-ghost btn-sm" type="submit" style="color:var(--danger);">Delete</button>
+                                </form>
+                            </div>
                         </div>
                     {% endfor %}
                 {% else %}

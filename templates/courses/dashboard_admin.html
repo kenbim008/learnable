@@ -9,6 +9,7 @@
             <div class="sidebar-heading">Menu</div>
             <ul class="sidebar-menu">
                 <li><a class="active" href="{% url 'courses:dashboard' %}">🏠 Dashboard</a></li>
+                <li><a href="{% url 'courses:landing' %}">🌐 Home</a></li>
                 <li><a href="/admin/auth/user/">👥 Users</a></li>
                 <li><a href="/admin/courses/course/">📚 Courses</a></li>
             </ul>
@@ -28,10 +29,39 @@
                 </div>
                 <div class="stat-card stat-card--success">
                     <div class="stat-card__icon">📚</div>
-                    <div class="stat-value">{{ course_count }}</div>
-                    <div class="stat-label">Courses</div>
+                    <div class="stat-value">{{ published_count }}</div>
+                    <div class="stat-label">Live courses</div>
+                </div>
+                <div class="stat-card stat-card--violet">
+                    <div class="stat-card__icon">⏳</div>
+                    <div class="stat-value">{{ pending_courses|length }}</div>
+                    <div class="stat-label">Awaiting review</div>
                 </div>
             </div>
+
+            {% if pending_courses %}
+            <div class="content-card">
+                <div class="card-head"><h2>Courses awaiting approval</h2></div>
+                {% for c in pending_courses %}
+                <div class="list-row">
+                    <div class="list-row__main">
+                        <div class="list-row__title">{{ c.title }}</div>
+                        <div class="list-row__sub">By {{ c.instructor.get_full_name|default:c.instructor.email }} · ${{ c.effective_price }}</div>
+                    </div>
+                    <a class="btn btn-outline btn-sm" href="{% url 'courses:course_learn' c.slug %}">Preview</a>
+                    <form method="post" action="{% url 'courses:admin_course_approve' c.pk %}">
+                        {% csrf_token %}
+                        <button class="btn btn-success btn-sm" type="submit">Approve</button>
+                    </form>
+                    <form method="post" action="{% url 'courses:admin_course_reject' c.pk %}">
+                        {% csrf_token %}
+                        <button class="btn btn-ghost btn-sm" type="submit">Reject</button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
             <div class="content-card">
                 <div class="card-head"><h2>Invite others</h2></div>
                 <p class="muted" style="margin-bottom:1rem;font-size:0.92rem;">Share your referral link to invite new admins, instructors, or students to LEARNible.</p>

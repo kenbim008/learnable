@@ -42,11 +42,33 @@ class Course(models.Model):
         BRIEFCASE = "briefcase", "Briefcase"
         CALCULATOR = "calculator", "Calculator"
 
+    class Status(models.TextChoices):
+        DRAFT = "draft", "Draft"
+        PENDING_REVIEW = "pending_review", "Pending review"
+        PUBLISHED = "published", "Published"
+        PAUSED = "paused", "Paused"
+
+    class Level(models.TextChoices):
+        BEGINNER = "beginner", "Beginner"
+        INTERMEDIATE = "intermediate", "Intermediate"
+        ADVANCED = "advanced", "Advanced"
+
     title = models.CharField(max_length=255)
     slug = models.SlugField(unique=True, max_length=200)
     instructor = models.ForeignKey(User, on_delete=models.CASCADE, related_name="courses_teaching")
     description = models.TextField(blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    discount_price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text="Optional sale price. Must be less than the regular price.",
+    )
+    category = models.CharField(max_length=64, blank=True)
+    subcategory = models.CharField(max_length=64, blank=True)
+    level = models.CharField(max_length=20, choices=Level.choices, default=Level.BEGINNER)
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING_REVIEW)
     rating = models.DecimalField(max_digits=3, decimal_places=2, default=4.8)
     icon_key = models.CharField(
         "Course icon",
@@ -74,12 +96,27 @@ class Course(models.Model):
         help_text="Filled in when you add a cover image.",
     )
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ["-created_at"]
 
     def __str__(self) -> str:
         return self.title
+
+    @property
+    def effective_price(self) -> Decimal:
+        if self.discount_price is not None and self.discount_price < self.price:
+            return self.discount_price
+        return self.price
+
+    @property
+    def has_discount(self) -> bool:
+        return self.discount_price is not None and self.discount_price < self.price
+
+    @property
+    def is_live(self) -> bool:
+        return self.status == self.Status.PUBLISHED
 
     @property
     def preview_storage_key(self) -> str:
@@ -114,6 +151,27 @@ class Enrollment(models.Model):
 
     def __str__(self) -> str:
         return f"{self.user_id} → {self.course_id}"
+
+
+class CourseModule(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="modules")
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    order = models.PositiveIntegerField(default=0)
+    video_basename = models.CharField(max_length=255, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["order", "pk"]
+
+    def __str__(self) -> str:
+        return f"{self.course.title} — {self.title}"
+
+    @property
+    def video_storage_key(self) -> str:
+        if not self.video_basename:
+            return ""
+        return f"videos/courses/{self.course_id}/modules/{self.pk}/{self.video_basename}"
 
 
 class InstructorSubscription(models.Model):

@@ -1,4 +1,5 @@
 import datetime
+import json
 import logging
 from decimal import Decimal
 
@@ -21,13 +22,14 @@ from django.views.decorators.http import require_GET, require_http_methods, requ
 
 from accounts.constants import GROUP_ADMIN, GROUP_INSTRUCTOR, GROUP_STUDENT
 from accounts.forms import user_in_group
-from accounts.navigation import dashboard_url_name
 from accounts.stripe_customer import stripe_is_configured
 from accounts.referrals import get_or_create_referral_code, referral_link
 
 from .access import can_serve_knowledge, can_view_course_lessons, normalize_storage_key
+from .categories import COURSE_CATEGORIES
 from .models import (
     Course,
+    CourseModule,
     Enrollment,
     InstructorEarning,
     InstructorSubscription,
@@ -36,12 +38,73 @@ from .models import (
     PayoutRequest,
 )
 from .s3 import presigned_get_url
-from .upload import CourseUploadError, apply_course_media_uploads
+from .upload import CourseUploadError, apply_course_media_uploads, apply_module_video_upload
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
 
 PAYOUT_ADMIN_EMAIL = "ingo.learnible@gmail.com"
+
+
+def _course_form_context(form, formset, *, is_edit=False, course=None, back_url=None):
+    return {
+        "form": form,
+        "formset": formset,
+        "is_edit": is_edit,
+        "course": course,
+        "back_url": back_url or reverse("courses:dashboard_instructor"),
+        "course_categories_json": json.dumps(
+            {
+                key: {"label": data["label"], "subcategories": data["subcategories"]}
+                for key, data in COURSE_CATEGORIES.items()
+            }
+        ),
+    }
+
+
+def _save_course_with_modules(request, *, course=None, instructor=None):
+    from .forms import CourseForm, CourseModuleFormSet
+
+    is_edit = course is not None
+    form = CourseForm(request.POST, request.FILES, instance=course)
+    if not form.is_valid():
+        return None, form, CourseModuleFormSet(request.POST, request.FILES, instance=course), "form"
+
+    try:
+        with transaction.atomic():
+            saved = form.save(commit=False)
+            if not is_edit:
+                saved.instructor = instructor
+                saved.status = Course.Status.PENDING_REVIEW
+            saved.save()
+            apply_course_media_uploads(
+                saved,
+                preview=form.cleaned_data.get("preview_video"),
+                primary=form.cleaned_data.get("primary_video"),
+                cover=form.cleaned_data.get("cover_image"),
+            )
+            formset = CourseModuleFormSet(request.POST, request.FILES, instance=saved)
+            if not formset.is_valid():
+                if not is_edit:
+                    saved.delete()
+                return None, form, formset, "formset"
+            formset.save()
+            for mod_form in formset.forms:
+                if not mod_form.cleaned_data or mod_form.cleaned_data.get("DELETE"):
+                    continue
+                module = mod_form.instance
+                if not module.pk:
+                    continue
+                video = mod_form.cleaned_data.get("video")
+                if video:
+                    apply_module_video_upload(module, video)
+    except CourseUploadError as exc:
+        return None, form, CourseModuleFormSet(request.POST, request.FILES, instance=course), str(exc)
+    except Exception:
+        logger.exception("Course save failed")
+        return None, form, CourseModuleFormSet(request.POST, request.FILES, instance=course), "upload"
+
+    return saved, form, None, None
 
 
 def _instructor_plan_exists() -> bool:
@@ -50,7 +113,7 @@ def _instructor_plan_exists() -> bool:
 
 
 def landing(request):
-    courses = Course.objects.select_related("instructor").all()
+    courses = Course.objects.select_related("instructor").filter(status=Course.Status.PUBLISHED)
     enrolled_ids: set[int] = set()
     is_student = False
     is_instructor = False
@@ -65,11 +128,6 @@ def landing(request):
             instructor_subscription = InstructorSubscription.objects.filter(
                 user=request.user
             ).first()
-    # Logged-in users with a role dashboard see the clean catalog, not the
-    # marketing home (hero / how-it-works / pricing sign-up CTAs).
-    show_marketing = not (
-        request.user.is_authenticated and dashboard_url_name(request.user)
-    )
     return render(
         request,
         "courses/landing.html",
@@ -79,7 +137,8 @@ def landing(request):
             "is_student": is_student,
             "is_instructor": is_instructor,
             "instructor_subscription": instructor_subscription,
-            "show_marketing": show_marketing,
+            "show_marketing": True,
+            "course_categories": COURSE_CATEGORIES,
             "stripe_configured": stripe_is_configured(),
             "instructor_price_configured": _instructor_plan_exists(),
         },
@@ -100,17 +159,28 @@ def _course_learn_back_url(user) -> str:
 
 @login_required
 def course_learn(request, slug):
-    course = get_object_or_404(Course.objects.select_related("instructor"), slug=slug)
+    course = get_object_or_404(
+        Course.objects.select_related("instructor").prefetch_related("modules"),
+        slug=slug,
+    )
     is_enrolled = Enrollment.objects.filter(user=request.user, course=course).exists()
     is_instructor = course.instructor_id == request.user.id
     is_student = user_in_group(request.user, GROUP_STUDENT)
+    is_admin = request.user.is_staff and user_in_group(request.user, GROUP_ADMIN)
+
+    if not course.is_live and not (is_instructor or is_admin or request.user.is_superuser):
+        messages.error(request, "This course is not available yet.")
+        return redirect("courses:landing")
+
     can_watch_lesson = can_view_course_lessons(request.user, course)
+    modules = list(course.modules.all())
 
     return render(
         request,
         "courses/course_learn.html",
         {
             "course": course,
+            "modules": modules,
             "is_enrolled": is_enrolled,
             "is_instructor": is_instructor,
             "is_student": is_student,
@@ -313,35 +383,96 @@ def instructor_course_create(request):
     if redirect_response:
         return redirect_response
 
-    from .forms import CourseForm
+    from .forms import CourseForm, CourseModuleFormSet
 
     if request.method == "POST":
-        form = CourseForm(request.POST, request.FILES)
-        if form.is_valid():
-            try:
-                with transaction.atomic():
-                    course = form.save(commit=False)
-                    course.instructor = request.user
-                    course.save()
-                    apply_course_media_uploads(
-                        course,
-                        preview=form.cleaned_data.get("preview_video"),
-                        primary=form.cleaned_data.get("primary_video"),
-                        cover=form.cleaned_data.get("cover_image"),
-                    )
-            except CourseUploadError as exc:
-                messages.error(request, str(exc))
-                return render(request, "courses/instructor_course_form.html", {"form": form})
-            except Exception:
-                messages.error(
-                    request,
-                    "We could not upload your files. Please try again in a moment.",
-                )
-                return render(request, "courses/instructor_course_form.html", {"form": form})
+        result, form, formset, err = _save_course_with_modules(request, instructor=request.user)
+        if isinstance(result, Course):
+            messages.success(
+                request,
+                "Course saved and submitted for admin review. It will go live once approved.",
+            )
             return redirect(f"{reverse('courses:dashboard_instructor')}?course_created=1")
+        if err == "formset":
+            messages.error(request, "Please fix the module errors below.")
+        elif err == "upload":
+            messages.error(request, "We could not upload your files. Please try again.")
+        elif err and err not in ("form", "formset", "upload"):
+            messages.error(request, err)
+        if formset is None:
+            formset = CourseModuleFormSet(request.POST, request.FILES)
     else:
         form = CourseForm()
-    return render(request, "courses/instructor_course_form.html", {"form": form})
+        formset = CourseModuleFormSet()
+
+    return render(
+        request,
+        "courses/instructor_course_form.html",
+        _course_form_context(form, formset, back_url=reverse("courses:dashboard_instructor")),
+    )
+
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def instructor_course_edit(request, slug):
+    redirect_response = _guard_group(request, GROUP_INSTRUCTOR, "Instructors only.")
+    if redirect_response:
+        return redirect_response
+
+    course = get_object_or_404(Course, slug=slug, instructor=request.user)
+    from .forms import CourseForm, CourseModuleFormSet
+
+    if request.method == "POST":
+        result, form, formset, err = _save_course_with_modules(request, course=course)
+        if isinstance(result, Course):
+            messages.success(request, "Course updated.")
+            return redirect(f"{reverse('courses:dashboard_instructor')}?course_updated=1")
+        if err == "formset":
+            messages.error(request, "Please fix the module errors below.")
+        elif err == "upload":
+            messages.error(request, "We could not upload your files. Please try again.")
+        elif err and err not in ("form", "formset", "upload"):
+            messages.error(request, err)
+    else:
+        form = CourseForm(instance=course)
+        formset = CourseModuleFormSet(instance=course)
+
+    return render(
+        request,
+        "courses/instructor_course_form.html",
+        _course_form_context(form, formset, is_edit=True, course=course),
+    )
+
+
+@login_required
+@require_POST
+def instructor_course_pause(request, slug):
+    redirect_response = _guard_group(request, GROUP_INSTRUCTOR, "Instructors only.")
+    if redirect_response:
+        return redirect_response
+    course = get_object_or_404(Course, slug=slug, instructor=request.user)
+    if course.status == Course.Status.PUBLISHED:
+        course.status = Course.Status.PAUSED
+        course.save(update_fields=["status", "updated_at"])
+        messages.success(request, f"“{course.title}” has been paused.")
+    elif course.status == Course.Status.PAUSED:
+        course.status = Course.Status.PUBLISHED
+        course.save(update_fields=["status", "updated_at"])
+        messages.success(request, f"“{course.title}” is live again.")
+    return redirect("courses:dashboard_instructor")
+
+
+@login_required
+@require_POST
+def instructor_course_delete(request, slug):
+    redirect_response = _guard_group(request, GROUP_INSTRUCTOR, "Instructors only.")
+    if redirect_response:
+        return redirect_response
+    course = get_object_or_404(Course, slug=slug, instructor=request.user)
+    title = course.title
+    course.delete()
+    messages.success(request, f"“{title}” has been deleted.")
+    return redirect("courses:dashboard_instructor")
 
 
 @login_required
@@ -357,12 +488,19 @@ def dashboard_admin(request):
         messages.info(request, "Super admins use the super admin dashboard.")
         return redirect("courses:dashboard_superadmin")
 
+    pending_courses = list(
+        Course.objects.filter(status=Course.Status.PENDING_REVIEW)
+        .select_related("instructor")
+        .order_by("-created_at")[:20]
+    )
     return render(
         request,
         "courses/dashboard_admin.html",
         {
             "user_count": User.objects.count(),
             "course_count": Course.objects.count(),
+            "published_count": Course.objects.filter(status=Course.Status.PUBLISHED).count(),
+            "pending_courses": pending_courses,
             "referral_link": referral_link(request.user, request),
         },
     )
@@ -396,11 +534,15 @@ def enroll(request, slug):
 
     course = get_object_or_404(Course, slug=slug)
 
+    if not course.is_live and course.instructor_id != request.user.id:
+        messages.error(request, "This course is not available for enrollment yet.")
+        return redirect("courses:landing")
+
     existing = Enrollment.objects.filter(user=request.user, course=course).first()
-    if existing and (existing.paid or course.price == Decimal("0.00")):
+    if existing and (existing.paid or course.effective_price == Decimal("0.00")):
         return redirect("courses:course_learn", slug=slug)
 
-    if course.price == Decimal("0.00"):
+    if course.effective_price == Decimal("0.00"):
         Enrollment.objects.get_or_create(
             user=request.user, course=course, defaults={"paid": True}
         )
@@ -581,11 +723,12 @@ def _handle_checkout_completed(session):
                 enrollment.save(update_fields=["paid", "stripe_payment_intent_id"])
 
             if not hasattr(enrollment, "earning"):
-                payout_amount = (course.price * PLATFORM_PAYOUT_RATE).quantize(Decimal("0.01"))
+                charge = course.effective_price
+                payout_amount = (charge * PLATFORM_PAYOUT_RATE).quantize(Decimal("0.01"))
                 InstructorEarning.objects.create(
                     instructor=course.instructor,
                     enrollment=enrollment,
-                    gross_amount=course.price,
+                    gross_amount=charge,
                     payout_amount=payout_amount,
                 )
 
@@ -625,6 +768,32 @@ def _handle_subscription_change(subscription):
         status=status,
         current_period_end=period_end,
     )
+
+
+@login_required
+@require_POST
+def admin_course_approve(request, course_id):
+    redirect_response = _guard_group(request, GROUP_ADMIN, "Admins only.")
+    if redirect_response:
+        return redirect_response
+    course = get_object_or_404(Course, pk=course_id)
+    course.status = Course.Status.PUBLISHED
+    course.save(update_fields=["status", "updated_at"])
+    messages.success(request, f"“{course.title}” is now live.")
+    return redirect("courses:dashboard_admin")
+
+
+@login_required
+@require_POST
+def admin_course_reject(request, course_id):
+    redirect_response = _guard_group(request, GROUP_ADMIN, "Admins only.")
+    if redirect_response:
+        return redirect_response
+    course = get_object_or_404(Course, pk=course_id)
+    course.status = Course.Status.DRAFT
+    course.save(update_fields=["status", "updated_at"])
+    messages.info(request, f"“{course.title}” was sent back to the instructor.")
+    return redirect("courses:dashboard_admin")
 
 
 @login_required

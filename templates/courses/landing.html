@@ -47,9 +47,9 @@
             <input type="search" id="courseSearch" placeholder="Search courses..." aria-label="Search courses">
             <select id="courseCategory" aria-label="Filter by category">
                 <option value="">All Categories</option>
-                <option value="technology">Technology &amp; IT</option>
-                <option value="business">Business</option>
-                <option value="design">Design</option>
+                {% for key, data in course_categories.items %}
+                    <option value="{{ key }}">{{ data.label }}</option>
+                {% endfor %}
             </select>
             <select id="courseLevel" aria-label="Filter by level">
                 <option value="">All Levels</option>

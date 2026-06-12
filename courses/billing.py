@@ -50,7 +50,7 @@ def create_course_checkout_session(user, course, request):
             {
                 "price_data": {
                     "currency": "usd",
-                    "unit_amount": int(course.price * 100),
+                    "unit_amount": int(course.effective_price * 100),
                     "product_data": {"name": course.title},
                 },
                 "quantity": 1,

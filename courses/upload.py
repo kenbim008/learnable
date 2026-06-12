@@ -7,7 +7,7 @@ from pathlib import Path
 
 from django.conf import settings
 
-from .models import Course
+from .models import Course, CourseModule
 from .s3 import s3_client
 
 
@@ -96,3 +96,14 @@ def apply_course_media_uploads(course: Course, *, preview=None, primary=None, co
 
     if updates:
         course.save(update_fields=updates)
+
+
+def apply_module_video_upload(module: CourseModule, uploaded) -> None:
+    if uploaded is None:
+        return
+    name = _unique_filename(uploaded.name, _VIDEO_EXT)
+    key = f"videos/courses/{module.course_id}/modules/{module.pk}/{name}"
+    body = _read_and_validate_size(uploaded, settings.COURSE_UPLOAD_MAX_VIDEO_BYTES)
+    _put_object(key=key, body=body, content_type=_guess_content_type(name) or "video/mp4")
+    module.video_basename = name
+    module.save(update_fields=["video_basename"])

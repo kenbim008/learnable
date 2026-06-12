@@ -1,14 +1,38 @@
 from django.contrib import admin
 
-from .models import Course, Enrollment, InstructorEarning, InstructorSubscription, PayoutRequest, StripeProduct
+from .models import Course, CourseModule, Enrollment, InstructorEarning, InstructorSubscription, PayoutRequest, StripeProduct
 
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ("title", "slug", "icon_key", "instructor", "price", "created_at")
+    list_display = ("title", "slug", "status", "category", "instructor", "price", "discount_price", "created_at")
+    list_filter = ("status", "category", "level")
     prepopulated_fields = {"slug": ("title",)}
     search_fields = ("title", "slug", "instructor__email")
     raw_id_fields = ("instructor",)
+    actions = ["approve_courses", "pause_courses"]
+
+    @admin.action(description="Approve selected courses (publish)")
+    def approve_courses(self, request, queryset):
+        queryset.update(status=Course.Status.PUBLISHED)
+
+    @admin.action(description="Pause selected courses")
+    def pause_courses(self, request, queryset):
+        queryset.update(status=Course.Status.PAUSED)
+
+
+class CourseModuleInline(admin.TabularInline):
+    model = CourseModule
+    extra = 0
+
+
+CourseAdmin.inlines = [CourseModuleInline]
+
+
+@admin.register(CourseModule)
+class CourseModuleAdmin(admin.ModelAdmin):
+    list_display = ("title", "course", "order", "created_at")
+    raw_id_fields = ("course",)
 
 
 @admin.register(Enrollment)

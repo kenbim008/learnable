@@ -1,21 +1,22 @@
 {% extends "base.html" %}
-{% load course_icons %}
-{% block title %}Create course · LEARNible{% endblock %}
+{% load course_icons static %}
+{% block title %}{% if is_edit %}Edit course{% else %}Create course{% endif %} · LEARNible{% endblock %}
 {% block body %}
-{% include "includes/app_header.html" with portal_label="Create course" back_url=back_url back_label="Dashboard" %}
+{% include "includes/app_header.html" with portal_label=is_edit|yesno:"Edit course,Create course" back_url=back_url back_label="Dashboard" %}
 
 <div class="dashboard">
     <div class="dashboard-container dashboard-container--centered-main">
         <main class="main-content main-content--centered-form">
             <div class="page-header" style="margin-bottom:1rem;">
                 <div>
-                    <h1>Create a course</h1>
-                    <p class="page-sub">Add the basics now — attach media whenever you're ready.</p>
+                    <h1>{% if is_edit %}Edit course{% else %}Create a course{% endif %}</h1>
+                    <p class="page-sub">Add details, optional discount pricing, and one or more lesson modules.</p>
                 </div>
             </div>
 
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
+                {{ formset.management_form }}
 
                 <div class="content-card">
                     <div class="form-section">
@@ -23,24 +24,45 @@
                         <div class="form-group">
                             <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
                             {{ form.title }}
-                            {% if form.title.help_text %}<small class="form-help">{{ form.title.help_text }}</small>{% endif %}
                             {{ form.title.errors }}
                         </div>
                         <div class="form-group">
                             <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
                             {{ form.description }}
-                            {% if form.description.help_text %}<small class="form-help">{{ form.description.help_text }}</small>{% endif %}
                             {{ form.description.errors }}
+                        </div>
+                        <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                            <div class="form-group">
+                                <label for="{{ form.category.id_for_label }}">{{ form.category.label }}</label>
+                                {{ form.category }}
+                                {{ form.category.errors }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form.subcategory.id_for_label }}">{{ form.subcategory.label }}</label>
+                                {{ form.subcategory }}
+                                {{ form.subcategory.errors }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.level.id_for_label }}">{{ form.level.label }}</label>
+                            {{ form.level }}
                         </div>
                     </div>
 
                     <div class="form-section">
                         <div class="form-section__title">Pricing</div>
-                        <div class="form-group">
-                            <label for="{{ form.price.id_for_label }}">{{ form.price.label }}</label>
-                            {{ form.price }}
-                            {% if form.price.help_text %}<small class="form-help">{{ form.price.help_text }}</small>{% endif %}
-                            {{ form.price.errors }}
+                        <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                            <div class="form-group">
+                                <label for="{{ form.price.id_for_label }}">{{ form.price.label }}</label>
+                                {{ form.price }}
+                                {{ form.price.errors }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form.discount_price.id_for_label }}">{{ form.discount_price.label }}</label>
+                                {{ form.discount_price }}
+                                <small class="form-help">Optional sale price.</small>
+                                {{ form.discount_price.errors }}
+                            </div>
                         </div>
                     </div>
 
@@ -50,47 +72,71 @@
                             <label>{{ form.icon_key.label }}</label>
                             <div class="icon-picker">
                                 {% for value, label in form.icon_key.field.choices %}
-                                    <input type="radio" name="{{ form.icon_key.html_name }}" id="icon_{{ value }}"
-                                           value="{{ value }}"
+                                    <input type="radio" name="{{ form.icon_key.html_name }}" id="icon_{{ value }}" value="{{ value }}"
                                            {% if form.icon_key.value|stringformat:"s" == value|stringformat:"s" %}checked{% endif %}>
-                                    <label for="icon_{{ value }}" title="{{ label }}">
-                                        {% course_icon value %}
-                                        <span class="visually-hidden">{{ label }}</span>
-                                    </label>
+                                    <label for="icon_{{ value }}" title="{{ label }}">{% course_icon value %}</label>
                                 {% endfor %}
                             </div>
-                            {% if form.icon_key.help_text %}<small class="form-help">{{ form.icon_key.help_text }}</small>{% endif %}
-                            {{ form.icon_key.errors }}
                         </div>
                     </div>
 
                     <div class="form-section">
-                        <div class="form-section__title">Media <span style="font-weight:500;text-transform:none;letter-spacing:0;">· optional</span></div>
+                        <div class="form-section__title">Course modules</div>
+                        <p class="form-help" style="margin-bottom:1rem;">Upload one or more lesson videos.</p>
+                        <div id="moduleFormset">
+                            {% for mod_form in formset %}
+                                <div class="module-form-row content-card" style="padding:1rem;margin-bottom:1rem;background:var(--surface-2);">
+                                    {% if mod_form.instance.pk %}{{ mod_form.id }}{% endif %}
+                                    <div class="form-group">
+                                        <label>{{ mod_form.title.label }}</label>
+                                        {{ mod_form.title }}
+                                        {{ mod_form.title.errors }}
+                                    </div>
+                                    <div class="form-group">
+                                        <label>{{ mod_form.description.label }}</label>
+                                        {{ mod_form.description }}
+                                    </div>
+                                    <div class="form-row" style="display:grid;grid-template-columns:120px 1fr;gap:1rem;align-items:end;">
+                                        <div class="form-group">
+                                            <label>{{ mod_form.order.label }}</label>
+                                            {{ mod_form.order }}
+                                        </div>
+                                        <div class="form-group">
+                                            <label>{{ mod_form.video.label }}</label>
+                                            {{ mod_form.video }}
+                                            {{ mod_form.video.errors }}
+                                        </div>
+                                    </div>
+                                    {% if mod_form.DELETE %}
+                                        <label style="font-size:0.9rem;margin-top:0.5rem;display:inline-flex;gap:0.35rem;">
+                                            {{ mod_form.DELETE }} Remove module
+                                        </label>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <button type="button" class="btn btn-outline btn-sm" id="addModuleBtn">+ Add another module</button>
+                        {{ formset.non_form_errors }}
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-section__title">Media · optional</div>
                         <div class="form-group">
                             <label for="{{ form.preview_video.id_for_label }}">{{ form.preview_video.label }}</label>
                             {{ form.preview_video }}
-                            <small class="form-help">A short, free clip students can watch before enrolling.</small>
-                            {{ form.preview_video.errors }}
                         </div>
                         <div class="form-group">
                             <label for="{{ form.primary_video.id_for_label }}">{{ form.primary_video.label }}</label>
                             {{ form.primary_video }}
-                            <small class="form-help">The main lesson, unlocked for enrolled students.</small>
-                            {{ form.primary_video.errors }}
                         </div>
                         <div class="form-group">
                             <label for="{{ form.cover_image.id_for_label }}">{{ form.cover_image.label }}</label>
                             {{ form.cover_image }}
-                            {{ form.cover_image.errors }}
                         </div>
                     </div>
 
-                    {% if form.non_field_errors %}
-                        <div class="errorlist" style="margin-top:1rem;">{{ form.non_field_errors }}</div>
-                    {% endif %}
-
                     <div class="form-actions">
-                        <button class="btn btn-success" type="submit">Save course</button>
+                        <button class="btn btn-success" type="submit">{% if is_edit %}Save changes{% else %}Submit for review{% endif %}</button>
                         <a class="btn btn-ghost" href="{% url 'courses:dashboard' %}">Cancel</a>
                     </div>
                 </div>
@@ -98,4 +144,8 @@
         </main>
     </div>
 </div>
+{% endblock %}
+{% block extra_head %}
+<script>window.LEARNIBLE_CATEGORIES = {{ course_categories_json|default:"{}"|safe }};</script>
+<script src="{% static 'js/course-form.js' %}"></script>
 {% endblock %}

@@ -66,7 +66,11 @@ def can_serve_knowledge(user: User, storage_key: str) -> bool:
     if is_preview_video:
         return user.is_authenticated
 
-    is_paid_area = (prefix == "videos" and rest.startswith("content/")) or prefix in ("images", "documents")
+    is_paid_area = (
+        (prefix == "videos" and rest.startswith("content/"))
+        or (prefix == "videos" and rest.startswith("modules/"))
+        or prefix in ("images", "documents")
+    )
     if not is_paid_area:
         return False
 
@@ -76,10 +80,12 @@ def can_serve_knowledge(user: User, storage_key: str) -> bool:
 
 
 def _has_access(user, course: Course) -> bool:
-    """True if the user's enrollment satisfies the course's payment requirement."""
-    if course.price <= _ZERO:
-        return Enrollment.objects.filter(user=user, course=course).exists()
-    return Enrollment.objects.filter(user=user, course=course, paid=True).exists()
+    enrollment = Enrollment.objects.filter(user=user, course=course).first()
+    if not enrollment:
+        return False
+    if course.effective_price <= _ZERO:
+        return True
+    return enrollment.paid
 
 
 def can_view_course_lessons(user: User, course: Course) -> bool:

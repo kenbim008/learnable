@@ -1,11 +1,13 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 
 from .forms import LoginForm, StudentInstructorSignupForm, assign_role_groups
+from .settings_forms import AccountPasswordChangeForm, ProfileSettingsForm
 from .navigation import dashboard_url_name
 from .referrals import attach_referral, remember_referral
 
@@ -83,6 +85,41 @@ def signup_view(request):
         return redirect(f"{reverse(dashboard)}?welcome=1")
 
     return render(request, "accounts/signup.html", {"form": form})
+
+
+@require_http_methods(["GET", "POST"])
+@login_required
+def settings_view(request):
+    profile_form = ProfileSettingsForm(instance=request.user)
+    password_form = AccountPasswordChangeForm(user=request.user)
+
+    if request.method == "POST":
+        action = request.POST.get("action")
+        if action == "profile":
+            profile_form = ProfileSettingsForm(request.POST, instance=request.user)
+            if profile_form.is_valid():
+                profile_form.save()
+                messages.success(request, "Your profile has been updated.")
+                return redirect("accounts:settings")
+        elif action == "password":
+            password_form = AccountPasswordChangeForm(user=request.user, data=request.POST)
+            if password_form.is_valid():
+                password_form.save()
+                from django.contrib.auth import update_session_auth_hash
+
+                update_session_auth_hash(request, password_form.user)
+                messages.success(request, "Your password has been changed.")
+                return redirect("accounts:settings")
+
+    return render(
+        request,
+        "accounts/settings.html",
+        {
+            "profile_form": profile_form,
+            "password_form": password_form,
+            "back_url": reverse("courses:dashboard"),
+        },
+    )
 
 
 @require_http_methods(["GET", "POST"])

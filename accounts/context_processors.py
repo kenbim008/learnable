@@ -14,6 +14,7 @@ def navigation(request):
     if not user.is_authenticated:
         return {
             "nav_home": {"url": landing, "label": "Home"},
+            "nav_landing_url": landing,
             "nav_catalog_url": catalog,
             "nav_show_public_home_link": True,
         }
@@ -21,12 +22,15 @@ def navigation(request):
     if dashboard_url_name(user):
         return {
             "nav_home": nav_home_for_user(user),
+            "nav_landing_url": landing,
+            "nav_settings_url": reverse("accounts:settings"),
             "nav_catalog_url": catalog,
-            "nav_show_public_home_link": False,
+            "nav_show_public_home_link": True,
         }
 
     return {
         "nav_home": {"url": landing, "label": "Home"},
+        "nav_landing_url": landing,
         "nav_catalog_url": catalog,
         "nav_show_public_home_link": True,
     }

@@ -1,5 +1,5 @@
 {% load course_icons %}
-<div class="course-card" data-search-title="{{ course.title|lower }}" data-search-instructor="{{ course.instructor.get_full_name|default:course.instructor.email|lower }}" data-price="{{ course.price }}" data-rating="{{ course.rating }}">
+<div class="course-card" data-search-title="{{ course.title|lower }}" data-search-instructor="{{ course.instructor.get_full_name|default:course.instructor.email|lower }}" data-price="{{ course.effective_price }}" data-rating="{{ course.rating }}" data-category="{{ course.category }}" data-level="{{ course.level }}">
     <div class="course-image course-image--icon">
         {% course_icon course.icon_key "course-card__icon" %}
         {% if course.preview_storage_key and user.is_authenticated %}
@@ -15,7 +15,12 @@
         <a class="course-title course-title--link" href="{% url 'courses:course_learn' course.slug %}">{{ course.title }}</a>
         <div class="course-instructor">By {{ course.instructor.get_full_name|default:course.instructor.email }}</div>
         <div class="course-meta">
-            <div class="course-price"{% if course.price > 0 %} data-price-usd="{{ course.price }}"{% endif %}>{% if course.price > 0 %}${{ course.price }}{% else %}Free{% endif %}</div>
+            <div class="course-price"{% if course.effective_price > 0 %} data-price-usd="{{ course.effective_price }}"{% endif %}>
+                {% if course.has_discount %}
+                    <span style="text-decoration:line-through;opacity:0.65;font-size:0.9em;">${{ course.price }}</span>
+                    ${{ course.discount_price }}
+                {% elif course.price > 0 %}${{ course.price }}{% else %}Free{% endif %}
+            </div>
             <div class="course-rating">⭐ {{ course.rating }}</div>
         </div>
         {% if user.is_authenticated %}
@@ -25,8 +30,8 @@
                 {% else %}
                     <form method="post" action="{% url 'courses:enroll' course.slug %}">
                         {% csrf_token %}
-                        {% if course.price > 0 %}
-                            <button class="add-to-cart-btn" type="submit">Enroll · ${{ course.price }}</button>
+                        {% if course.effective_price > 0 %}
+                            <button class="add-to-cart-btn" type="submit">Enroll · ${{ course.effective_price }}</button>
                         {% else %}
                             <button class="add-to-cart-btn" type="submit">Enroll free</button>
                         {% endif %}

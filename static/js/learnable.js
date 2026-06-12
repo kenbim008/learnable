@@ -105,12 +105,19 @@ function initCourseFilters() {
 
     function applyFilters() {
         const query = search.value.trim().toLowerCase();
+        const catFilter = category?.value || "";
+        const levelFilter = level?.value || "";
         let visible = 0;
 
         getCards().forEach((card) => {
             const title = card.getAttribute("data-search-title") || "";
             const instructor = card.getAttribute("data-search-instructor") || "";
-            const matches = !query || title.includes(query) || instructor.includes(query);
+            const cardCategory = card.getAttribute("data-category") || "";
+            const cardLevel = card.getAttribute("data-level") || "";
+            const matchesSearch = !query || title.includes(query) || instructor.includes(query);
+            const matchesCategory = !catFilter || cardCategory === catFilter;
+            const matchesLevel = !levelFilter || cardLevel === levelFilter;
+            const matches = matchesSearch && matchesCategory && matchesLevel;
             card.classList.toggle("is-filtered-out", !matches);
             if (matches) visible += 1;
         });

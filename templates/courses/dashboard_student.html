@@ -10,8 +10,10 @@
             <div class="sidebar-heading">Menu</div>
             <ul class="sidebar-menu">
                 <li><a class="active" href="{% url 'courses:dashboard' %}">🏠 Dashboard</a></li>
+                <li><a href="{% url 'courses:landing' %}">🌐 Home</a></li>
                 <li><a href="{% url 'courses:landing' %}#courses">🧭 Browse courses</a></li>
                 <li><a href="{% url 'courses:community' %}">💬 Community</a></li>
+                <li><a href="{% url 'accounts:settings' %}">⚙️ Settings</a></li>
             </ul>
         </aside>
         <main class="main-content">
@@ -76,7 +78,7 @@
                                     {% else %}
                                         <form method="post" action="{% url 'courses:enroll' e.course.slug %}" style="margin-top:auto;">
                                             {% csrf_token %}
-                                            <button class="btn btn-success btn-block" type="submit">Complete purchase · ${{ e.course.price }}</button>
+                                            <button class="btn btn-success btn-block" type="submit">Complete purchase · ${{ e.course.effective_price }}</button>
                                         </form>
                                     {% endif %}
                                 </div>

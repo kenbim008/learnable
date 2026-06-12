@@ -12,6 +12,12 @@ Params: portal_label (str), back_url (optional), back_label (optional).
             <span class="topbar-portal">{{ portal_label }}</span>
         {% endif %}
         <div class="header-right">
+            {% if nav_show_public_home_link and nav_landing_url %}
+                <a class="header-link" href="{{ nav_landing_url }}">Home</a>
+            {% endif %}
+            {% if nav_settings_url %}
+                <a class="header-link" href="{{ nav_settings_url }}">Settings</a>
+            {% endif %}
             {% if back_url %}
                 <a class="header-link" href="{{ back_url }}">← {{ back_label|default:"Back" }}</a>
             {% endif %}
